@@ -1,0 +1,33 @@
+specVersion: '2.4'
+metadata:
+  name: 'price_agreements'
+type: application
+server:
+  settings:
+    httpPort: 8086
+  customMiddleware:
+  - name: ui5-middleware-simpleproxy
+    afterMiddleware: compression
+    mountPath: /v2
+    configuration:
+      baseUri: "http://localhost:4004/v2"
+      removeETag: true
+builder:
+  cachebuster:
+    signatureType: time
+  resources:
+    excludes:
+      - "/templates/**"
+  customTasks:
+    - name: ui5-task-cachebuster-indexing
+      afterTask: generateVersionInfo
+    - name: ui5-task-transpile
+      afterTask: replaceVersion
+      configuration:
+        debug: false
+        removeConsoleStatements: true
+        transpileAsync: true
+        excludePatterns:
+        - "lib"
+        - "libs"
+        - "themes"

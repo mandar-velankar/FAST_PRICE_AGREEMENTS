@@ -1,0 +1,21 @@
+{
+	"name": "PRICE_AGREEMENTS",
+	"version": "0.0.1",
+	"private": true,
+	"description": "Price Agreements",
+	"scripts": {
+		"setup": "cd priceAgreements && npm install",
+		"start:app": "cd priceAgreements && PORT=5002 npm start",
+		"start:local": "cd priceAgreements && npm run start:local",
+		"build:xsa": "mbt build -p=xsa --mtar=FASTCAP-priceAgreements-Frontend.mtar",
+		"build:cf": "mbt build -p=cf --mtar=FASTCAP-priceAgreements-Frontend-CF.mtar",
+		"deploy:cf": "cf deploy mta_archives/FASTCAP-priceAgreements-Frontend-CF.mtar -e cf.mtaext"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"mbt": "~1.0.17"
+	},
+	"engines": {
+		"node": "^12"
+	}
+}

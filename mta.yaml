@@ -1,0 +1,51 @@
+ID: FASTPRICEAGREEMENTS
+_schema-version: '2.1'
+version: 0.4.1
+
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npm install
+
+modules:
+  - name: FASTPRICEAGREEMENTS-app
+    type: html5
+    path: priceAgreements
+    build-parameters:
+      builder: custom
+      commands:
+      - npm install
+      - npm run build
+    parameters:
+      memory: 1024M
+      disk-quota: 4096M
+    provides:
+      - name: priceAgreementsApp
+        public: true
+        properties:
+          url: ${default-url}
+    requires:
+      - name: srv_api
+        group: destinations
+        properties:
+          forwardAuthToken: true
+          name: srv_api
+          url: '~{url}'
+      - name: uaa_FAST
+resources:
+  - name: uaa_FAST
+    parameters:
+      path: ./xs-security.json
+      service-plan: default
+      service: xsuaa
+    type: org.cloudfoundry.existing-service
+  - name: srv_api
+    type: configuration
+    parameters:
+      provider-id: FAST:srv_api
+      provider-nid: mta
+      target:
+        org: ${org}
+        space: ${space}
+      version: '>=0.0.0'
