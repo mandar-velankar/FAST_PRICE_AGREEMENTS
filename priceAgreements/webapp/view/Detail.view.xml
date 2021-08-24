@@ -1,89 +1,86 @@
 <mvc:View
 	controllerName="com.bayer.tender.priceagreements.controller.Detail"
-	xmlns="sap.m"
-	xmlns:semantic="sap.f.semantic"
-	xmlns:mvc="sap.ui.core.mvc">
+	xmlns="sap.uxap" 
+	xmlns:m="sap.m" 
+	xmlns:f="sap.f"
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns:t="sap.ui.table" 
+	xmlns:core="sap.ui.core" 
+	xmlns:l="sap.ui.layout"
+	xmlns:viz.data="sap.viz.ui5.data" 
+	xmlns:viz="sap.viz.ui5.controls" 
+	xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+	xmlns:tnt="sap.tnt">
 
-	<semantic:SemanticPage
-		id="detailPage"
-		busy="{detailView>/busy}"
-		busyIndicatorDelay="{detailView>/delay}">
-		<semantic:titleHeading>
-			<Title
-				text="{ID}"
-				level="H2"/>
-		</semantic:titleHeading>
-		<semantic:headerContent>
-			<ObjectAttribute title="{i18n>priceTitle}"/>
+	<!-- ObjectPage Layout -->
+	<ObjectPageLayout 
+		id="DetailPage" 
+		showTitleInHeaderContent="true" 
+		alwaysShowContentHeader="true" 
+		preserveHeaderStateOnScroll="false"
+		headerContentPinnable="true" 
+		isChildPage="true" 
+		toggleHeaderOnTitleClick="true" 
+		showFooter="false" 
+		upperCaseAnchorBar="false"
+		enableLazyLoading="false" 
+		useIconTabBar="true" 
+		navigate=".onSectionNavigate"
+		selectedSection="basicInformationId"
+		showAnchorBarPopover="false">
 
-		</semantic:headerContent>
-		<semantic:content>
-			<Table
-				id="lineItemsList"
-				width="auto"
-				items="{Product}"
-				updateFinished=".onListUpdateFinished"
-				noDataText="{i18n>detailLineItemTableNoDataText}"
-				busyIndicatorDelay="{detailView>/lineItemTableDelay}">
-				<headerToolbar>
-					<Toolbar>
-						<Title
-							id="lineItemsTitle"
-							text="{detailView>/lineItemListTitle}"
-							titleStyle="H3"
-							level="H3"/>
-					</Toolbar>
-				</headerToolbar>
-				<columns>
-					<Column>
-						<Text text="{i18n>detailLineItemTableIDColumn}"/>
-					</Column>
-					<Column
-						minScreenWidth="Tablet"
-						demandPopin="true"
-						hAlign="End">
-						<Text text="{i18n>detailLineItemTableUnitNumberColumn}"/>
-					</Column>
-				</columns>
-				<items>
-					<ColumnListItem>
-						<cells>
-							<ObjectIdentifier
-								title="{}"
-								text="{PRODUCTPACKID}"/>
-							<ObjectNumber
-/>
-						</cells>
-					</ColumnListItem>
-				</items>
-			</Table>
-		</semantic:content>
-		<!--Semantic ShareMenu Buttons-->
-		<semantic:sendEmailAction>
-			<semantic:SendEmailAction
-				id="shareEmail"
-				press=".onSendEmailPress"/>
-		</semantic:sendEmailAction>
+	<headerTitle>
+			<ObjectPageDynamicHeaderTitle>
+				
+				<!-- Heading part that is used when heading is not collapsed -->
+				<expandedHeading>
+					<m:Title text="IT-21-1001-1 / Lazzio Agency / XARELTO 20mg 28 TABL" id="tenderId" wrapping="true" class="sapUiSmallMarginEnd"/>
+				</expandedHeading>
 
-		<semantic:closeAction>
-			<semantic:CloseAction
-					id="closeColumn"
-					press=".onCloseDetailPress"/>
-		</semantic:closeAction>
+				<!-- WINDOW ACTIONS -->
+				<navigationActions>
+					<m:OverflowToolbarButton id="enterFullScreenButton" type="Transparent" icon="sap-icon://full-screen" press=".toggleFullScreen"
+						tooltip="Enter Full Screen Mode" visible="{= !${device>/system/phone} &amp;&amp; !${appView>/actionButtonsInfo/midColumn/fullScreen}}" />
+					<m:OverflowToolbarButton id="exitFullScreenButton" type="Transparent" icon="sap-icon://exit-full-screen" press=".toggleFullScreen"
+						tooltip="Exit Full Screen Mode" visible="{= !${device>/system/phone} &amp;&amp; ${appView>/actionButtonsInfo/midColumn/fullScreen}}"/>
+					<m:OverflowToolbarButton id="closeScreenButton" type="Transparent" icon="sap-icon://decline" press=".onCloseDetailPress" tooltip="Close column"
+						visible="true"/>
+				</navigationActions>
+				
+				<!-- ACTIONS -->
+				<actions>
+					<m:Button id="syncrButtonId" icon="sap-icon://synchronize" text="Synchronize" type="Emphasized" press="._onSynchronize"  visible="{= !${soa>/creationMode} }"/>
+					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${soa>/editMode} === false ? true : false }"/>
+				</actions>
+				
+			</ObjectPageDynamicHeaderTitle>
+		</headerTitle>
 
-		<semantic:fullScreenAction>
-			<semantic:FullScreenAction
-					id="enterFullScreen"
-					visible="{= !${device>/system/phone} &amp;&amp; !${appView>/actionButtonsInfo/midColumn/fullScreen}}"
-					press=".toggleFullScreen"/>
-		</semantic:fullScreenAction>
-		<semantic:exitFullScreenAction>
-			<semantic:ExitFullScreenAction
-					id="exitFullScreen"
-					visible="{= !${device>/system/phone} &amp;&amp; ${appView>/actionButtonsInfo/midColumn/fullScreen}}"
-					press=".toggleFullScreen"/>
-		</semantic:exitFullScreenAction>
+		<headerContent>
+			<m:FlexBox wrap="Wrap" fitContainer="true" alignItems="Stretch">
+							<m:MessageStrip
+				text="Your changes have not yet been synchronized."
+				type="Warning"
+				showIcon="true"
+				showCloseButton="false"
+				class="sapUiSmallMarginBottom">
+			</m:MessageStrip>
+				
+			</m:FlexBox>
+		</headerContent>
 
-	</semantic:SemanticPage>
+		<sections>
 
+		</sections>
+
+		<!-- footer bar-->
+		<footer>
+			<m:OverflowToolbar>
+				<m:ToolbarSpacer />
+				<m:Button type="Accept" text="Save" press="onFooterSavePress"/>
+				<m:Button type="Reject" text="Cancel" press="onFooterCancelPress"/>
+			</m:OverflowToolbar>
+		</footer>
+	</ObjectPageLayout>
 </mvc:View>
