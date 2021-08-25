@@ -14,21 +14,7 @@
 	xmlns:tnt="sap.tnt">
 
 	<!-- ObjectPage Layout -->
-	<ObjectPageLayout 
-		id="DetailPage" 
-		showTitleInHeaderContent="true" 
-		alwaysShowContentHeader="true" 
-		preserveHeaderStateOnScroll="false"
-		headerContentPinnable="true" 
-		isChildPage="true" 
-		toggleHeaderOnTitleClick="true" 
-		showFooter="false" 
-		upperCaseAnchorBar="false"
-		enableLazyLoading="false" 
-		useIconTabBar="true" 
-		navigate=".onSectionNavigate"
-		selectedSection="basicInformationId"
-		showAnchorBarPopover="false">
+	<ObjectPageLayout>
 
 	<headerTitle>
 			<ObjectPageDynamicHeaderTitle>
@@ -59,18 +45,106 @@
 
 		<headerContent>
 			<m:FlexBox wrap="Wrap" fitContainer="true" alignItems="Stretch">
-							<m:MessageStrip
+			  <m:MessageStrip
 				text="Your changes have not yet been synchronized."
 				type="Warning"
 				showIcon="true"
 				showCloseButton="false"
 				class="sapUiSmallMarginBottom">
-			</m:MessageStrip>
+			  </m:MessageStrip>
 				
 			</m:FlexBox>
 		</headerContent>
 
 		<sections>
+
+		    <ObjectPageSection showTitle="false" visible="true">
+					<ObjectPageSubSection mode="Expanded" title="Price Agreement Details">
+						<form:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
+										adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
+										singleContainerFullSize="false" backgroundDesign="Solid" id="opportunityDetailsFormId">
+							<form:content>
+								<m:Label text="{i18n>effectiveDate}" design="Bold"  required="true"/>
+								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
+								<m:Input value="2021-08-25"  enabled="false"/>
+
+								<m:Label text="{i18n>expiryDate}" design="Bold"  required="true"/>
+								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
+								<m:Input value="2021-08-25"  enabled="false"/>
+
+								<m:Label text="{i18n>materialNo}" design="Bold" required="true"/>
+								<!-- <m:Select selectedKey="{soa>/selectedOpportunity/classification}"  enabled="{= ${soa>/editMode} }" change="onClassificationChange" items="{ path: 'soa>/CountryClassifications'}">
+									<core:Item text="{soa>CLASSIFICATION}" key="{soa>CLASSIFICATION}"/>
+								</m:Select> -->
+								<m:Select selectedKey="{soa>/selectedOpportunity/classification}"  enabled="{= ${soa>/editMode} }" change="onClassificationChange">
+									<core:Item text="1265465" key="1265465"/>
+									<core:Item text="6565656" key="6565656"/>
+								</m:Select>
+
+								<m:Label text="{i18n>price}" design="Bold" required="true"/>
+								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
+								<m:Input value="12"  enabled="false"/>
+								
+
+							</form:content>
+					</form:SimpleForm>
+					</ObjectPageSubSection>
+
+					<ObjectPageSubSection mode="Expanded" title="Customer Prices">
+							<m:Table id="MaterialsTableID" 
+										mode="SingleSelectMaster"
+										delete="onDeleteProduct"
+										selectionChange=".onProductItemSelect"
+							>
+								<m:columns>
+									<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+										<m:Label text="Institutes" wrapping="true"/>
+									</m:Column>
+									<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+										<m:Label text="Apply" wrapping="true"/>
+									</m:Column>
+									<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+										<m:Label text="Price" wrapping="true"/>
+									</m:Column>
+									<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+										<m:Label text="Effective Date" wrapping="true"/>
+									</m:Column>
+									<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+										<m:Label text="Expiry Date" wrapping="true"/>
+									</m:Column>
+								</m:columns>
+								<m:items>
+									<m:ColumnListItem highlight="Indication04">
+										<m:cells>
+											<m:Text text="Inst1"/>
+											<m:Text text="Yes"/>
+											<m:Text text="8"/> 
+											<m:Text text=""/> 
+											<m:Text text="01/01/2022"/>
+										</m:cells>
+									</m:ColumnListItem>
+									<m:ColumnListItem highlight="Indication03">
+										<m:cells>
+											<m:Text text="Inst2"/>
+											<m:Text text="Yes"/>
+											<m:Text text="10"/> 
+											<m:Text text=""/> 
+											<m:Text text="18/18/2022"/>
+										</m:cells>
+									</m:ColumnListItem>
+									<m:ColumnListItem highlight="Indication02">
+										<m:cells>
+											<m:Text text="Inst3"/>
+											<m:Text text="No"/>
+											<m:Text text=""/> 
+											<m:Text text=""/> 
+											<m:Text text=""/>
+										</m:cells>
+									</m:ColumnListItem>
+								</m:items>
+							</m:Table>
+					</ObjectPageSubSection>
+			</ObjectPageSection>
 
 		</sections>
 
