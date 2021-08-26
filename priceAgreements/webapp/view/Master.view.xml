@@ -76,8 +76,8 @@
 					<items>
 						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="Error" id="items">
 							<cells>
-								<Text text="{CountryCode}"/>
-								<Text text="{TenderReference}"/>
+								<Text text="IT-21-1001-1"/>
+								<Text text="XARELTO 20mg 28 TABL"/>
 								<Text text="{Price}"/>
 								<Text text="{
 										path: 'EffectiveDate',

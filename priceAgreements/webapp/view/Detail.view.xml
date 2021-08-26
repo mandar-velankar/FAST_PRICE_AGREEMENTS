@@ -64,6 +64,7 @@
 										adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
 										singleContainerFullSize="false" backgroundDesign="Solid" id="opportunityDetailsFormId">
 							<form:content>
+								<core:Title text=""/>
 								<m:Label text="{i18n>effectiveDate}" design="Bold"  required="true"/>
 								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
 								<m:Input value="2021-08-25"  enabled="false"/>
@@ -83,7 +84,32 @@
 
 								<m:Label text="{i18n>price}" design="Bold" required="true"/>
 								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
-								<m:Input value="12"  enabled="false"/>
+								<m:Input value="12" description="EUR"  enabled="false"/>
+
+								<m:Label text="{i18n>listPrice}" design="Bold" required="true"/>
+								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
+								<m:Input value="12"  description="EUR" enabled="false"/>
+
+								<m:Label text="{i18n>RetailPrice}" design="Bold" required="true"/>
+								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
+								<m:Input value="12"  enabled="false" description="EUR"/>
+
+								<m:Label text="{i18n>Discount}" design="Bold" required="true"/>
+								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
+								<m:Input value="0%"  enabled="false"/>
+
+								<core:Title text=""/>
+								<m:Label text="{i18n>requestedVol}" design="Bold" required="true"/>
+								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
+								<m:Input value="1000" description="Units"  enabled="false"/>
+
+								<m:Label text="{i18n>deliveredVol}" design="Bold" required="true"/>
+								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
+								<m:Input value="900" description="Units" enabled="false"/>
+
+								<m:Label text="{i18n>Residue}" design="Bold" required="true"/>
+								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
+								<m:Input value="10%"  enabled="false"/>
 								
 
 							</form:content>
