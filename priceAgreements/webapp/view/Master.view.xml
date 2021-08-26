@@ -19,7 +19,15 @@
 		<!-- DynamicPage Content -->
 		<f:content>
 			<VBox fitContainer="true">
-				<OverflowToolbar class="sapFDynamicPageAlignContent">	
+				<OverflowToolbar class="sapFDynamicPageAlignContent">
+					<Select	id="idslctfilter">
+						<core:Item key="" text=""/>
+						<core:Item key="New Agreements" text="New Agreements"/>
+						<core:Item key="New Material Numbers" text="New Material Numbers"/>
+						<core:Item key="Updated Retail Price" text="Updated Retail Price"/>
+						<core:Item key="Expiring Soon" text="Expiring Soon"/>
+						<core:Item key="Expired" text="Expired"/>
+					</Select>
 					<ToolbarSpacer/>				
 						<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
 						<Button icon="sap-icon://filter" text="" press=".onOpenViewSettings"/>
