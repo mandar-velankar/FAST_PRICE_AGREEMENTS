@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData">
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/Common.xml" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Alias="Common" Namespace="com.sap.vocabularies.Common.v1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/>
+    </edmx:Reference>
+    <edmx:Reference Uri="https://sap.github.io/odata-vocabularies/vocabularies/UI.xml" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
+        <edmx:Include Alias="UI" Namespace="com.sap.vocabularies.UI.v1"/>
+    </edmx:Reference>
+    <edmx:DataServices m:DataServiceVersion="2.0">
+        <Schema Namespace="PriceAgreementService" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+            <EntityContainer Name="EntityContainer" m:IsDefaultEntityContainer="true">
+                <EntitySet Name="Candidates" EntityType="PriceAgreementService.Candidates"/>
+                <EntitySet Name="CustomerPrices" EntityType="PriceAgreementService.CustomerPrices"/>
+                <EntitySet Name="Materials" EntityType="PriceAgreementService.Materials"/>
+                <EntitySet Name="PT_TMCTPRDPCK" EntityType="PriceAgreementService.PT_TMCTPRDPCK"/>
+                <EntitySet Name="PT_TMINST" EntityType="PriceAgreementService.PT_TMINST"/>
+                <EntitySet Name="PT_TMTEND" EntityType="PriceAgreementService.PT_TMTEND"/>
+                <EntitySet Name="PriceAgreements" EntityType="PriceAgreementService.PriceAgreements"/>
+                <AssociationSet Name="CustomerPrices_PriceAgreement" Association="PriceAgreementService.CustomerPrices_PriceAgreement">
+                    <End Role="CustomerPrices" EntitySet="CustomerPrices"/>
+                    <End Role="PriceAgreements" EntitySet="PriceAgreements"/>
+                </AssociationSet>
+                <AssociationSet Name="CustomerPrices_Institute" Association="PriceAgreementService.CustomerPrices_Institute">
+                    <End Role="CustomerPrices" EntitySet="CustomerPrices"/>
+                    <End Role="PT_TMINST" EntitySet="PT_TMINST"/>
+                </AssociationSet>
+                <AssociationSet Name="CustomerPrices_Material" Association="PriceAgreementService.CustomerPrices_Material">
+                    <End Role="CustomerPrices" EntitySet="CustomerPrices"/>
+                    <End Role="Materials" EntitySet="Materials"/>
+                </AssociationSet>
+                <AssociationSet Name="PT_TMTEND_Institute" Association="PriceAgreementService.PT_TMTEND_Institute">
+                    <End Role="PT_TMTEND" EntitySet="PT_TMTEND"/>
+                    <End Role="PT_TMINST" EntitySet="PT_TMINST"/>
+                </AssociationSet>
+                <AssociationSet Name="PriceAgreements_Institute" Association="PriceAgreementService.PriceAgreements_Institute">
+                    <End Role="PriceAgreements" EntitySet="PriceAgreements"/>
+                    <End Role="PT_TMINST" EntitySet="PT_TMINST"/>
+                </AssociationSet>
+                <AssociationSet Name="PriceAgreements_Tender" Association="PriceAgreementService.PriceAgreements_Tender">
+                    <End Role="PriceAgreements" EntitySet="PriceAgreements"/>
+                    <End Role="PT_TMTEND" EntitySet="PT_TMTEND"/>
+                </AssociationSet>
+                <AssociationSet Name="PriceAgreements_Product" Association="PriceAgreementService.PriceAgreements_Product">
+                    <End Role="PriceAgreements" EntitySet="PriceAgreements"/>
+                    <End Role="PT_TMCTPRDPCK" EntitySet="PT_TMCTPRDPCK"/>
+                </AssociationSet>
+                <AssociationSet Name="PriceAgreements_Candidates" Association="PriceAgreementService.PriceAgreements_Candidates">
+                    <End Role="PriceAgreements" EntitySet="PriceAgreements"/>
+                    <End Role="Candidates" EntitySet="Candidates"/>
+                </AssociationSet>
+            </EntityContainer>
+            <EntityType Name="Candidates">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="InstituteId" Type="Edm.String"/>
+                <Property Name="PriceAgreementId" Type="Edm.String"/>
+                <Property Name="ValidFrom" Type="Edm.DateTimeOffset"/>
+                <Property Name="ValidTo" Type="Edm.DateTimeOffset"/>
+            </EntityType>
+            <EntityType Name="CustomerPrices">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="ValidFrom" Type="Edm.DateTimeOffset"/>
+                <Property Name="ValidTo" Type="Edm.DateTimeOffset"/>
+                <NavigationProperty Name="PriceAgreement" Relationship="PriceAgreementService.CustomerPrices_PriceAgreement" FromRole="CustomerPrices" ToRole="PriceAgreements"/>
+                <Property Name="InstituteId" Type="Edm.Int32"/>
+                <NavigationProperty Name="Institute" Relationship="PriceAgreementService.CustomerPrices_Institute" FromRole="CustomerPrices" ToRole="PT_TMINST"/>
+                <Property Name="MaterialId" Type="Edm.String"/>
+                <NavigationProperty Name="Material" Relationship="PriceAgreementService.CustomerPrices_Material" FromRole="CustomerPrices" ToRole="Materials"/>
+                <Property Name="Synchronized" Type="Edm.Boolean"/>
+                <Property Name="Price" Type="Edm.Double"/>
+                <Property Name="PriceAgreement_ID" Type="Edm.Guid"/>
+            </EntityType>
+            <EntityType Name="Materials">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="ProductPackId" Type="Edm.String"/>
+                <Property Name="Description" Type="Edm.String"/>
+                <Property Name="MaterialNumber" Type="Edm.String"/>
+                <Property Name="ValidFrom" Type="Edm.DateTimeOffset"/>
+                <Property Name="ValidTo" Type="Edm.DateTimeOffset"/>
+                <Property Name="CountryCode" Type="Edm.String"/>
+            </EntityType>
+            <EntityType Name="PT_TMCTPRDPCK">
+                <Key>
+                    <PropertyRef Name="COUNTRYCODE"/>
+                    <PropertyRef Name="ACTIVERECORD"/>
+                    <PropertyRef Name="PRODUCTPACKID"/>
+                </Key>
+                <Property Name="COUNTRYPRODUCTPACKID" Type="Edm.Int32"/>
+                <Property Name="COUNTRYCODE" Type="Edm.String" MaxLength="2" Nullable="false"/>
+                <Property Name="COUNTRYOFORIGIN" Type="Edm.String" MaxLength="120"/>
+                <Property Name="SHELFLIFE" Type="Edm.Int32"/>
+                <Property Name="REGISTERED" Type="Edm.Int32"/>
+                <Property Name="ACTIVERECORD" Type="Edm.String" MaxLength="10" Nullable="false"/>
+                <Property Name="PRODUCTPACKID" Type="Edm.Int32" Nullable="false"/>
+                <Property Name="MANUFACTURER" Type="Edm.String" MaxLength="500"/>
+                <Property Name="Presentation_2" Type="Edm.String" MaxLength="1000"/>
+                <Property Name="VTATax" Type="Edm.Single"/>
+                <Property Name="COMMENT" Type="Edm.String" MaxLength="255"/>
+                <Property Name="GOV_CODE" Type="Edm.String" MaxLength="255"/>
+                <Property Name="QTY_THRESHOLD" Type="Edm.Int32"/>
+            </EntityType>
+            <EntityType Name="PT_TMINST">
+                <Key>
+                    <PropertyRef Name="CountryCode"/>
+                    <PropertyRef Name="InstituteID"/>
+                </Key>
+                <Property Name="CountryCode" Type="Edm.String" MaxLength="2" Nullable="false"/>
+                <Property Name="InstituteID" Type="Edm.Int32" Nullable="false"/>
+                <Property Name="CustomerID" Type="Edm.Int32"/>
+                <Property Name="InstituteName" Type="Edm.String" MaxLength="500"/>
+                <Property Name="InstituteType" Type="Edm.String" MaxLength="50"/>
+                <Property Name="Address" Type="Edm.String" MaxLength="500"/>
+                <Property Name="ContactNo" Type="Edm.String" MaxLength="50"/>
+                <Property Name="Fax" Type="Edm.String" MaxLength="50"/>
+                <Property Name="ContactPerson" Type="Edm.String" MaxLength="100"/>
+                <Property Name="ActiveRecord" Type="Edm.String" MaxLength="10"/>
+                <Property Name="Comment" Type="Edm.String" MaxLength="500"/>
+                <Property Name="City" Type="Edm.String" MaxLength="255"/>
+                <Property Name="INSTITUTE_HIERARCHY_ID" Type="Edm.Int32"/>
+                <Property Name="State" Type="Edm.String"/>
+                <Property Name="MercadoPublicoIssuer" Type="Edm.String"/>
+            </EntityType>
+            <EntityType Name="PT_TMTEND">
+                <Key>
+                    <PropertyRef Name="TenderID"/>
+                </Key>
+                <Property Name="TenderID" Type="Edm.String" MaxLength="50" Nullable="false"/>
+                <Property Name="CountryCode" Type="Edm.String" MaxLength="2" Nullable="false"/>
+                <Property Name="ToolID" Type="Edm.Int32"/>
+                <Property Name="TenderNo" Type="Edm.Int32"/>
+                <Property Name="CloneTenderID" Type="Edm.String" MaxLength="50"/>
+                <Property Name="SubmittedOn" Type="Edm.DateTime" sap:display-format="Date"/>
+                <Property Name="SubmittedBy" Type="Edm.String" MaxLength="50"/>
+                <Property Name="Active" Type="Edm.Int32"/>
+                <Property Name="Classification" Type="Edm.String" MaxLength="50"/>
+                <Property Name="BiddingTypeLevel1" Type="Edm.String" MaxLength="50"/>
+                <Property Name="BiddingTypeLevel2" Type="Edm.String" MaxLength="50"/>
+                <Property Name="BiddingTypeLevel3" Type="Edm.String" MaxLength="50"/>
+                <Property Name="HighValue" Type="Edm.Boolean"/>
+                <Property Name="OfferStartDate" Type="Edm.DateTime" sap:display-format="Date"/>
+                <Property Name="IbizID" Type="Edm.String" MaxLength="50"/>
+                <Property Name="PublicNotice" Type="Edm.String"/>
+                <Property Name="TenderName" Type="Edm.String" MaxLength="250"/>
+                <Property Name="InstituteID" Type="Edm.Int32" Nullable="false"/>
+                <Property Name="TenderChannel" Type="Edm.String" MaxLength="255"/>
+                <Property Name="GroupPurchasing" Type="Edm.Int32"/>
+                <Property Name="PublicationDate" Type="Edm.DateTime" sap:display-format="Date"/>
+                <Property Name="BidDueDate" Type="Edm.DateTime" sap:display-format="Date"/>
+                <Property Name="AwardDate" Type="Edm.DateTime" sap:display-format="Date"/>
+                <Property Name="NextPublicationDye" Type="Edm.DateTime" sap:display-format="Date"/>
+                <Property Name="ContractLength" Type="Edm.Int32"/>
+                <Property Name="ContractExtenseion" Type="Edm.Int32"/>
+                <Property Name="TenderStatus" Type="Edm.String" MaxLength="255"/>
+                <Property Name="ManualSaveStatus" Type="Edm.String" MaxLength="50"/>
+                <Property Name="FoldersCreated" Type="Edm.Int32"/>
+                <Property Name="TENDER_TYPE_ID" Type="Edm.Int32"/>
+                <Property Name="CONTRACT_TYPE_ID" Type="Edm.Int32"/>
+                <Property Name="SALES_TYPE_ID" Type="Edm.Int32"/>
+                <Property Name="TENDER_ORIGIN_ID" Type="Edm.Int32"/>
+                <Property Name="PROCUREMENT_METHOD_ID" Type="Edm.String"/>
+                <Property Name="PROCUREMENT_REASON" Type="Edm.String"/>
+                <NavigationProperty Name="Institute" Relationship="PriceAgreementService.PT_TMTEND_Institute" FromRole="PT_TMTEND" ToRole="PT_TMINST"/>
+            </EntityType>
+            <EntityType Name="PriceAgreements">
+                <Key>
+                    <PropertyRef Name="ID"/>
+                </Key>
+                <Property Name="ID" Type="Edm.Guid" Nullable="false"/>
+                <Property Name="createdAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="createdBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="modifiedAt" Type="Edm.DateTimeOffset" Precision="7"/>
+                <Property Name="modifiedBy" Type="Edm.String" MaxLength="255"/>
+                <Property Name="ExpiryDate" Type="Edm.DateTimeOffset"/>
+                <Property Name="EffectiveDate" Type="Edm.DateTimeOffset"/>
+                <Property Name="OriginalEffectiveDate" Type="Edm.DateTimeOffset"/>
+                <Property Name="ListPrice" Type="Edm.Double"/>
+                <Property Name="RetailPrice" Type="Edm.Double"/>
+                <Property Name="Price" Type="Edm.Double"/>
+                <Property Name="Discount" Type="Edm.Double"/>
+                <Property Name="DeliveredVolume" Type="Edm.Int32"/>
+                <Property Name="AwardedVolume" Type="Edm.Int32"/>
+                <Property Name="CountryCode" Type="Edm.String"/>
+                <Property Name="InstituteId" Type="Edm.Int32"/>
+                <Property Name="TenderId" Type="Edm.String"/>
+                <Property Name="ProductPackId" Type="Edm.String"/>
+                <NavigationProperty Name="Institute" Relationship="PriceAgreementService.PriceAgreements_Institute" FromRole="PriceAgreements" ToRole="PT_TMINST"/>
+                <NavigationProperty Name="Tender" Relationship="PriceAgreementService.PriceAgreements_Tender" FromRole="PriceAgreements" ToRole="PT_TMTEND"/>
+                <NavigationProperty Name="Product" Relationship="PriceAgreementService.PriceAgreements_Product" FromRole="PriceAgreements" ToRole="PT_TMCTPRDPCK"/>
+                <NavigationProperty Name="Candidates" Relationship="PriceAgreementService.PriceAgreements_Candidates" FromRole="PriceAgreements" ToRole="Candidates"/>
+            </EntityType>
+            <Association Name="CustomerPrices_PriceAgreement">
+                <End Role="CustomerPrices" Type="PriceAgreementService.CustomerPrices" Multiplicity="*"/>
+                <End Role="PriceAgreements" Type="PriceAgreementService.PriceAgreements" Multiplicity="0..1"/>
+                <ReferentialConstraint>
+                    <Principal Role="PriceAgreements">
+                        <PropertyRef Name="ID"/>
+                    </Principal>
+                    <Dependent Role="CustomerPrices">
+                        <PropertyRef Name="PriceAgreement_ID"/>
+                    </Dependent>
+                </ReferentialConstraint>
+            </Association>
+            <Association Name="CustomerPrices_Institute">
+                <End Role="CustomerPrices" Type="PriceAgreementService.CustomerPrices" Multiplicity="*"/>
+                <End Role="PT_TMINST" Type="PriceAgreementService.PT_TMINST" Multiplicity="0..1"/>
+                <ReferentialConstraint>
+                    <Principal Role="PT_TMINST">
+                        <PropertyRef Name="InstituteID"/>
+                    </Principal>
+                    <Dependent Role="CustomerPrices">
+                        <PropertyRef Name="InstituteId"/>
+                    </Dependent>
+                </ReferentialConstraint>
+            </Association>
+            <Association Name="CustomerPrices_Material">
+                <End Role="CustomerPrices" Type="PriceAgreementService.CustomerPrices" Multiplicity="*"/>
+                <End Role="Materials" Type="PriceAgreementService.Materials" Multiplicity="0..1"/>
+                <ReferentialConstraint>
+                    <Principal Role="Materials">
+                        <PropertyRef Name="ID"/>
+                    </Principal>
+                    <Dependent Role="CustomerPrices">
+                        <PropertyRef Name="MaterialId"/>
+                    </Dependent>
+                </ReferentialConstraint>
+            </Association>
+            <Association Name="PT_TMTEND_Institute">
+                <End Role="PT_TMTEND" Type="PriceAgreementService.PT_TMTEND" Multiplicity="*"/>
+                <End Role="PT_TMINST" Type="PriceAgreementService.PT_TMINST" Multiplicity="0..1"/>
+                <ReferentialConstraint>
+                    <Principal Role="PT_TMINST">
+                        <PropertyRef Name="InstituteID"/>
+                    </Principal>
+                    <Dependent Role="PT_TMTEND">
+                        <PropertyRef Name="InstituteID"/>
+                    </Dependent>
+                </ReferentialConstraint>
+            </Association>
+            <Association Name="PriceAgreements_Institute">
+                <End Role="PriceAgreements" Type="PriceAgreementService.PriceAgreements" Multiplicity="*"/>
+                <End Role="PT_TMINST" Type="PriceAgreementService.PT_TMINST" Multiplicity="0..1"/>
+                <ReferentialConstraint>
+                    <Principal Role="PT_TMINST">
+                        <PropertyRef Name="InstituteID"/>
+                    </Principal>
+                    <Dependent Role="PriceAgreements">
+                        <PropertyRef Name="InstituteId"/>
+                    </Dependent>
+                </ReferentialConstraint>
+            </Association>
+            <Association Name="PriceAgreements_Tender">
+                <End Role="PriceAgreements" Type="PriceAgreementService.PriceAgreements" Multiplicity="*"/>
+                <End Role="PT_TMTEND" Type="PriceAgreementService.PT_TMTEND" Multiplicity="0..1"/>
+                <ReferentialConstraint>
+                    <Principal Role="PT_TMTEND">
+                        <PropertyRef Name="TenderID"/>
+                    </Principal>
+                    <Dependent Role="PriceAgreements">
+                        <PropertyRef Name="TenderId"/>
+                    </Dependent>
+                </ReferentialConstraint>
+            </Association>
+            <Association Name="PriceAgreements_Product">
+                <End Role="PriceAgreements" Type="PriceAgreementService.PriceAgreements" Multiplicity="*"/>
+                <End Role="PT_TMCTPRDPCK" Type="PriceAgreementService.PT_TMCTPRDPCK" Multiplicity="0..1"/>
+                <ReferentialConstraint>
+                    <Principal Role="PT_TMCTPRDPCK">
+                        <PropertyRef Name="PRODUCTPACKID"/>
+                        <PropertyRef Name="COUNTRYCODE"/>
+                    </Principal>
+                    <Dependent Role="PriceAgreements">
+                        <PropertyRef Name="ProductPackId"/>
+                        <PropertyRef Name="CountryCode"/>
+                    </Dependent>
+                </ReferentialConstraint>
+            </Association>
+            <Association Name="PriceAgreements_Candidates">
+                <End Role="PriceAgreements" Type="PriceAgreementService.PriceAgreements" Multiplicity="*"/>
+                <End Role="Candidates" Type="PriceAgreementService.Candidates" Multiplicity="*"/>
+            </Association>
+            <Annotations Target="PriceAgreementService.Candidates/createdAt" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Created On"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+            </Annotations>
+            <Annotations Target="PriceAgreementService.Candidates/createdBy" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Created By"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+            </Annotations>
+            <Annotations Target="PriceAgreementService.Candidates/modifiedAt" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Changed On"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+            </Annotations>
+            <Annotations Target="PriceAgreementService.Candidates/modifiedBy" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Changed By"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+            </Annotations>
+            <Annotations Target="PriceAgreementService.CustomerPrices/createdAt" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Created On"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+            </Annotations>
+            <Annotations Target="PriceAgreementService.CustomerPrices/createdBy" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Created By"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+            </Annotations>
+            <Annotations Target="PriceAgreementService.CustomerPrices/modifiedAt" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Changed On"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+            </Annotations>
+            <Annotations Target="PriceAgreementService.CustomerPrices/modifiedBy" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Changed By"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+            </Annotations>
+            <Annotations Target="PriceAgreementService.Materials/createdAt" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Created On"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+            </Annotations>
+            <Annotations Target="PriceAgreementService.Materials/createdBy" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Created By"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+            </Annotations>
+            <Annotations Target="PriceAgreementService.Materials/modifiedAt" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Changed On"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+            </Annotations>
+            <Annotations Target="PriceAgreementService.Materials/modifiedBy" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Changed By"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+            </Annotations>
+            <Annotations Target="PriceAgreementService.PriceAgreements/createdAt" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Created On"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+            </Annotations>
+            <Annotations Target="PriceAgreementService.PriceAgreements/createdBy" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Created By"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="Core.Immutable" Bool="true"/>
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+            </Annotations>
+            <Annotations Target="PriceAgreementService.PriceAgreements/modifiedAt" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Changed On"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+            </Annotations>
+            <Annotations Target="PriceAgreementService.PriceAgreements/modifiedBy" xmlns="http://docs.oasis-open.org/odata/ns/edm">
+                <Annotation Term="Common.Label" String="Changed By"/>
+                <Annotation Term="Core.Computed" Bool="true"/>
+                <Annotation Term="Core.Description" String="User's unique ID"/>
+                <Annotation Term="UI.HiddenFilter" Bool="true"/>
+            </Annotations>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>
