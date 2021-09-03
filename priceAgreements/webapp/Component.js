@@ -3,8 +3,10 @@ sap.ui.define([
 	"sap/ui/Device",
 	"./model/models",
 	"./controller/ListSelector",
-	"./controller/ErrorHandler"
-], function (UIComponent, Device, models, ListSelector, ErrorHandler) {
+	"./controller/ErrorHandler",
+	"./service/PriceAgreementService",
+	"./state/PriceAgreementState"
+], function (UIComponent, Device, models, ListSelector, ErrorHandler,PriceAgreementService,PriceAgreementState) {
 	"use strict";
 
 	return UIComponent.extend("com.bayer.tender.priceagreements.Component", {
@@ -12,7 +14,7 @@ sap.ui.define([
 		metadata : {
 			manifest : "json"
 		},
-
+		PA:"pa",
 		/**
 		 * The component is initialized by UI5 automatically during the startup of the app and calls the init method once.
 		 * In this method, the device models are set and the router is initialized.
@@ -20,6 +22,9 @@ sap.ui.define([
 		 * @override
 		 */
 		init : function () {
+			this.paService = new PriceAgreementService(this.getModel());
+			this.paState = new PriceAgreementState(this.paService);
+
 			this.oListSelector = new ListSelector();
 			this._oErrorHandler = new ErrorHandler(this);
 
@@ -66,6 +71,9 @@ sap.ui.define([
 				}
 			}
 			return this._sContentDensityClass;
+		},
+		getState: function (stateName) {
+			return this[stateName + "State"];
 		}
 
 	});

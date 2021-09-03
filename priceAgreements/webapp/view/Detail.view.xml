@@ -21,7 +21,7 @@
 				
 				<!-- Heading part that is used when heading is not collapsed -->
 				<expandedHeading>
-					<m:Title text="IT-21-1001-1 / Lazzio Agency / XARELTO 20mg 28 TABL" id="tenderId" wrapping="true" class="sapUiSmallMarginEnd"/>
+					<m:Title text="{pa>/priceAgreement/iD} / {pa>/priceAgreement/tender/tenderName} / {pa>/priceAgreement/institute/instituteName}" id="tenderId" wrapping="true" class="sapUiSmallMarginEnd"/>
 				</expandedHeading>
 
 				<!-- WINDOW ACTIONS -->
@@ -67,45 +67,53 @@
 								<core:Title text=""/>
 								<m:Label text="{i18n>effectiveDate}" design="Bold"  required="true"/>
 								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
-								<m:Input value="2021-08-25"  enabled="false"/>
+								<m:Input value="{path: 'pa>/priceAgreement/effectiveDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd'
+										}}"  enabled="false"/>
 
 								<m:Label text="{i18n>expiryDate}" design="Bold"  required="true"/>
 								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
-								<m:Input value="2021-08-25"  enabled="false"/>
+								<m:Input value="{path: 'pa>/priceAgreement/expiryDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd'
+										}}"  enabled="false"/>
 
 								<m:Label text="{i18n>materialNo}" design="Bold" required="true"/>
 								<!-- <m:Select selectedKey="{soa>/selectedOpportunity/classification}"  enabled="{= ${soa>/editMode} }" change="onClassificationChange" items="{ path: 'soa>/CountryClassifications'}">
 									<core:Item text="{soa>CLASSIFICATION}" key="{soa>CLASSIFICATION}"/>
 								</m:Select> -->
-								<m:Select selectedKey="{soa>/selectedOpportunity/classification}"  enabled="{= ${soa>/editMode} }" change="onClassificationChange">
+								<m:Select selectedKey="{pa>/priceAgreement/materialNo}">
 									<core:Item text="1265465" key="1265465"/>
 									<core:Item text="6565656" key="6565656"/>
 								</m:Select>
 
 								<m:Label text="{i18n>price}" design="Bold" required="true"/>
 								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
-								<m:Input value="12" description="EUR"  enabled="false"/>
+								<m:Input value="12" description="{pa>/priceAgreement/price} EUR"  enabled="false"/>
 
 								<m:Label text="{i18n>listPrice}" design="Bold" required="true"/>
 								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
-								<m:Input value="12"  description="EUR" enabled="false"/>
+								<m:Input value="12"  description="{pa>/priceAgreement/listPrice} EUR" enabled="false"/>
 
 								<m:Label text="{i18n>RetailPrice}" design="Bold" required="true"/>
 								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
-								<m:Input value="12"  enabled="false" description="EUR"/>
+								<m:Input value="12"  enabled="false" description="{pa>/priceAgreement/retailPrice} EUR"/>
 
 								<m:Label text="{i18n>Discount}" design="Bold" required="true"/>
 								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
-								<m:Input value="0%"  enabled="false"/>
+								<m:Input value="{pa>/priceAgreement/discount}"  enabled="false"/>
 
 								<core:Title text=""/>
 								<m:Label text="{i18n>requestedVol}" design="Bold" required="true"/>
 								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
-								<m:Input value="1000" description="Units"  enabled="false"/>
+								<m:Input value="{pa>/priceAgreement/retailPrice}" description="Units"  enabled="false"/>
 
 								<m:Label text="{i18n>deliveredVol}" design="Bold" required="true"/>
 								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
-								<m:Input value="900" description="Units" enabled="false"/>
+								<m:Input value="{pa>/priceAgreement/deliveredVolume}" description="Units" enabled="false"/>
 
 								<m:Label text="{i18n>Residue}" design="Bold" required="true"/>
 								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
@@ -121,6 +129,7 @@
 										mode="SingleSelectMaster"
 										delete="onDeleteProduct"
 										selectionChange=".onProductItemSelect"
+										items="{pa>/priceAgreement/customerPrices}"
 							>
 								<m:columns>
 									<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
@@ -142,29 +151,11 @@
 								<m:items>
 									<m:ColumnListItem highlight="Indication04">
 										<m:cells>
-											<m:Text text="Inst1"/>
-											<m:Text text="Yes"/>
-											<m:Text text="8"/> 
-											<m:Text text=""/> 
-											<m:Text text="01/01/2022"/>
-										</m:cells>
-									</m:ColumnListItem>
-									<m:ColumnListItem highlight="Indication03">
-										<m:cells>
-											<m:Text text="Inst2"/>
-											<m:Text text="Yes"/>
-											<m:Text text="10"/> 
-											<m:Text text=""/> 
-											<m:Text text="18/18/2022"/>
-										</m:cells>
-									</m:ColumnListItem>
-									<m:ColumnListItem highlight="Indication02">
-										<m:cells>
-											<m:Text text="Inst3"/>
-											<m:Text text="No"/>
-											<m:Text text=""/> 
-											<m:Text text=""/> 
-											<m:Text text=""/>
+											<m:Text text="{pa>material/description}"/>
+											<m:Text text="{pa>synchronized}"/>
+											<m:Text text="{pa>price}"/> 
+											<m:Text text="{pa>validFrom}"/> 
+											<m:Text text="{pa>validTo}"/>
 										</m:cells>
 									</m:ColumnListItem>
 								</m:items>
