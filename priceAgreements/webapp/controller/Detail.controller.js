@@ -26,6 +26,8 @@ sap.ui.define([
 				delay : 0,
 				lineItemListTitle : this.getResourceBundle().getText("detailLineItemTableHeading")
 			});
+			this.paState = this.getOwnerComponent().getState(this.getOwnerComponent().PA);
+			this.setModel(this.paState.getModel(),"pa");
 
 			this.getRouter().getRoute("object").attachPatternMatched(this._onObjectMatched, this);
 
@@ -89,10 +91,11 @@ sap.ui.define([
 			var sObjectId =  oEvent.getParameter("arguments").objectId;
 			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
 			this.getModel().metadataLoaded().then( function() {
-				var sObjectPath = this.getModel().createKey("PriceAgreements", {
-					ID :  sObjectId
-				});
-				this._bindView("/" + sObjectPath);
+				this.paState.getPriceAgreement(sObjectId);
+				// var sObjectPath = this.getModel().createKey("PriceAgreements", {
+				// 	ID :  sObjectId
+				// });
+				// this._bindView("/" + sObjectPath);
 			}.bind(this));
 		},
 
