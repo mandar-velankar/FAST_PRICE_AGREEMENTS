@@ -9,7 +9,7 @@ sap.ui.define([
         },
         getPriceAgreement: function (id) {
             const keyPath = this.model.createKey("/PriceAgreements",{ID:id});
-            return this.odata(keyPath).get({urlParameters:{$expand:"Institute,Tender,Product,Candidates,CustomerPrices,CustomerPrices/Material"}});
+            return this.odata(keyPath).get({urlParameters:{$expand:"Institute,Tender,Product/ProductPack,Candidates,CustomerPrices,CustomerPrices/Material"}});
         }
 
     });

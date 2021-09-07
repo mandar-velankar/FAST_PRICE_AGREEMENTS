@@ -42,7 +42,7 @@
 								descending: false
 							},
 							parameters: {
-								expand: 'Candidates,Product,Tender,Institute'
+								expand: 'Candidates,Product/ProductPack,Tender,Institute'
 							}
 						}"
 						class="sapFDynamicPageAlignContent"
@@ -82,10 +82,10 @@
 						</Column>
 					</columns>
 					<items>
-						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="Error" id="items">
+						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="{= ${Synchronized} === true ? 'None' : 'Warning'}" id="items">
 							<cells>
-								<Text text="IT-21-1001-1"/>
-								<Text text="XARELTO 20mg 28 TABL"/>
+								<Text text="{Tender/TenderName}"/>
+								<Text text="{Product/ProductPack/PRODUCTPACKNAME}"/>
 								<Text text="{Price}"/>
 								<Text text="{
 										path: 'EffectiveDate',

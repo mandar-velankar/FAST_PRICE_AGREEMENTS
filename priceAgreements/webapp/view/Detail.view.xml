@@ -21,7 +21,7 @@
 				
 				<!-- Heading part that is used when heading is not collapsed -->
 				<expandedHeading>
-					<m:Title text="{pa>/priceAgreement/iD} / {pa>/priceAgreement/tender/tenderName} / {pa>/priceAgreement/institute/instituteName}" id="tenderId" wrapping="true" class="sapUiSmallMarginEnd"/>
+					<m:Title text="{pa>/priceAgreement/tender/tenderName} / {pa>/priceAgreement/institute/instituteName} / {pa>/priceAgreement/product/productPack/pRODUCTPACKNAME}" id="tenderId" wrapping="true" class="sapUiSmallMarginEnd"/>
 				</expandedHeading>
 
 				<!-- WINDOW ACTIONS -->
@@ -50,7 +50,8 @@
 				type="Warning"
 				showIcon="true"
 				showCloseButton="false"
-				class="sapUiSmallMarginBottom">
+				class="sapUiSmallMarginBottom" 
+				visible="{= !${pa>/priceAgreement/synchronized}}">
 			  </m:MessageStrip>
 				
 			</m:FlexBox>
