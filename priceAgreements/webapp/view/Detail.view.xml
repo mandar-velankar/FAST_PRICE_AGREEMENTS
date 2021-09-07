@@ -71,7 +71,7 @@
 										type: 'sap.ui.model.type.Date',
 										formatOptions: {
 											pattern: 'yyyy-MM-dd'
-										}}"  enabled="{pa>/editMode}"/>
+										}}"  enabled="false"/>
 
 								<m:Label text="{i18n>expiryDate}" design="Bold"  required="true"/>
 								<!-- <m:Input value="{soa>/selectedOpportunity/tenderReference}"  enabled="{= ${soa>/editMode} }"/> -->
@@ -79,7 +79,7 @@
 										type: 'sap.ui.model.type.Date',
 										formatOptions: {
 											pattern: 'yyyy-MM-dd'
-										}}"  enabled="false"/>
+										}}"  enabled="{pa>/editMode}"/>
 
 								<m:Label text="{i18n>materialNo}" design="Bold" required="true"/>
 								<!-- <m:Select selectedKey="{soa>/selectedOpportunity/classification}"  enabled="{= ${soa>/editMode} }" change="onClassificationChange" items="{ path: 'soa>/CountryClassifications'}">
