@@ -17,17 +17,17 @@ sap.ui.define([
 		/* lifecycle methods                                           */
 		/* =========================================================== */
 
-		onInit : function () {
+		onInit: function () {
 			// Model used to manipulate control states. The chosen values make sure,
 			// detail page is busy indication immediately so there is no break in
 			// between the busy indication for loading the view's meta data
 			var oViewModel = new JSONModel({
-				busy : false,
-				delay : 0,
-				lineItemListTitle : this.getResourceBundle().getText("detailLineItemTableHeading")
+				busy: false,
+				delay: 0,
+				lineItemListTitle: this.getResourceBundle().getText("detailLineItemTableHeading")
 			});
 			this.paState = this.getOwnerComponent().getState(this.getOwnerComponent().PA);
-			this.setModel(this.paState.getModel(),"pa");
+			this.setModel(this.paState.getModel(), "pa");
 
 			this.getRouter().getRoute("object").attachPatternMatched(this._onObjectMatched, this);
 
@@ -44,7 +44,7 @@ sap.ui.define([
 		 * Event handler when the share by E-Mail button has been clicked
 		 * @public
 		 */
-		onSendEmailPress : function () {
+		onSendEmailPress: function () {
 			var oViewModel = this.getModel("detailView");
 
 			URLHelper.triggerEmail(
@@ -60,7 +60,7 @@ sap.ui.define([
 		 * @param {object} oEvent an event containing the total number of items in the list
 		 * @private
 		 */
-		onListUpdateFinished : function (oEvent) {
+		onListUpdateFinished: function (oEvent) {
 			var sTitle,
 				iTotalItems = oEvent.getParameter("total"),
 				oViewModel = this.getModel("detailView");
@@ -87,10 +87,10 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent pattern match event in route 'object'
 		 * @private
 		 */
-		_onObjectMatched : function (oEvent) {
-			var sObjectId =  oEvent.getParameter("arguments").objectId;
+		_onObjectMatched: function (oEvent) {
+			var sObjectId = oEvent.getParameter("arguments").objectId;
 			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
-			this.getModel().metadataLoaded().then( function() {
+			this.getModel().metadataLoaded().then(function () {
 				this.paState.getPriceAgreement(sObjectId);
 				// var sObjectPath = this.getModel().createKey("PriceAgreements", {
 				// 	ID :  sObjectId
@@ -106,7 +106,7 @@ sap.ui.define([
 		 * @param {string} sObjectPath path to the object to be bound to the view.
 		 * @private
 		 */
-		_bindView : function (sObjectPath) {
+		_bindView: function (sObjectPath) {
 			// Set busy indicator during view binding
 			var oViewModel = this.getModel("detailView");
 
@@ -114,10 +114,10 @@ sap.ui.define([
 			oViewModel.setProperty("/busy", false);
 
 			this.getView().bindElement({
-				path : sObjectPath,
+				path: sObjectPath,
 				events: {
-					change : this._onBindingChange.bind(this),
-					dataRequested : function () {
+					change: this._onBindingChange.bind(this),
+					dataRequested: function () {
 						oViewModel.setProperty("/busy", true);
 					},
 					dataReceived: function () {
@@ -127,7 +127,7 @@ sap.ui.define([
 			});
 		},
 
-		_onBindingChange : function () {
+		_onBindingChange: function () {
 			var oView = this.getView(),
 				oElementBinding = oView.getElementBinding();
 
@@ -155,7 +155,7 @@ sap.ui.define([
 				oResourceBundle.getText("shareSendEmailObjectMessage", [sObjectName, sObjectId, location.href]));
 		},
 
-		_onMetadataLoaded : function () {
+		_onMetadataLoaded: function () {
 			// Store original busy indicator delay for the detail view
 			var iOriginalViewBusyDelay = this.getView().getBusyIndicatorDelay(),
 				oViewModel = this.getModel("detailView"),
@@ -167,7 +167,7 @@ sap.ui.define([
 			oViewModel.setProperty("/delay", 0);
 			oViewModel.setProperty("/lineItemTableDelay", 0);
 
-			oLineItemTable.attachEventOnce("updateFinished", function() {
+			oLineItemTable.attachEventOnce("updateFinished", function () {
 				// Restore original busy indicator delay for line item table
 				oViewModel.setProperty("/lineItemTableDelay", iOriginalLineItemTableBusyDelay);
 			});
@@ -200,9 +200,25 @@ sap.ui.define([
 				this.getModel("appView").setProperty("/layout", "MidColumnFullScreen");
 			} else {
 				// reset to previous layout
-				this.getModel("appView").setProperty("/layout",  this.getModel("appView").getProperty("/previousLayout"));
+				this.getModel("appView").setProperty("/layout", this.getModel("appView").getProperty("/previousLayout"));
 			}
-		}
+		},
+
+		onEditModePress: function () {
+
+			this.paState.setEditMode(true);
+		},
+
+		onFooterCancelPress: function (oEvent) {
+			this.paState.setEditMode(false);
+
+		},
+
+
+		onFooterSavePress: async function (oEvent) {
+			this.paState.setEditMode(false);
+
+		},
 	});
 
 });
