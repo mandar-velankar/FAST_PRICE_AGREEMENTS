@@ -2,8 +2,10 @@ sap.ui.define([
 	"./BaseController",
 	"sap/ui/model/json/JSONModel",
 	"../model/formatter",
-	"sap/m/library"
-], function (BaseController, JSONModel, formatter, mobileLibrary) {
+	"sap/m/library",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator"
+], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterOperator) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
@@ -91,6 +93,11 @@ sap.ui.define([
 			var sObjectId =  oEvent.getParameter("arguments").objectId;
 			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
 			this.getModel().metadataLoaded().then( function() {
+
+				// set filter
+				const aFilter = [new Filter("PriceAgreementId", FilterOperator.EQ, sObjectId)];
+				this.byId("idMaterialNumberSelect").getBinding("items").filter(aFilter);
+
 				this.paState.getPriceAgreement(sObjectId);
 				// var sObjectPath = this.getModel().createKey("PriceAgreements", {
 				// 	ID :  sObjectId
@@ -202,7 +209,11 @@ sap.ui.define([
 				// reset to previous layout
 				this.getModel("appView").setProperty("/layout",  this.getModel("appView").getProperty("/previousLayout"));
 			}
-		}
+		},
+
+		onMaterialNumberChange: function(){
+			//TODO: implement
+		},
 	});
 
 });

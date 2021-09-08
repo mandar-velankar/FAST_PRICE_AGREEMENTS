@@ -81,12 +81,14 @@
 										}}"  enabled="false"/>
 
 								<m:Label text="{i18n>materialNo}" design="Bold" required="true"/>
-								<!-- <m:Select selectedKey="{soa>/selectedOpportunity/classification}"  enabled="{= ${soa>/editMode} }" change="onClassificationChange" items="{ path: 'soa>/CountryClassifications'}">
-									<core:Item text="{soa>CLASSIFICATION}" key="{soa>CLASSIFICATION}"/>
-								</m:Select> -->
-								<m:Select selectedKey="{pa>/priceAgreement/materialNo}">
-									<core:Item text="1265465" key="1265465"/>
-									<core:Item text="6565656" key="6565656"/>
+								<m:Select  
+									id="idMaterialNumberSelect"
+									change=".onMaterialNumberChange" 
+									items="{ 
+										path: '/DistinctPriceAgreementMaterialNumbers'
+									}"
+								>
+									<core:Item text="{MaterialNumber}" key="{ProductPackId}"/>
 								</m:Select>
 
 								<m:Label text="{i18n>price}" design="Bold" required="true"/>
