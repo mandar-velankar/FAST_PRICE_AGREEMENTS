@@ -9,7 +9,8 @@ sap.ui.define([
             //data needs to be defined before calling parent. 
             //Parent will use this for creating a JSONModel
             this.data = {
-                priceAgreement: new PriceAgreement()
+                priceAgreement: new PriceAgreement(),
+                editMode: false
             };
             BaseState.call(this);
             this.paService = service;
@@ -25,6 +26,7 @@ sap.ui.define([
             });
         },
 
+
         getCandidatePrices: function (priceAgreementId) {
             this.setProperty("candidatePrices", []);
             return this.getService().getCandidatePrices(priceAgreementId).then(response => {
@@ -32,7 +34,12 @@ sap.ui.define([
                 this.setProperty("candidatePrices", candidatePrices);
                 return this.getProperty("candidatePrices");
             });
-        }
+        },
+
+        setEditMode: function (sEditMode) {
+            this.setProperty("editMode", sEditMode);
+        },
+
     });
 
     return PriceAgreementState;

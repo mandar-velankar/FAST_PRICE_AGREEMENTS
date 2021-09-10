@@ -14,7 +14,7 @@
 	xmlns:tnt="sap.tnt">
 
 	<!-- ObjectPage Layout -->
-	<ObjectPageLayout>
+	<ObjectPageLayout showFooter="{pa>/editMode}">
 
 	<headerTitle>
 			<ObjectPageDynamicHeaderTitle>
@@ -37,7 +37,7 @@
 				<!-- ACTIONS -->
 				<actions>
 					<m:Button id="syncrButtonId" icon="sap-icon://synchronize" text="Synchronize" type="Emphasized" press="._onSynchronize"  visible="{= !${soa>/creationMode} }"/>
-					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${soa>/editMode} === false ? true : false }"/>
+					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${pa>/editMode} === false }"/>
 				</actions>
 				
 			</ObjectPageDynamicHeaderTitle>
@@ -78,9 +78,10 @@
 										type: 'sap.ui.model.type.Date',
 										formatOptions: {
 											pattern: 'yyyy-MM-dd'
-										}}"  enabled="false"/>
+										}}"  enabled="{pa>/editMode}"/>
 
 								<m:Label text="{i18n>materialNo}" design="Bold" required="true"/>
+
 								<m:Select  
 									id="idMaterialNumberSelect"
 									change=".onMaterialNumberChange" 
@@ -89,6 +90,7 @@
 									}"
 								>
 									<core:Item text="{MaterialNumber}" key="{ProductPackId}"/>
+
 								</m:Select>
 
 								<m:Label text="{i18n>price}" design="Bold" required="true"/>
