@@ -42,7 +42,7 @@
 								descending: false
 							},
 							parameters: {
-								expand: 'Candidates,Product/ProductPack,Tender,Institute'
+								expand: 'Product/ProductPack,Tender,Institute'
 							}
 						}"
 						class="sapFDynamicPageAlignContent"

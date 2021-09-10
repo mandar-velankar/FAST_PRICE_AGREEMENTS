@@ -123,7 +123,7 @@
 										mode="SingleSelectMaster"
 										delete="onDeleteProduct"
 										selectionChange=".onProductItemSelect"
-										items="{pa>/priceAgreement/customerPrices}"
+										items="{pa>/candidatePrices}"
 							>
 								<m:columns>
 									<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
@@ -146,7 +146,7 @@
 									<m:ColumnListItem highlight="Indication04">
 										<m:cells>
 											<m:Text text="{pa>instituteId}"/>
-											<m:Text text="{pa>synchronized}"/>
+											<m:Text text="{pa>applied}"/>
 											<m:Text text="{pa>price}"/> 
 											<m:Text text="{
 													path: 'pa>validFrom',

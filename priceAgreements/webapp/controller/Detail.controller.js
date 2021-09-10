@@ -99,6 +99,7 @@ sap.ui.define([
 				this.byId("idMaterialNumberSelect").getBinding("items").filter(aFilter);
 
 				this.paState.getPriceAgreement(sObjectId);
+				this.paState.getCandidatePrices(sObjectId);
 				// var sObjectPath = this.getModel().createKey("PriceAgreements", {
 				// 	ID :  sObjectId
 				// });
