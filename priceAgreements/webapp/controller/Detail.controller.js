@@ -2,8 +2,10 @@ sap.ui.define([
 	"./BaseController",
 	"sap/ui/model/json/JSONModel",
 	"../model/formatter",
-	"sap/m/library"
-], function (BaseController, JSONModel, formatter, mobileLibrary) {
+	"sap/m/library",
+	"sap/ui/model/Filter",
+	"sap/ui/model/FilterOperator"
+], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterOperator) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
@@ -90,8 +92,14 @@ sap.ui.define([
 		_onObjectMatched: function (oEvent) {
 			var sObjectId = oEvent.getParameter("arguments").objectId;
 			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
+
 			this.getModel().metadataLoaded().then(function () {
+        // set filter
+				const aFilter = [new Filter("PriceAgreementId", FilterOperator.EQ, sObjectId)];
+				this.byId("idMaterialNumberSelect").getBinding("items").filter(aFilter);
+  
 				this.paState.getPriceAgreement(sObjectId);
+				this.paState.getCandidatePrices(sObjectId);
 				// var sObjectPath = this.getModel().createKey("PriceAgreements", {
 				// 	ID :  sObjectId
 				// });
@@ -204,6 +212,11 @@ sap.ui.define([
 			}
 		},
 
+
+	  onMaterialNumberChange: function(){
+			//TODO: implement
+    },
+    
 		onEditModePress: function () {
 
 			this.paState.setEditMode(true);
@@ -214,10 +227,8 @@ sap.ui.define([
 
 		},
 
-
 		onFooterSavePress: async function (oEvent) {
 			this.paState.setEditMode(false);
-
 		},
 	});
 
