@@ -317,6 +317,12 @@ sap.ui.define([
 				andFilters.push(new sap.ui.model.Filter("hasNewMaterials", "EQ", hasNewMaterialsFilter));
 			}
 
+			const productPackfilter = this.byId("idProductPackfilter").getSelectedKey();
+
+			if(productPackfilter){
+				andFilters.push(new sap.ui.model.Filter("ProductPackId", "EQ", productPackfilter));
+			}
+
 			// var sSearch = this.byId("idSearch").getProperty("value");
 
 			
@@ -380,6 +386,11 @@ sap.ui.define([
 				this.getView().byId("list").getBinding("items").filter();
 			}
 
+		},
+
+		onProductPackIdsReceived: function(evt){
+			// add empty item
+			this.byId("idProductPackfilter").insertItem(new sap.ui.core.Item());
 		},
 
 	});
