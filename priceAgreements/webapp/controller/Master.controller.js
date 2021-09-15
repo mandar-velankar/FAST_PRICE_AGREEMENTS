@@ -301,7 +301,86 @@ sap.ui.define([
 			var oViewModel = this.getModel("masterView");
 			oViewModel.setProperty("/isFilterBarVisible", (this._oListFilterState.aFilter.length > 0));
 			oViewModel.setProperty("/filterBarLabel", this.getResourceBundle().getText("masterFilterBarText", [sFilterBarText]));
-		}
+		},
+
+		setFilter: function (oSelection) {
+
+			//Add filters if they are set
+			var orFilters = [];
+			var andFilters = [];
+
+
+			//get possible filters
+			var hasNewMaterialsFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newmaterialnumberskey';
+
+			if(hasNewMaterialsFilter){
+				andFilters.push(new sap.ui.model.Filter("hasNewMaterials", "EQ", hasNewMaterialsFilter));
+			}
+
+			// var sSearch = this.byId("idSearch").getProperty("value");
+
+			
+
+			// if (sSearch.length > 0) {
+
+			// 	orFilters.push(new Filter({
+			// 		path: "channel",
+			// 		operator: FilterOperator.Contains,
+			// 		value1: sSearch,
+			// 		caseSensitive: false
+			// 	}));
+
+			// 	orFilters.push(new Filter({
+			// 		path: "countryCode",
+			// 		operator: FilterOperator.Contains,
+			// 		value1: sSearch,
+			// 		caseSensitive: false
+			// 	}));
+
+			// 	orFilters.push(new Filter({
+			// 		path: "contractNumber",
+			// 		operator: FilterOperator.Contains,
+			// 		value1: sSearch,
+			// 		caseSensitive: false
+			// 	}));
+
+			// 	orFilters.push(new Filter({
+			// 		path: "institute/instituteName",
+			// 		operator: FilterOperator.Contains,
+			// 		value1: sSearch,
+			// 		caseSensitive: false
+			// 	}));
+
+			// 	orFilters.push(new Filter({
+			// 		path: "distributor/distributorName",
+			// 		operator: FilterOperator.Contains,
+			// 		value1: sSearch,
+			// 		caseSensitive: false
+			// 	}));
+
+			// 	orFilters.push(new Filter({
+			// 		path: "offerValue",
+			// 		operator: FilterOperator.Contains,
+			// 		value1: sSearch,
+			// 		caseSensitive: false
+			// 	}));
+
+
+			// 	andFilters.push(new sap.ui.model.Filter(orFilters, false));
+			// }
+
+
+			if(andFilters.length > 0){
+				var oFilters = new sap.ui.model.Filter(andFilters, true);
+
+				//Binding to table with the filters and the sorters
+				this.getView().byId("list").getBinding("items").filter(oFilters, sap.ui.model.FilterType.Application);
+			}else{
+				this.getView().byId("list").getBinding("items").aApplicationFilters = [];
+				this.getView().byId("list").getBinding("items").filter();
+			}
+
+		},
 
 	});
 

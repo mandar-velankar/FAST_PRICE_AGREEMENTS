@@ -80,19 +80,6 @@
 											pattern: 'yyyy-MM-dd'
 										}}"  enabled="{pa>/editMode}"/>
 
-								<m:Label text="{i18n>materialNo}" design="Bold" required="true"/>
-
-								<m:Select  
-									id="idMaterialNumberSelect"
-									change=".onMaterialNumberChange" 
-									items="{ 
-										path: '/DistinctPriceAgreementMaterialNumbers'
-									}"
-								>
-									<core:Item text="{MaterialNumber}" key="{ProductPackId}"/>
-
-								</m:Select>
-
 								<m:Label text="{i18n>price}" design="Bold" required="true"/>
 								<m:Input value="{pa>/priceAgreement/price} " description="EUR"  enabled="false"/>
 
@@ -127,9 +114,28 @@
 										selectionChange=".onProductItemSelect"
 										items="{pa>/candidatePrices}"
 							>
+								<m:headerToolbar>
+									<m:OverflowToolbar>
+										<m:content>
+											<m:Label text="{i18n>materialNo}" />
+											<m:Select  
+												id="idMaterialNumberSelect"
+												change=".onMaterialNumberChange" 
+												items="{ 
+													path: 'pa>/priceAgreement/materials'
+												}"
+											>
+												<core:Item key="{pa>materialNumber}" text="{pa>materialNumber}" />
+											</m:Select>
+										</m:content>
+									</m:OverflowToolbar>
+								</m:headerToolbar>
 								<m:columns>
 									<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
 										<m:Label text="Institute" wrapping="true"/>
+									</m:Column>
+									<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+										<m:Label text="Material No." wrapping="true"/>
 									</m:Column>
 									<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
 										<m:Label text="Apply" wrapping="true"/>
@@ -148,6 +154,7 @@
 									<m:ColumnListItem highlight="Indication04">
 										<m:cells>
 											<m:Text text="{pa>instituteId}"/>
+											<m:Text text="{pa>materialNumber}"/>
 											<m:Text text="{pa>applied}"/>
 											<m:Text text="{pa>price}"/> 
 											<m:Text text="{
