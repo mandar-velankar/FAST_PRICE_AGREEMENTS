@@ -101,7 +101,6 @@
 
 								<m:Label text="{i18n>Residue}" design="Bold" required="true"/>
 								<m:Input value="{= Math.round(100 * (1 - (${pa>/priceAgreement/deliveredVolume}/${pa>/priceAgreement/awardedVolume}))) }" enabled="false"/>
-								
 
 							</form:content>
 					</form:SimpleForm>
@@ -123,8 +122,7 @@
 												change=".onMaterialNumberChange" 
 												items="{ 
 													path: 'pa>/priceAgreement/materials'
-												}"
-											>
+												}">
 												<core:Item key="{pa>materialNumber}" text="{pa>materialNumber}" />
 											</m:Select>
 										</m:content>

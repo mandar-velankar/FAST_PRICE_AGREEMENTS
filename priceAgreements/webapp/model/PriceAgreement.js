@@ -50,7 +50,8 @@ sap.ui.define([
             this.candidates = (candidates && candidates.map(candidate => new Candidate(candidate)) ) || [];
         },
         setMaterials: function (materials){
-            this.materials = (materials && materials.map(material => new Material(material)) ) || [];
+            this.materials = (materials && materials.map(material => new Material(material))) || [];
+            this.materials.unshift(new Material({"MaterialNumber":""}));
         },
         setCustomerPrices: function (customerPrices){
             this.customerPrices = (customerPrices && customerPrices.map(customerPrice => new CustomerPrice(customerPrice)) ) || [];

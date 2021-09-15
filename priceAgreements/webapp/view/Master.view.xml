@@ -33,7 +33,7 @@
 						change=".setFilter" 
 						items="{ 
 							path: '/ProductPackIds',
-							 events: {
+							events: {
 								dataReceived: '.onProductPackIdsReceived'
 							}
 						}">

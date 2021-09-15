@@ -35,7 +35,7 @@ sap.ui.define([
 
 			this.setModel(oViewModel, "detailView");
 
-			this.getOwnerComponent().getModel().metadataLoaded().then(this._onMetadataLoaded.bind(this));
+			// this.getOwnerComponent().getModel().metadataLoaded().then(this._onMetadataLoaded.bind(this));
 		},
 
 		/* =========================================================== */
@@ -95,8 +95,8 @@ sap.ui.define([
 
 			this.getModel().metadataLoaded().then(function () {
         // set filter
-				const aFilter = [new Filter("PriceAgreementId", FilterOperator.EQ, sObjectId)];
-				this.byId("idMaterialNumberSelect").getBinding("items").filter(aFilter);
+				// const aFilter = [new Filter("PriceAgreementId", FilterOperator.EQ, sObjectId)];
+				// this.byId("idMaterialNumberSelect").getBinding("items").filter(aFilter);
   
 				this.paState.getPriceAgreement(sObjectId);
 				this.paState.getCandidatePrices(sObjectId);
@@ -230,6 +230,7 @@ sap.ui.define([
 		onFooterSavePress: async function (oEvent) {
 			this.paState.setEditMode(false);
 		},
+
 	});
 
 });
