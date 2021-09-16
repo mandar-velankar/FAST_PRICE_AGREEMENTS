@@ -8,9 +8,12 @@
 		<sortItems>
 			<ViewSettingsItem
 				text="{i18n>masterSort1}"
-				key="ID"
+				key="Tender/TenderName"
 				selected="true"/>
-
+			<ViewSettingsItem
+				text="{i18n>masterSort2}"
+				key="Product/ProductPack/PRODUCTPACKNAME"
+				selected="true"/>
 		</sortItems>
 
 	</ViewSettingsDialog>

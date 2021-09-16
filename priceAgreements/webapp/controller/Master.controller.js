@@ -171,7 +171,9 @@ sap.ui.define([
 			sPath = mParams.sortItem.getKey();
 			bDescending = mParams.sortDescending;
 			aSorters.push(new Sorter(sPath, bDescending));
-			this._oList.getBinding("items").sort(aSorters);
+			
+			const oTable = this.byId("list");
+			oTable.getBinding("items").sort(aSorters);
 		},
 
 		/**
@@ -305,12 +307,10 @@ sap.ui.define([
 
 		setFilter: function (oSelection) {
 
-			//Add filters if they are set
 			var orFilters = [];
 			var andFilters = [];
 
-
-			//get possible filters
+			//get filters
 			var hasNewMaterialsFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newmaterialnumberskey';
 
 			if(hasNewMaterialsFilter){
@@ -323,57 +323,26 @@ sap.ui.define([
 				andFilters.push(new sap.ui.model.Filter("ProductPackId", "EQ", productPackfilter));
 			}
 
-			// var sSearch = this.byId("idSearch").getProperty("value");
+			let sSearch = this.byId("idSearch").getProperty("value");
 
-			
+			if (sSearch.length > 0) {
 
-			// if (sSearch.length > 0) {
+				orFilters.push(new Filter({
+					path: "Tender/TenderName",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
 
-			// 	orFilters.push(new Filter({
-			// 		path: "channel",
-			// 		operator: FilterOperator.Contains,
-			// 		value1: sSearch,
-			// 		caseSensitive: false
-			// 	}));
+				orFilters.push(new Filter({
+					path: "Product/ProductPack/PRODUCTPACKNAME",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
 
-			// 	orFilters.push(new Filter({
-			// 		path: "countryCode",
-			// 		operator: FilterOperator.Contains,
-			// 		value1: sSearch,
-			// 		caseSensitive: false
-			// 	}));
-
-			// 	orFilters.push(new Filter({
-			// 		path: "contractNumber",
-			// 		operator: FilterOperator.Contains,
-			// 		value1: sSearch,
-			// 		caseSensitive: false
-			// 	}));
-
-			// 	orFilters.push(new Filter({
-			// 		path: "institute/instituteName",
-			// 		operator: FilterOperator.Contains,
-			// 		value1: sSearch,
-			// 		caseSensitive: false
-			// 	}));
-
-			// 	orFilters.push(new Filter({
-			// 		path: "distributor/distributorName",
-			// 		operator: FilterOperator.Contains,
-			// 		value1: sSearch,
-			// 		caseSensitive: false
-			// 	}));
-
-			// 	orFilters.push(new Filter({
-			// 		path: "offerValue",
-			// 		operator: FilterOperator.Contains,
-			// 		value1: sSearch,
-			// 		caseSensitive: false
-			// 	}));
-
-
-			// 	andFilters.push(new sap.ui.model.Filter(orFilters, false));
-			// }
+				andFilters.push(new sap.ui.model.Filter(orFilters, false));
+			}
 
 
 			if(andFilters.length > 0){
