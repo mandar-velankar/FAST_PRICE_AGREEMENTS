@@ -14,20 +14,32 @@ sap.ui.define([
             return this.odata(keyPath).get({urlParameters:{$expand:"Materials,Institute,Tender,Product/ProductPack,CustomerPrices"}});
         },
 
-        getCandidatePrices: function (priceAgreementId) {
+        getCandidatePrices: function (priceAgreementId, materialNumber) {
 
             var aFilters = [];
 
 			if (priceAgreementId) {
 
-				var oTenderFilter = new Filter({
+				var oPriceAgreemenFilter = new Filter({
 					path: 'PriceAgreementId',
 					operator: FilterOperator.EQ,
 					value1: priceAgreementId
 				});
 
-				aFilters.push(oTenderFilter);
+				aFilters.push(oPriceAgreemenFilter);
 			}
+
+            if (materialNumber) {
+
+				var oMaterialNumberFilter = new Filter({
+					path: 'MaterialNumber',
+					operator: FilterOperator.EQ,
+					value1: materialNumber
+				});
+
+				aFilters.push(oMaterialNumberFilter);
+			}
+
 
             
 			var mParameters = {

@@ -27,9 +27,9 @@ sap.ui.define([
         },
 
 
-        getCandidatePrices: function (priceAgreementId) {
+        getCandidatePrices: function (priceAgreementId, materialNumber) {
             this.setProperty("candidatePrices", []);
-            return this.getService().getCandidatePrices(priceAgreementId).then(response => {
+            return this.getService().getCandidatePrices(priceAgreementId, materialNumber).then(response => {
                 const candidatePrices = response.data.results.map(item => new CandidatePrice(item));
                 this.setProperty("candidatePrices", candidatePrices);
                 return this.getProperty("candidatePrices");
