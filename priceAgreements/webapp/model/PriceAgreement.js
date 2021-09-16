@@ -4,8 +4,9 @@ sap.ui.define([
     "./Product",
     "./Tender",
     "./Candidate",
+    "./Material",
     "./CustomerPrice"
-], function (BaseObject,Institute,Product,Tender,Candidate,CustomerPrice) {
+], function (BaseObject,Institute,Product,Tender,Candidate,CustomerPrice, Material) {
     "use strict";
 
     var PriceAgreement = BaseObject.extend("com.bayer.tender.priceagreements.model.PriceAgreement", {
@@ -16,6 +17,7 @@ sap.ui.define([
             this.product = new Product();
             this.tender = new Tender();
             this.candidates = [];
+            this.materials = [];
             this.customerPrices = [];
 
             if (data) {
@@ -24,6 +26,7 @@ sap.ui.define([
                 this.setProduct(data.Product);
                 this.setTender(data.Tender);
                 data.Candidates && this.setCandidates(data.Candidates.results);
+                data.Materials && this.setMaterials(data.Materials.results);
                 data.CustomerPrices && this.setCustomerPrices(data.CustomerPrices.results);
             }
         },
@@ -45,6 +48,10 @@ sap.ui.define([
         },
         setCandidates: function (candidates){
             this.candidates = (candidates && candidates.map(candidate => new Candidate(candidate)) ) || [];
+        },
+        setMaterials: function (materials){
+            this.materials = (materials && materials.map(material => new Material(material))) || [];
+            this.materials.unshift(new Material({"MaterialNumber":""}));
         },
         setCustomerPrices: function (customerPrices){
             this.customerPrices = (customerPrices && customerPrices.map(customerPrice => new CustomerPrice(customerPrice)) ) || [];

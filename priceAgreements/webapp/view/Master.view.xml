@@ -20,13 +20,24 @@
 		<f:content>
 			<VBox fitContainer="true">
 				<OverflowToolbar class="sapFDynamicPageAlignContent">
-					<Select	id="idslctfilter">
+					<Select	id="idslctfilter" change=".setFilter">
 						<core:Item key="" text=""/>
-						<core:Item key="New Agreements" text="New Agreements"/>
-						<core:Item key="New Material Numbers" text="New Material Numbers"/>
-						<core:Item key="Updated Retail Price" text="Updated Retail Price"/>
-						<core:Item key="Expiring Soon" text="Expiring Soon"/>
-						<core:Item key="Expired" text="Expired"/>
+						<core:Item key="newAgreementsKey" text="New Agreements"/>
+						<core:Item key="newMaterialNumbersKey" text="New Material Numbers"/>
+						<core:Item key="updatedRetailPriceKey" text="Updated Retail Price"/>
+						<core:Item key="expiringSoonKey" text="Expiring Soon"/>
+						<core:Item key="expiredKey" text="Expired"/>
+					</Select>
+					<Select  
+						id="idProductPackfilter"
+						change=".setFilter" 
+						items="{ 
+							path: '/ProductPackIds',
+							events: {
+								dataReceived: '.onProductPackIdsReceived'
+							}
+						}">
+						<core:Item key="{ProductPackId}" text="{ProductPackId}" />
 					</Select>
 					<ToolbarSpacer/>				
 						<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>

@@ -11,23 +11,35 @@ sap.ui.define([
         },
         getPriceAgreement: function (id) {
             const keyPath = this.model.createKey("/PriceAgreements",{ID:id});
-            return this.odata(keyPath).get({urlParameters:{$expand:"Institute,Tender,Product/ProductPack,CustomerPrices/Material"}});
+            return this.odata(keyPath).get({urlParameters:{$expand:"Materials,Institute,Tender,Product/ProductPack,CustomerPrices"}});
         },
 
-        getCandidatePrices: function (priceAgreementId) {
+        getCandidatePrices: function (priceAgreementId, materialNumber) {
 
             var aFilters = [];
 
 			if (priceAgreementId) {
 
-				var oTenderFilter = new Filter({
+				var oPriceAgreemenFilter = new Filter({
 					path: 'PriceAgreementId',
 					operator: FilterOperator.EQ,
 					value1: priceAgreementId
 				});
 
-				aFilters.push(oTenderFilter);
+				aFilters.push(oPriceAgreemenFilter);
 			}
+
+            if (materialNumber) {
+
+				var oMaterialNumberFilter = new Filter({
+					path: 'MaterialNumber',
+					operator: FilterOperator.EQ,
+					value1: materialNumber
+				});
+
+				aFilters.push(oMaterialNumberFilter);
+			}
+
 
             
 			var mParameters = {
