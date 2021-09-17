@@ -25,8 +25,9 @@ sap.ui.define([
                 return this.getProperty("priceAgreement");
             });
         },
-
-
+        getPriceAgreementInstance:function(){
+            return this.getProperty("priceAgreement");
+        },
         getCandidatePrices: function (priceAgreementId, materialNumber) {
             this.setProperty("candidatePrices", []);
             return this.getService().getCandidatePrices(priceAgreementId, materialNumber).then(response => {
@@ -35,7 +36,6 @@ sap.ui.define([
                 return this.getProperty("candidatePrices");
             });
         },
-
         setEditMode: function (sEditMode) {
             this.setProperty("editMode", sEditMode);
         },

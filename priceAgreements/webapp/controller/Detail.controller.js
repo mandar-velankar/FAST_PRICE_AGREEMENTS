@@ -4,8 +4,9 @@ sap.ui.define([
 	"../model/formatter",
 	"sap/m/library",
 	"sap/ui/model/Filter",
-	"sap/ui/model/FilterOperator"
-], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterOperator) {
+	"sap/ui/model/FilterOperator",
+	"sap/m/MessageBox"
+], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterOperator,MessageBox) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
@@ -221,12 +222,24 @@ sap.ui.define([
 			this.paState.setEditMode(true);
 		},
 
+		handleDateChange: function (oEvent) {
+			var valid = oEvent.getParameter("valid");
+
+			const isValid = this.paState.getPriceAgreementInstance().setExpiryDateValueState(valid?"None":"Error");
+			this.paState.updateModel();
+		},
 		onFooterCancelPress: function (oEvent) {
 			this.paState.setEditMode(false);
 
 		},
 
 		onFooterSavePress: async function (oEvent) {
+			const isValid = this.paState.getPriceAgreementInstance().isValid();
+			this.paState.updateModel();
+			if(!isValid || !this.byId("expiryDateID").isValidValue()){
+				MessageBox.error(this.getText("requiredFields"));
+				return false;
+			}
 			this.paState.setEditMode(false);
 		},
 

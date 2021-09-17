@@ -19,7 +19,7 @@ sap.ui.define([
             this.candidates = [];
             this.materials = [];
             this.customerPrices = [];
-
+            this.expiryDateValueState="None";
             if (data) {
                 //copy array's manually to objects
                 this.setInstitute(data.Institute);
@@ -60,7 +60,18 @@ sap.ui.define([
         getInstitute: function (){
             return this.institute || undefined;
         },
-        
+        setExpiryDateValueState:function(state){
+            this.expiryDateValueState=state;
+        },
+        isValid:function(){
+            let isValid = false;
+            this.expiryDateValueState="Error";
+            if(this.expiryDate && this.expiryDate !== ""){
+                this.expiryDateValueState="None";
+                isValid = true;
+            }
+            return isValid;
+        },
         getJSON: function () {
             const data = this.getJSONObject([
                 "expiryDate",
