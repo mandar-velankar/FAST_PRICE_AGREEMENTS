@@ -2,7 +2,8 @@ sap.ui.define([
     "com/bayer/tender/uilib/objects/BaseState",
     "../model/PriceAgreement",
     "../model/CandidatePrice",
-], function (BaseState, PriceAgreement, CandidatePrice) {
+    "../model/CustomerPrice"
+], function (BaseState, PriceAgreement, CandidatePrice, CustomerPrice) {
     "use strict";
     var PriceAgreementState = BaseState.extend("com.bayer.tender.priceagreements.state.PriceAgreementState", {
         constructor: function (service) {
@@ -26,6 +27,15 @@ sap.ui.define([
             });
         },
 
+        savePriceAgreement: function () {
+            const priceAgreement = this.getProperty("priceAgreement");
+
+            if(priceAgreement.iD){
+                return this.getService().updatePriceAgreement(priceAgreement);
+            }
+            
+        },
+
 
         getCandidatePrices: function (priceAgreementId, materialNumber) {
             this.setProperty("candidatePrices", []);
@@ -34,6 +44,32 @@ sap.ui.define([
                 this.setProperty("candidatePrices", candidatePrices);
                 return this.getProperty("candidatePrices");
             });
+        },
+
+        saveCandidatePrices: function () {
+
+            const candidatePrices = this.getProperty("candidatePrices").filter(cap => cap.applied); // get only the applied candidatePrices
+            const priceAgreement = this.getProperty("priceAgreement");
+
+            // create customerPrices object based on candidatePrices
+            const customerPrices = candidatePrices.map(candidate => {
+                candidate.price = priceAgreement.price;
+                candidate.validTo = priceAgreement.expiryDate;
+
+                const customerPrice = new CustomerPrice(candidate.getJSON());
+
+                if(candidate.customerPriceId){
+                    customerPrice['iD'] = candidate.customerPriceId;
+                }
+                
+                return customerPrice;
+            });
+
+            const promises = customerPrices.map(cp => this.getService().saveCustomerPrice(cp));
+
+            
+            return Promise.all(promises);
+            
         },
 
         setEditMode: function (sEditMode) {

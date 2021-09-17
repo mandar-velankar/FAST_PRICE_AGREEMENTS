@@ -227,7 +227,12 @@ sap.ui.define([
 		},
 
 		onFooterSavePress: async function (oEvent) {
-			this.paState.setEditMode(false);
+
+			this.paState.saveCandidatePrices()
+				.then(this.paState.savePriceAgreement.bind(this.paState))
+				.then(() => {
+					this.paState.setEditMode(false);
+				});
 		},
 
 	});
