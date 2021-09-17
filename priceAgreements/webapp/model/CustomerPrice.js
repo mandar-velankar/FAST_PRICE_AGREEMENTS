@@ -11,23 +11,21 @@ sap.ui.define([
 
             if (data) {
                 //copy array's manually to objects
-                this.setMaterial(data.Material);
             }
         },
 
-        setMaterial: function (material){
-            if(material){
-                this.material = new Material(material);
-            }
-        },
         getJSON: function () {
             return this.getJSONObject([
                 "iD",
-                "instituteID",
+                "instituteId",
                 "priceAgreementId",
-                "materialId",
+                "countryCode",
+                "productPackId",
+                "materialNumber",
                 "price",
-                "synchronized"
+                "synchronized",
+                "validFrom",
+                "validTo"
             ]);
         },
 

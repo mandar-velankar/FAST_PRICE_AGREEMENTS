@@ -14,6 +14,36 @@ sap.ui.define([
             return this.odata(keyPath).get({urlParameters:{$expand:"Materials,Institute,Tender,Product/ProductPack,CustomerPrices"}});
         },
 
+		updatePriceAgreement: function(priceAgreement){
+
+			const data = priceAgreement.getJSON();
+
+			const sKey = this.model.createKey("/PriceAgreements", {
+				ID: data.ID
+			});
+
+			return this.odata(sKey).put(data);
+
+		},
+
+		saveCustomerPrice: function(customerPrice){
+
+			const data = customerPrice.getAll();
+
+			if(data.ID){
+				const sKey = this.model.createKey("/CustomerPrices", {
+					ID: data.ID
+				});
+	
+				return this.odata(sKey).put(data);
+			}else{
+				return this.odata("/CustomerPrices").post(data);
+			}
+
+		},
+
+
+
         getCandidatePrices: function (priceAgreementId, materialNumber) {
 
             var aFilters = [];
