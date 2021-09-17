@@ -37,8 +37,18 @@ sap.ui.define([
             });
         },
         setEditMode: function (sEditMode) {
+            if(sEditMode){
+                this.backupPriceAgreement();
+            }
             this.setProperty("editMode", sEditMode);
         },
+        backupPriceAgreement:function(){
+            this.priceAgreementData = this.getPriceAgreementInstance().getAll();
+        },
+        restorePriceAgreement:function(){
+            this.priceAgreementData && this.setProperty("priceAgreement", new PriceAgreement(this.priceAgreementData));
+            this.updateModel();
+        }
 
     });
 

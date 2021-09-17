@@ -6,7 +6,7 @@ sap.ui.define([
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"sap/m/MessageBox"
-], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterOperator,MessageBox) {
+], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterOperator, MessageBox) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
@@ -95,7 +95,7 @@ sap.ui.define([
 			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
 
 			this.getModel().metadataLoaded().then(function () {
-  
+
 				this.paState.getPriceAgreement(this.sObjectId);
 				this.paState.getCandidatePrices(this.sObjectId, null);
 				// var sObjectPath = this.getModel().createKey("PriceAgreements", {
@@ -211,12 +211,12 @@ sap.ui.define([
 		},
 
 
-	  onMaterialNumberChange: function(){
+		onMaterialNumberChange: function () {
 			// set filter
 			const selectedMaterial = parseInt(this.byId("idMaterialNumberSelect").getSelectedItem().getKey());
 			this.paState.getCandidatePrices(this.sObjectId, selectedMaterial);
-    },
-    
+		},
+
 		onEditModePress: function () {
 
 			this.paState.setEditMode(true);
@@ -225,18 +225,27 @@ sap.ui.define([
 		handleDateChange: function (oEvent) {
 			var valid = oEvent.getParameter("valid");
 
-			const isValid = this.paState.getPriceAgreementInstance().setExpiryDateValueState(valid?"None":"Error");
+			const isValid = this.paState.getPriceAgreementInstance().setExpiryDateValueState(valid ? "None" : "Error");
 			this.paState.updateModel();
 		},
 		onFooterCancelPress: function (oEvent) {
-			this.paState.setEditMode(false);
-
+			const onClose = (action)=>{
+				if (action === MessageBox.Action.YES) {
+					this.paState.setEditMode(false);
+					this.paState.restorePriceAgreement();
+				}
+			};
+			MessageBox.warning(this.getText("confirmCancel"), {
+				actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+				emphasizedAction: MessageBox.Action.YES,
+				onClose: onClose
+			});
 		},
 
 		onFooterSavePress: async function (oEvent) {
 			const isValid = this.paState.getPriceAgreementInstance().isValid();
 			this.paState.updateModel();
-			if(!isValid || !this.byId("expiryDateID").isValidValue()){
+			if (!isValid || !this.byId("expiryDateID").isValidValue()) {
 				MessageBox.error(this.getText("requiredFields"));
 				return false;
 			}

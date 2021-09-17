@@ -22,10 +22,9 @@ sap.ui.define([
                 "countryCode"
             ]);
         },
-
         getAll: function () {
             return {
-                ...this.getJSON(),
+                ...this
             };
         }
     });

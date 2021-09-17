@@ -30,10 +30,9 @@ sap.ui.define([
                 "synchronized"
             ]);
         },
-
         getAll: function () {
             return {
-                ...this.getJSON(),
+                ...this
             };
         }
     });
