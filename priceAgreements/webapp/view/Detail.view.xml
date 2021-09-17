@@ -153,7 +153,11 @@
 										<m:cells>
 											<m:Text text="{pa>instituteId}"/>
 											<m:Text text="{pa>materialNumber}"/>
-											<m:Text text="{pa>applied}"/>
+											<m:Switch state="{pa>applied}" customTextOn="Yes" customTextOff="No" enabled="{= ${pa>/editMode} &amp;&amp; !${pa>applied} }">
+												<m:layoutData>
+													<m:FlexItemData growFactor="1" />
+												</m:layoutData>
+											</m:Switch>
 											<m:Text text="{pa>price}"/> 
 											<m:Text text="{
 													path: 'pa>validFrom',
