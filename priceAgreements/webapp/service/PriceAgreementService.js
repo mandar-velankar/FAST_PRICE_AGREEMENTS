@@ -28,7 +28,8 @@ sap.ui.define([
 
 		saveCustomerPrice: function(customerPrice){
 
-			const data = customerPrice.getAll();
+			// const data = customerPrice.getAll();
+			const data = customerPrice.getJSON();
 
 			if(data.ID){
 				const sKey = this.model.createKey("/CustomerPrices", {

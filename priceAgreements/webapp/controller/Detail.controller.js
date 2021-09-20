@@ -97,7 +97,7 @@ sap.ui.define([
 			this.getModel().metadataLoaded().then(function () {
 
 				this.paState.getPriceAgreement(this.sObjectId);
-				this.paState.getCandidatePrices(this.sObjectId, null);
+				// this.paState.getCandidatePrices(this.sObjectId, null);
 				// var sObjectPath = this.getModel().createKey("PriceAgreements", {
 				// 	ID :  sObjectId
 				// });
