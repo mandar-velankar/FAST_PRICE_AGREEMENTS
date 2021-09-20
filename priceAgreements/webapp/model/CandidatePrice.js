@@ -19,6 +19,18 @@ sap.ui.define([
         
         getJSON: function () {
 
+            return this.getJSONObject([
+                "instituteId",
+                "priceAgreementId",
+                "countryCode",
+                "productPackId",
+                "materialNumber",
+                "price",
+                "synchronized",
+                "validFrom",
+                "validTo"
+            ]);
+
         },
 
         getAll: function () {

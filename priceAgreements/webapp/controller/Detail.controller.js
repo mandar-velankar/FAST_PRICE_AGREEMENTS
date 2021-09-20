@@ -249,7 +249,11 @@ sap.ui.define([
 				MessageBox.error(this.getText("requiredFields"));
 				return false;
 			}
-			this.paState.setEditMode(false);
+			this.paState.saveCandidatePrices()
+				.then(this.paState.savePriceAgreement.bind(this.paState))
+				.then(() => {
+					this.paState.setEditMode(false);
+				});
 		},
 
 	});

@@ -77,6 +77,7 @@ sap.ui.define([
         },
         getJSON: function () {
             const data = this.getJSONObject([
+                "iD",
                 "expiryDate",
                 "effectiveDate",
                 "originalEffectiveDate",
@@ -89,11 +90,9 @@ sap.ui.define([
                 "countryCode",
                 "instituteId",
                 "tenderId",
-                "productPackId"
+                "productPackId",
+                "synchronized"
             ]);
-
-            data.institute = this.institute;
-            data.product = this.product;
 
             return data;
         },
