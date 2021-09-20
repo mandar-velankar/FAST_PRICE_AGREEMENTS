@@ -26,7 +26,9 @@ sap.ui.define([
                 return this.getProperty("priceAgreement");
             });
         },
-
+        getPriceAgreementInstance:function(){
+            return this.getProperty("priceAgreement");
+        },
         savePriceAgreement: function () {
             const priceAgreement = this.getProperty("priceAgreement");
 
@@ -35,8 +37,6 @@ sap.ui.define([
             }
             
         },
-
-
         getCandidatePrices: function (priceAgreementId, materialNumber) {
             this.setProperty("candidatePrices", []);
             return this.getService().getCandidatePrices(priceAgreementId, materialNumber).then(response => {
@@ -45,7 +45,6 @@ sap.ui.define([
                 return this.getProperty("candidatePrices");
             });
         },
-
         saveCandidatePrices: function () {
 
             const candidatePrices = this.getProperty("candidatePrices").filter(cap => cap.applied); // get only the applied candidatePrices
@@ -71,10 +70,19 @@ sap.ui.define([
             return Promise.all(promises);
             
         },
-
         setEditMode: function (sEditMode) {
+            if(sEditMode){
+                this.backupPriceAgreement();
+            }
             this.setProperty("editMode", sEditMode);
         },
+        backupPriceAgreement:function(){
+            this.priceAgreementData = this.getPriceAgreementInstance().getAll();
+        },
+        restorePriceAgreement:function(){
+            this.priceAgreementData && this.setProperty("priceAgreement", new PriceAgreement(this.priceAgreementData));
+            this.updateModel();
+        }
 
     });
 

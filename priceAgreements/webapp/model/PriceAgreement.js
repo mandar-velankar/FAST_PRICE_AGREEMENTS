@@ -19,14 +19,17 @@ sap.ui.define([
             this.candidates = [];
             this.materials = [];
             this.customerPrices = [];
-
+            this.expiryDateValueState="None";
             if (data) {
                 //copy array's manually to objects
-                this.setInstitute(data.Institute);
-                this.setProduct(data.Product);
-                this.setTender(data.Tender);
+                this.setInstitute(data.Institute||data.institute);//or for backup restore
+                this.setProduct(data.Product||data.product);//or for backup restore
+                this.setTender(data.Tender||data.tender);//or for backup restore
+                data.candidates && this.setCandidates(data.candidates);//used for backup restore
                 data.Candidates && this.setCandidates(data.Candidates.results);
+                data.materials && this.setMaterials(data.materials);//used for backup restore
                 data.Materials && this.setMaterials(data.Materials.results);
+                data.customerPrices && this.setCustomerPrices(data.customerPrices);//used for backup restore
                 data.CustomerPrices && this.setCustomerPrices(data.CustomerPrices.results);
             }
         },
@@ -60,7 +63,18 @@ sap.ui.define([
         getInstitute: function (){
             return this.institute || undefined;
         },
-        
+        setExpiryDateValueState:function(state){
+            this.expiryDateValueState=state;
+        },
+        isValid:function(){
+            let isValid = false;
+            this.expiryDateValueState="Error";
+            if(this.expiryDate && this.expiryDate !== ""){
+                this.expiryDateValueState="None";
+                isValid = true;
+            }
+            return isValid;
+        },
         getJSON: function () {
             const data = this.getJSONObject([
                 "iD",
@@ -84,11 +98,16 @@ sap.ui.define([
         },
 
         getAll: function () {
-            return {
-                ...this.getJSON(),
-                Institute: this.institute.getJSON(),
-                Product: this.product.getJSON()
-            };
+            let all = {...this};
+
+            all.institute = this.institute.getAll();
+            all.product = this.product.getAll();
+            all.tender = this.tender.getAll();
+            all.candidates = this.candidates.map(candidate=>candidate.getAll());
+            all.materials = this.materials.map(material=>material.getAll());
+            all.customerPrices = this.customerPrices.map(customerPrice=>customerPrice.getAll());
+            
+            return all;
         }
     });
     

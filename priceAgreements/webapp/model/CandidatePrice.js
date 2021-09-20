@@ -35,7 +35,7 @@ sap.ui.define([
 
         getAll: function () {
             return {
-                ...this.getJSON(),
+                ...this
             };
         }
     });

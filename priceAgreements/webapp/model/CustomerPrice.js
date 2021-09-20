@@ -28,10 +28,9 @@ sap.ui.define([
                 "validTo"
             ]);
         },
-
         getAll: function () {
             return {
-                ...this.getJSON(),
+                ...this
             };
         }
     });
