@@ -47,6 +47,7 @@ sap.ui.define([
                 this.getPriceAgreementInstance().setCandidatePrices(response.data.results);
                 // const candidatePrices = response.data.results.map(item => new CandidatePrice(item));
                 // this.setProperty("candidatePrices", candidatePrices);
+                this.updateModel();
                 return this.getPriceAgreementInstance().getCandidatePrices();
             });
         },
