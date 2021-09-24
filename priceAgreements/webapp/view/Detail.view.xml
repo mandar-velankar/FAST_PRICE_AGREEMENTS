@@ -114,7 +114,7 @@
 										mode="SingleSelectMaster"
 										delete="onDeleteProduct"
 										selectionChange=".onProductItemSelect"
-										items="{pa>/candidatePrices}"
+										items="{pa>/priceAgreement/candidatePrices}"
 							>
 								<m:headerToolbar>
 									<m:OverflowToolbar>

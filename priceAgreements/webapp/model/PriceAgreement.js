@@ -5,8 +5,9 @@ sap.ui.define([
     "./Tender",
     "./Candidate",
     "./Material",
-    "./CustomerPrice"
-], function (BaseObject,Institute,Product,Tender,Candidate,CustomerPrice, Material) {
+    "./CustomerPrice",
+    "./CandidatePrice"
+], function (BaseObject,Institute,Product,Tender,Candidate,CustomerPrice, Material,CandidatePrice) {
     "use strict";
 
     var PriceAgreement = BaseObject.extend("com.bayer.tender.priceagreements.model.PriceAgreement", {
@@ -19,6 +20,7 @@ sap.ui.define([
             this.candidates = [];
             this.materials = [];
             this.customerPrices = [];
+            this.candidatePrices = [];
             this.expiryDateValueState="None";
             if (data) {
                 //copy array's manually to objects
@@ -31,9 +33,12 @@ sap.ui.define([
                 data.Materials && this.setMaterials(data.Materials.results);
                 data.customerPrices && this.setCustomerPrices(data.customerPrices);//used for backup restore
                 data.CustomerPrices && this.setCustomerPrices(data.CustomerPrices.results);
+                data.candidatePrices && this.setCandidatePrices(data.candidatePrices);//used for backup restore
             }
         },
-
+        setCandidatePrices:function(candidatePrices){
+            this.candidatePrices = (candidatePrices && candidatePrices.map(candidatePrice => new CandidatePrice(candidatePrice)) ) || [];
+        },
         setInstitute: function (institute){
             if(institute){
                 this.institute = new Institute(institute);
@@ -59,7 +64,9 @@ sap.ui.define([
         setCustomerPrices: function (customerPrices){
             this.customerPrices = (customerPrices && customerPrices.map(customerPrice => new CustomerPrice(customerPrice)) ) || [];
         },
-
+        getCandidatePrices: function(){
+            return this.candidatePrices || [];
+        },
         getInstitute: function (){
             return this.institute || undefined;
         },
@@ -106,6 +113,7 @@ sap.ui.define([
             all.candidates = this.candidates.map(candidate=>candidate.getAll());
             all.materials = this.materials.map(material=>material.getAll());
             all.customerPrices = this.customerPrices.map(customerPrice=>customerPrice.getAll());
+            all.candidatePrices = this.candidatePrices.map(candidatePrice=>candidatePrice.getAll());
             
             return all;
         }
