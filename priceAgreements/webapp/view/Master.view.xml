@@ -20,13 +20,25 @@
 		<f:content>
 			<VBox fitContainer="true">
 				<OverflowToolbar class="sapFDynamicPageAlignContent">
-					<Select	id="idslctfilter">
+					<Select	id="idslctfilter" change=".setFilter">
 						<core:Item key="" text=""/>
-						<core:Item key="New Agreements" text="New Agreements"/>
-						<core:Item key="New Material Numbers" text="New Material Numbers"/>
-						<core:Item key="Updated Retail Price" text="Updated Retail Price"/>
-						<core:Item key="Expiring Soon" text="Expiring Soon"/>
-						<core:Item key="Expired" text="Expired"/>
+						<core:Item key="newAgreementsKey" text="New Agreements"/>
+						<core:Item key="newMaterialNumbersKey" text="New Material Numbers"/>
+						<core:Item key="updatedRetailPriceKey" text="Updated Retail Price"/>
+						<core:Item key="expiringSoonKey" text="Expiring Soon"/>
+						<core:Item key="expiredKey" text="Expired"/>
+					</Select>
+					<Label text="{i18n>Product}"/>
+					<Select  
+						id="idProductPackfilter"
+						change=".setFilter" 
+						items="{ 
+							path: '/PriceAgreementProductNames',
+							events: {
+								dataReceived: '.onProductPackIdsReceived'
+							}
+						}">
+						<core:Item key="{ProductPackId}" text="{ProductName}" />
 					</Select>
 					<ToolbarSpacer/>				
 						<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
@@ -42,7 +54,7 @@
 								descending: false
 							},
 							parameters: {
-								expand: 'Candidates,Product,Tender,Institute'
+								expand: 'Product/ProductPack,Tender,Institute'
 							}
 						}"
 						class="sapFDynamicPageAlignContent"
@@ -82,10 +94,10 @@
 						</Column>
 					</columns>
 					<items>
-						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="Error" id="items">
+						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="{= ${Synchronized} === true ? 'None' : 'Warning'}" id="items">
 							<cells>
-								<Text text="IT-21-1001-1"/>
-								<Text text="XARELTO 20mg 28 TABL"/>
+								<Text text="{Tender/TenderName}"/>
+								<Text text="{Product/ProductPack/PRODUCTPACKNAME}"/>
 								<Text text="{Price}"/>
 								<Text text="{
 										path: 'EffectiveDate',

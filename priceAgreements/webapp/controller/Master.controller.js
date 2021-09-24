@@ -171,7 +171,9 @@ sap.ui.define([
 			sPath = mParams.sortItem.getKey();
 			bDescending = mParams.sortDescending;
 			aSorters.push(new Sorter(sPath, bDescending));
-			this._oList.getBinding("items").sort(aSorters);
+			
+			const oTable = this.byId("list");
+			oTable.getBinding("items").sort(aSorters);
 		},
 
 		/**
@@ -301,7 +303,64 @@ sap.ui.define([
 			var oViewModel = this.getModel("masterView");
 			oViewModel.setProperty("/isFilterBarVisible", (this._oListFilterState.aFilter.length > 0));
 			oViewModel.setProperty("/filterBarLabel", this.getResourceBundle().getText("masterFilterBarText", [sFilterBarText]));
-		}
+		},
+
+		setFilter: function (oSelection) {
+
+			var orFilters = [];
+			var andFilters = [];
+
+			//get filters
+			var hasNewMaterialsFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newmaterialnumberskey';
+
+			if(hasNewMaterialsFilter){
+				andFilters.push(new sap.ui.model.Filter("hasNewMaterials", "EQ", hasNewMaterialsFilter));
+			}
+
+			const productPackfilter = this.byId("idProductPackfilter").getSelectedKey();
+
+			if(productPackfilter){
+				andFilters.push(new sap.ui.model.Filter("ProductPackId", "EQ", productPackfilter));
+			}
+
+			let sSearch = this.byId("idSearch").getProperty("value");
+
+			if (sSearch.length > 0) {
+
+				orFilters.push(new Filter({
+					path: "Tender/TenderName",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
+					path: "Product/ProductPack/PRODUCTPACKNAME",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				andFilters.push(new sap.ui.model.Filter(orFilters, false));
+			}
+
+
+			if(andFilters.length > 0){
+				var oFilters = new sap.ui.model.Filter(andFilters, true);
+
+				//Binding to table with the filters and the sorters
+				this.getView().byId("list").getBinding("items").filter(oFilters, sap.ui.model.FilterType.Application);
+			}else{
+				this.getView().byId("list").getBinding("items").aApplicationFilters = [];
+				this.getView().byId("list").getBinding("items").filter();
+			}
+
+		},
+
+		onProductPackIdsReceived: function(evt){
+			// add empty item
+			this.byId("idProductPackfilter").insertItem(new sap.ui.core.Item());
+		},
 
 	});
 
