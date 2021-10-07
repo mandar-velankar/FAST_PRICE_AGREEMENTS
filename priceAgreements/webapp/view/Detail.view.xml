@@ -109,80 +109,127 @@
 					</form:SimpleForm>
 					</ObjectPageSubSection>
 
-					<ObjectPageSubSection mode="Expanded" title="Customer Prices">
-							<m:Table id="MaterialsTableID" 
+					<ObjectPageSubSection mode="Expanded">
+							<m:IconTabBar>
+							<m:items>
+								<m:IconTabFilter text="Customer Prices" key="customerPrices">
+									<m:Table id="MaterialsTableID" 
 										mode="SingleSelectMaster"
 										delete="onDeleteProduct"
 										selectionChange=".onProductItemSelect"
 										items="{pa>/priceAgreement/candidatePrices}"
-							>
-								<m:headerToolbar>
-									<m:OverflowToolbar>
-										<m:content>
-											<m:Label text="{i18n>materialNo}" />
-											<m:Select  
-												id="idMaterialNumberSelect"
-												change=".onMaterialNumberChange" 
-												items="{ 
-													path: 'pa>/priceAgreement/materials'
-												}">
-												<core:Item key="{pa>materialNumber}" text="{pa>materialNumber}" />
-											</m:Select>
-										</m:content>
-									</m:OverflowToolbar>
-								</m:headerToolbar>
-								<m:columns>
-									<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
-										<m:Label text="Institute" wrapping="true"/>
-									</m:Column>
-									<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
-										<m:Label text="Material No." wrapping="true"/>
-									</m:Column>
-									<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
-										<m:Label text="Apply" wrapping="true"/>
-									</m:Column>
-									<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
-										<m:Label text="Price" wrapping="true"/>
-									</m:Column>
-									<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
-										<m:Label text="Effective Date" wrapping="true"/>
-									</m:Column>
-									<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
-										<m:Label text="Expiry Date" wrapping="true"/>
-									</m:Column>
-								</m:columns>
-								<m:items>
-									<m:ColumnListItem highlight="Indication04">
-										<m:cells>
-											<m:Text text="{pa>instituteId}"/>
-											<m:Text text="{pa>materialNumber}"/>
-											<m:Switch state="{pa>applied}" customTextOn="Yes" customTextOff="No" enabled="{= ${pa>/editMode} &amp;&amp; !${pa>applied} }">
-												<m:layoutData>
-													<m:FlexItemData growFactor="1" />
-												</m:layoutData>
-											</m:Switch>
-											<m:Text text="{pa>price}"/> 
-											<m:Text text="{
-													path: 'pa>validFrom',
-													type: 'sap.ui.model.type.Date',
-													formatOptions: {
-														pattern: 'yyyy-MM-dd'
-													}
-												}" 
-											/>
-											<m:Text text="{
-													path: 'pa>validTo',
-													type: 'sap.ui.model.type.Date',
-													formatOptions: {
-														pattern: 'yyyy-MM-dd'
-													}
-												}" 
-											/>
-										</m:cells>
-									</m:ColumnListItem>
-								</m:items>
-							</m:Table>
+									>
+										<m:headerToolbar>
+											<m:OverflowToolbar>
+												<m:content>
+													<m:Label text="{i18n>materialNo}" />
+													<m:Select  
+														id="idMaterialNumberSelect"
+														change=".onMaterialNumberChange" 
+														items="{ 
+															path: 'pa>/priceAgreement/materials'
+														}">
+														<core:Item key="{pa>materialNumber}" text="{pa>materialNumber}" />
+													</m:Select>
+												</m:content>
+											</m:OverflowToolbar>
+										</m:headerToolbar>
+										<m:columns>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+												<m:Label text="Institute" wrapping="true"/>
+											</m:Column>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+												<m:Label text="Material No." wrapping="true"/>
+											</m:Column>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+												<m:Label text="Apply" wrapping="true"/>
+											</m:Column>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+												<m:Label text="Price" wrapping="true"/>
+											</m:Column>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+												<m:Label text="Effective Date" wrapping="true"/>
+											</m:Column>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+												<m:Label text="Expiry Date" wrapping="true"/>
+											</m:Column>
+										</m:columns>
+										<m:items>
+											<m:ColumnListItem highlight="Indication04">
+												<m:cells>
+													<m:Text text="{pa>instituteId}"/>
+													<m:Text text="{pa>materialNumber}"/>
+													<m:Switch state="{pa>applied}" customTextOn="Yes" customTextOff="No" enabled="{= ${pa>/editMode} &amp;&amp; !${pa>applied} }">
+														<m:layoutData>
+															<m:FlexItemData growFactor="1" />
+														</m:layoutData>
+													</m:Switch>
+													<m:Text text="{pa>price}"/> 
+													<m:Text text="{
+															path: 'pa>validFrom',
+															type: 'sap.ui.model.type.Date',
+															formatOptions: {
+																pattern: 'yyyy-MM-dd'
+															}
+														}" 
+													/>
+													<m:Text text="{
+															path: 'pa>validTo',
+															type: 'sap.ui.model.type.Date',
+															formatOptions: {
+																pattern: 'yyyy-MM-dd'
+															}
+														}" 
+													/>
+												</m:cells>
+											</m:ColumnListItem>
+										</m:items>
+									</m:Table>
+								</m:IconTabFilter>
+								<m:IconTabFilter text="Deliveries" key="deliveries">
+									<m:Table id="DeliveriesTableID" 
+										mode="SingleSelectMaster"
+										delete="onDeleteDelivery"
+										selectionChange=".onDeliveryItemSelect"
+										items="{pa>/priceAgreement/deliveries}"
+									>
+										<m:columns>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+												<m:Label text="Institute Name" wrapping="true"/>
+											</m:Column>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+												<m:Label text="Date" wrapping="true"/>
+											</m:Column>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+												<m:Label text="Quantity" wrapping="true"/>
+											</m:Column>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+												<m:Label text="UoM" wrapping="true"/>
+											</m:Column>
+										</m:columns>
+										<m:items>
+											<m:ColumnListItem highlight="Indication04">
+												<m:cells>
+													<m:Text text="{pa>instituteId}"/>
+													<m:Text text="{pa>materialNumber}"/>
+													<m:Text text="{pa>price}"/> 
+													<m:Text text="{
+															path: 'pa>validFrom',
+															type: 'sap.ui.model.type.Date',
+															formatOptions: {
+																pattern: 'yyyy-MM-dd'
+															}
+														}" 
+													/>
+												</m:cells>
+											</m:ColumnListItem>
+										</m:items>
+									</m:Table>
+								</m:IconTabFilter>
+							</m:items>
+						</m:IconTabBar>
 					</ObjectPageSubSection>
+
 			</ObjectPageSection>
 
 		</sections>
