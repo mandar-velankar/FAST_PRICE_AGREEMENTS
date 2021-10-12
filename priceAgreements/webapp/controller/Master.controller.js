@@ -55,6 +55,8 @@ sap.ui.define([
 				}.bind(this)
 			});
 
+			this.paState = this.getOwnerComponent().getState(this.getOwnerComponent().PA);
+
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
 		},
@@ -239,7 +241,8 @@ sap.ui.define([
 				title: this.getResourceBundle().getText("masterTitleCount", [0]),
 				noDataText: this.getResourceBundle().getText("masterListNoDataText"),
 				sortBy: "ID",
-				groupBy: "None"
+				groupBy: "None",
+				btnApplyNewPriceEnabled: false,
 			});
 		},
 
@@ -312,8 +315,15 @@ sap.ui.define([
 
 			//get filters
 			var hasNewMaterialsFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newmaterialnumberskey';
+			const updatedRetailPriceFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'updatedretailpricekey';
 
-			if(hasNewMaterialsFilter){
+			if(updatedRetailPriceFilter){
+				this.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", true); // enabled the ApplyNewPrice button 
+			}else{
+				this.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", false); // disables the ApplyNewPrice button 
+			}
+
+			if(hasNewMaterialsFilter){ 
 				andFilters.push(new sap.ui.model.Filter("hasNewMaterials", "EQ", hasNewMaterialsFilter));
 			}
 
@@ -360,6 +370,56 @@ sap.ui.define([
 		onProductPackIdsReceived: function(evt){
 			// add empty item
 			this.byId("idProductPackfilter").insertItem(new sap.ui.core.Item());
+		},
+
+		/**
+		 * Apply the new Price to all of the existing Customer prices, 
+		 * which means creating new entries for CustomerPrices 
+		 * (same InstituteID/ProductPackID but with new MaterialNumber and ValidFrom as today's date)
+		 * @param {Object} evt - Event object
+		 */
+		onApplyNewPricePress: function(evt){
+
+			const _that = this;
+			const priceAgreementsTableItems = this.byId("list").getItems();
+			const priceAgreements = priceAgreementsTableItems.map(item => item.getBindingContext().getObject());
+
+			const _fnOnClose = function(sAction){
+
+				if (sAction === "YES") {
+					// apply the new price
+
+					priceAgreements.forEach(async pr => {
+
+						const priceAgreementPrice = pr.Price;
+						const customerPricesPaths = pr.CustomerPrices.__list;
+
+						const customerPrices = customerPricesPaths.map(path => {
+
+							const customerPriceObj = _that.getView().getModel().getProperty(`/${path}`);
+							customerPriceObj.Price = priceAgreementPrice;
+
+							return _that.paState.createCustomerPriceObject(customerPriceObj);
+						});
+
+						const saveCustomerPricePromises = customerPrices.map(cp => _that.paState.saveCustomerPrice(cp));
+						
+						await Promise.all(saveCustomerPricePromises);
+					});
+					
+				
+				} 
+
+			};
+
+
+			sap.m.MessageBox.warning("Are you sure you want to apply the new price to all of the existing customer prices", {
+				actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+				styleClass: "sapUiSizeCompact",
+				onClose: _fnOnClose
+			});
+
+			
 		},
 
 	});
