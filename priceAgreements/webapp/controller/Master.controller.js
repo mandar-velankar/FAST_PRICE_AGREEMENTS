@@ -318,6 +318,7 @@ sap.ui.define([
 			const updatedRetailPriceFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'updatedretailpricekey';
 
 			if(updatedRetailPriceFilter){
+				andFilters.push(new sap.ui.model.Filter("hasNewPrice", "EQ", updatedRetailPriceFilter));
 				this.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", true); // enabled the ApplyNewPrice button 
 			}else{
 				this.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", false); // disables the ApplyNewPrice button 
