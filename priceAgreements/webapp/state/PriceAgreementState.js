@@ -77,6 +77,17 @@ sap.ui.define([
             return Promise.all(promises);
 
         },
+
+        createCustomerPriceObject: function(customerPriceData){
+            if(customerPriceData){
+                return new CustomerPrice(customerPriceData);
+            }
+        },
+
+        saveCustomerPrice: function (customerPrice) {
+            return this.getService().saveCustomerPrice(customerPrice);
+        },
+
         setEditMode: function (sEditMode) {
             if (sEditMode) {
                 this.backupPriceAgreement();
