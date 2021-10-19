@@ -11,7 +11,7 @@
 		<f:title>
 			<f:DynamicPageTitle>
 				<f:heading>
-					<Title text="Price Agreements (n)"/>
+					<Title text="Price Agreements"/>
 				</f:heading>
 			</f:DynamicPageTitle>
 		</f:title>
