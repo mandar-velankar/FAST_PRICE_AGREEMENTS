@@ -32,14 +32,19 @@ sap.ui.define([
         getPriceAgreementInstance: function () {
             return this.getProperty("priceAgreement");
         },
-        savePriceAgreement: function () {
-            const priceAgreement = this.getProperty("priceAgreement");
-
+        savePriceAgreement: function (priceAgreement) {
             if (priceAgreement.iD) {
                 return this.getService().updatePriceAgreement(priceAgreement);
             }
 
         },
+
+        createPriceAgreementObject: function(priceAgreement){
+            if(priceAgreement){
+                return new PriceAgreement(priceAgreement);
+            }
+        },
+
         getCandidatePrices: function (priceAgreementId, materialNumber) {
             // this.setProperty("candidatePrices", []);
             this.getPriceAgreementInstance().setCandidatePrices([]);
@@ -77,6 +82,17 @@ sap.ui.define([
             return Promise.all(promises);
 
         },
+
+        createCustomerPriceObject: function(customerPriceData){
+            if(customerPriceData){
+                return new CustomerPrice(customerPriceData);
+            }
+        },
+
+        saveCustomerPrice: function (customerPrice) {
+            return this.getService().saveCustomerPrice(customerPrice);
+        },
+
         setEditMode: function (sEditMode) {
             if (sEditMode) {
                 this.backupPriceAgreement();
