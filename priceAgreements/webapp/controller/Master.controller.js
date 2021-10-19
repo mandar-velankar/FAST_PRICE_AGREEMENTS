@@ -385,27 +385,67 @@ sap.ui.define([
 			const priceAgreementsTableItems = this.byId("list").getItems();
 			const priceAgreements = priceAgreementsTableItems.map(item => item.getBindingContext().getObject());
 
+			if(priceAgreements.length <= 0){
+				sap.m.MessageBox.warning("There are no Price Agreements with updated retail price.");
+				return;
+			}
+
 			const _fnOnClose = function(sAction){
 
 				if (sAction === "YES") {
-					// apply the new price
 
+					// apply the new price
 					priceAgreements.forEach(async pr => {
 
-						const priceAgreementPrice = pr.Price;
+
+						const uom = pr.UoM;
 						const customerPricesPaths = pr.CustomerPrices.__list;
+						const consumerPrice = _that.getView().getModel().getProperty(`/${pr.ConsumerPrice.__ref}`);
 
+						// calulate the new NetOfferPrice
+						let newNetOfferPrice = "";
+						if(uom === "Pack"){
+							newNetOfferPrice = consumerPrice.MaxPriceNhsPP * (1 - pr.Discount);
+						}else{
+							newNetOfferPrice = consumerPrice.MaxPriceNhsPU * (1 - pr.Discount);
+						}
+
+						// update the Price Agreement price
+						pr.Price = newNetOfferPrice;
+
+				
+						// update CustomerPrices if any available
 						const customerPrices = customerPricesPaths.map(path => {
-
 							const customerPriceObj = _that.getView().getModel().getProperty(`/${path}`);
-							customerPriceObj.Price = priceAgreementPrice;
-
+							customerPriceObj.Price = newNetOfferPrice;
 							return _that.paState.createCustomerPriceObject(customerPriceObj);
 						});
 
 						const saveCustomerPricePromises = customerPrices.map(cp => _that.paState.saveCustomerPrice(cp));
-						
-						await Promise.all(saveCustomerPricePromises);
+
+						// update the PriceAgreement prices
+						if(uom === "Pack"){
+							pr.ListPrice = consumerPrice.ConsumerPriceExclPP;
+							pr.RetailPrice = consumerPrice.MaxPriceNhsPP;
+						}else{
+							pr.ListPrice = consumerPrice.ConsumerPriceExclPU;
+							pr.RetailPrice = consumerPrice.MaxPriceNhsPU;
+						}
+
+						const savePriceAgreement = _that.paState.savePriceAgreement(_that.paState.createPriceAgreementObject(pr));
+
+						await Promise.all(saveCustomerPricePromises, savePriceAgreement);
+
+						// clear the filter and refresh the binding
+						_that.byId("idslctfilter").setSelectedKey();
+						_that.getView().byId("list").getBinding("items").aApplicationFilters = [];
+						_that.getView().byId("list").getBinding("items").filter();
+
+						_that.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", false);
+
+						// navigate to master page
+						_that.getOwnerComponent().oListSelector.clearMasterListSelection();
+						_that.getRouter().navTo("master");
 					});
 					
 				

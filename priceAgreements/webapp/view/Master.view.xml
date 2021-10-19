@@ -60,7 +60,7 @@
 								descending: false
 							},
 							parameters: {
-								expand: 'Product/ProductPack,Tender,Institute,CustomerPrices'
+								expand: 'Product/ProductPack,Tender,Institute,CustomerPrices,ConsumerPrice'
 							}
 						}"
 						class="sapFDynamicPageAlignContent"

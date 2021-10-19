@@ -250,7 +250,7 @@ sap.ui.define([
 				return false;
 			}
 			this.paState.saveCandidatePrices()
-				.then(this.paState.savePriceAgreement.bind(this.paState))
+				.then(this.paState.savePriceAgreement.bind(this.paState, this.paState.getPriceAgreementInstance()))
 				.then(() => {
 					this.paState.setEditMode(false);
 				});
