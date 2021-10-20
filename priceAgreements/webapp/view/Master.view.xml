@@ -11,7 +11,7 @@
 		<f:title>
 			<f:DynamicPageTitle>
 				<f:heading>
-					<Title text="Price Agreements (n)"/>
+					<Title text="Price Agreements"/>
 				</f:heading>
 			</f:DynamicPageTitle>
 		</f:title>
@@ -40,7 +40,13 @@
 						}">
 						<core:Item key="{ProductPackId}" text="{ProductName}" />
 					</Select>
-					<ToolbarSpacer/>				
+					<ToolbarSpacer/>
+						<Button
+							id="idApplyNewPrice"
+							text="Apply new price"
+							enabled="{masterView>/btnApplyNewPriceEnabled}"
+							type="Emphasized"
+							press=".onApplyNewPricePress"/>				
 						<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
 						<Button icon="sap-icon://filter" text="" press=".onOpenViewSettings"/>
 				</OverflowToolbar>
@@ -54,7 +60,7 @@
 								descending: false
 							},
 							parameters: {
-								expand: 'Product/ProductPack,Tender,Institute'
+								expand: 'Product/ProductPack,Tender,Institute,CustomerPrices,ConsumerPrice'
 							}
 						}"
 						class="sapFDynamicPageAlignContent"
