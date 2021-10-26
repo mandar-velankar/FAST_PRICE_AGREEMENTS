@@ -75,6 +75,11 @@
 					<columns>
 						<Column>
 							<header>
+								<ObjectIdentifier title="{i18n>TenderId}" />
+							</header>
+						</Column>
+						<Column>
+							<header>
 								<ObjectIdentifier title="{i18n>Reference}" />
 							</header>
 						</Column>
@@ -102,6 +107,7 @@
 					<items>
 						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="{= ${Synchronized} === true ? 'None' : 'Warning'}" id="items">
 							<cells>
+								<Text text="{Tender/TenderID}"/>
 								<Text text="{Tender/TenderName}"/>
 								<Text text="{Product/ProductPack/PRODUCTPACKNAME}"/>
 								<Text text="{Price}"/>
