@@ -336,7 +336,7 @@ sap.ui.define([
 			}
 
 			if(expiringSoonFilter){
-				andFilters.push(new sap.ui.model.Filter("expiringSoon", "EQ", true));
+				andFilters.push(new sap.ui.model.Filter("ExpiringSoon", "EQ", true));
 			}
 
 			let sSearch = this.byId("idSearch").getProperty("value");
