@@ -21,7 +21,11 @@ sap.ui.define([
         },
         getPriceAgreement: function (id) {
             this.setProperty("priceAgreement", new PriceAgreement());
-            return Promise.all([this.getService().getPriceAgreement(id), this.getService().getCandidatePrices(id, null)])
+            return Promise.all([
+                this.getService().getPriceAgreement(id), 
+                this.getService().getCandidatePrices({
+                    priceAgreementId: id
+                })])
                 .then(response => {
                     this.setProperty("priceAgreement", new PriceAgreement(response[0].data));
                     this.getPriceAgreementInstance().setCandidatePrices(response[1].data.results);
@@ -45,13 +49,11 @@ sap.ui.define([
             }
         },
 
-        getCandidatePrices: function (priceAgreementId, materialNumber) {
+        getCandidatePrices: function (filters) {
             // this.setProperty("candidatePrices", []);
             this.getPriceAgreementInstance().setCandidatePrices([]);
-            return this.getService().getCandidatePrices(priceAgreementId, materialNumber).then(response => {
+            return this.getService().getCandidatePrices(filters).then(response => {
                 this.getPriceAgreementInstance().setCandidatePrices(response.data.results);
-                // const candidatePrices = response.data.results.map(item => new CandidatePrice(item));
-                // this.setProperty("candidatePrices", candidatePrices);
                 this.updateModel();
                 return this.getPriceAgreementInstance().getCandidatePrices();
             });
