@@ -43,7 +43,7 @@
 					<ToolbarSpacer/>
 						<Button
 							id="idApplyNewPrice"
-							text="Apply new price"
+							text="Apply price"
 							enabled="{masterView>/btnApplyNewPriceEnabled}"
 							type="Emphasized"
 							press=".onApplyNewPricePress"/>				

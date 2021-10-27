@@ -400,11 +400,11 @@ sap.ui.define([
 
 				if (sAction === "YES") {
 
-					// apply new SKU on each price agreement
-					await Promise.all(priceAgreements.map(pr => _that.applyNewSKU.call(_that, pr)));
-
 					// apply the new price on each price agreement
 					await Promise.all(priceAgreements.map(pr => _that.applyNewPrice.call(_that, pr)));
+
+					// apply new SKU on each price agreement
+					await Promise.all(priceAgreements.map(pr => _that.applyNewSKU.call(_that, pr)));
 
 					// clear the filter and refresh the binding
 					_that.byId("idslctfilter").setSelectedKey();
