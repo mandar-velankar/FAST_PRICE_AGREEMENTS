@@ -214,7 +214,10 @@ sap.ui.define([
 		onMaterialNumberChange: function () {
 			// set filter
 			const selectedMaterial = parseInt(this.byId("idMaterialNumberSelect").getSelectedItem().getKey());
-			this.paState.getCandidatePrices(this.sObjectId, selectedMaterial);
+			this.paState.getCandidatePrices({
+				priceAgreementId: this.sObjectId, 
+				materialNumber: selectedMaterial
+			});
 		},
 
 		onEditModePress: function () {
