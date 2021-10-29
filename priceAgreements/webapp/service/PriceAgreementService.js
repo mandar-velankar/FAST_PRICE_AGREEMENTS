@@ -45,32 +45,37 @@ sap.ui.define([
 
 
 
-        getCandidatePrices: function (priceAgreementId, materialNumber) {
+        getCandidatePrices: function (filters) {
+
+			if(!filters){
+				return "Please provide filter object.";
+			}
 
             var aFilters = [];
 
-			if (priceAgreementId) {
-
-				var oPriceAgreemenFilter = new Filter({
+			if (filters.hasOwnProperty("priceAgreementId")) {
+				aFilters.push( new Filter({
 					path: 'PriceAgreementId',
 					operator: FilterOperator.EQ,
-					value1: priceAgreementId
-				});
-
-				aFilters.push(oPriceAgreemenFilter);
+					value1: filters.priceAgreementId
+				}));
 			}
 
-            if (materialNumber) {
-
-				var oMaterialNumberFilter = new Filter({
+            if (filters.hasOwnProperty("materialNumber")) {
+				aFilters.push(new Filter({
 					path: 'MaterialNumber',
 					operator: FilterOperator.EQ,
-					value1: materialNumber
-				});
-
-				aFilters.push(oMaterialNumberFilter);
+					value1: filters.materialNumber
+				}));
 			}
 
+			if (filters.hasOwnProperty("applied")) {
+				aFilters.push(new Filter({
+					path: 'Applied',
+					operator: FilterOperator.EQ,
+					value1: filters.applied
+				}));
+			}
 
             
 			var mParameters = {
