@@ -75,6 +75,11 @@
 					<columns>
 						<Column>
 							<header>
+								<ObjectIdentifier title="{i18n>TenderId}" />
+							</header>
+						</Column>
+						<Column>
+							<header>
 								<ObjectIdentifier title="{i18n>Reference}" />
 							</header>
 						</Column>
@@ -90,18 +95,19 @@
 						</Column>
 						<Column>
 							<header>
-								<ObjectIdentifier title="{i18n>EffectiveDate}" />
+								<ObjectIdentifier title="{i18n>effectiveDate}" />
 							</header>
 						</Column>
 						<Column>
 							<header>
-								<ObjectIdentifier title="{i18n>ExpiryDate}" />
+								<ObjectIdentifier title="{i18n>expiryDate}" />
 							</header>
 						</Column>
 					</columns>
 					<items>
 						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="{= ${Synchronized} === true ? 'None' : 'Warning'}" id="items">
 							<cells>
+								<Text text="{Tender/TenderID}"/>
 								<Text text="{Tender/TenderName}"/>
 								<Text text="{Product/ProductPack/PRODUCTPACKNAME}"/>
 								<Text text="{Price}"/>
