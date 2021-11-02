@@ -226,6 +226,30 @@
 										</m:items>
 									</m:Table>
 								</m:IconTabFilter>
+								<m:IconTabFilter text="FOC" key="foc">
+									<m:Table id="idFocTable" 
+										mode="SingleSelectMaster"
+										selectionChange=".onFocItemSelect"
+										items="{pa>/priceAgreement/foc}"
+									>
+										<m:columns>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+												<m:Label text="Product" wrapping="true"/>
+											</m:Column>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+												<m:Label text="FOC" wrapping="true"/>
+											</m:Column>
+										</m:columns>
+										<m:items>
+											<m:ColumnListItem>
+												<m:cells>
+													<m:Text text="{pa>productPackId}"/>
+													<m:Text text="{= ${pa>freeGoods_ABS_PCT} === 'PCT' ? ${pa>freeGoods} * 100 : ${pa>freeGoods}} {= ${pa>freeGoods_ABS_PCT} === 'PCT' ? '%' : 'units'}"/>
+												</m:cells>
+											</m:ColumnListItem>
+										</m:items>
+									</m:Table>
+								</m:IconTabFilter>
 							</m:items>
 						</m:IconTabBar>
 					</ObjectPageSubSection>

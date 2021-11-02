@@ -14,6 +14,38 @@ sap.ui.define([
             return this.odata(keyPath).get({urlParameters:{$expand:"Materials,Institute,Tender,Product/ProductPack,CustomerPrices"}});
         },
 
+		getPriceAgreementFOC: function (filters) {
+
+			if(!filters){
+				return "Please provide filter object.";
+			}
+
+            var aFilters = [];
+
+			if (filters.hasOwnProperty("productCode")) {
+				aFilters.push( new Filter({
+					path: 'ProductCode',
+					operator: FilterOperator.EQ,
+					value1: filters.productCode
+				}));
+			}
+
+            if (filters.hasOwnProperty("countryCode")) {
+				aFilters.push(new Filter({
+					path: 'CountryCode',
+					operator: FilterOperator.EQ,
+					value1: filters.countryCode
+				}));
+			}
+
+			var mParameters = {
+				filters: aFilters
+				
+			};
+
+            return this.odata("/PriceAgreementFOC").get(mParameters);
+        },
+
 		updatePriceAgreement: function(priceAgreement){
 
 			const data = priceAgreement.getJSON();
