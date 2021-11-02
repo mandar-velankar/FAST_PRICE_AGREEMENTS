@@ -6,8 +6,9 @@ sap.ui.define([
     "./Candidate",
     "./Material",
     "./CustomerPrice",
-    "./CandidatePrice"
-], function (BaseObject,Institute,Product,Tender,Candidate,CustomerPrice, Material,CandidatePrice) {
+    "./CandidatePrice",
+    "./Foc"
+], function (BaseObject,Institute,Product,Tender,Candidate,CustomerPrice, Material,CandidatePrice,Foc) {
     "use strict";
 
     var PriceAgreement = BaseObject.extend("com.bayer.tender.priceagreements.model.PriceAgreement", {
@@ -18,6 +19,7 @@ sap.ui.define([
             this.product = new Product();
             this.tender = new Tender();
             this.candidates = [];
+            this.foc = [];
             this.materials = [];
             this.customerPrices = [];
             this.candidatePrices = [];
@@ -38,6 +40,9 @@ sap.ui.define([
         },
         setCandidatePrices:function(candidatePrices){
             this.candidatePrices = (candidatePrices && candidatePrices.map(candidatePrice => new CandidatePrice(candidatePrice)) ) || [];
+        },
+        setPriceAgreementFOC:function(foc){
+            this.foc = (foc && foc.map(focItem => new Foc(focItem)) ) || [];
         },
         setInstitute: function (institute){
             if(institute){
