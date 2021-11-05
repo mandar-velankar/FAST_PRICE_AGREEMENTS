@@ -55,6 +55,8 @@ sap.ui.define([
 				}.bind(this)
 			});
 
+			this.paState = this.getOwnerComponent().getState(this.getOwnerComponent().PA);
+
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
 		},
@@ -239,7 +241,9 @@ sap.ui.define([
 				title: this.getResourceBundle().getText("masterTitleCount", [0]),
 				noDataText: this.getResourceBundle().getText("masterListNoDataText"),
 				sortBy: "ID",
-				groupBy: "None"
+				groupBy: "None",
+				btnApplyNewPriceEnabled: false,
+				btnApplyNewSkuEnabled: false,
 			});
 		},
 
@@ -312,15 +316,32 @@ sap.ui.define([
 
 			//get filters
 			var hasNewMaterialsFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newmaterialnumberskey';
+			const updatedRetailPriceFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'updatedretailpricekey';
+			const expiringSoonFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'expiringsoonkey';
 
-			if(hasNewMaterialsFilter){
+			if(updatedRetailPriceFilter){
+				andFilters.push(new sap.ui.model.Filter("hasNewPrice", "EQ", updatedRetailPriceFilter));
+			}
+
+			if(hasNewMaterialsFilter){ 
 				andFilters.push(new sap.ui.model.Filter("hasNewMaterials", "EQ", hasNewMaterialsFilter));
+			}
+
+			// enabled/disable the ApplyNewPrice button 
+			if(hasNewMaterialsFilter || updatedRetailPriceFilter){ 
+				this.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", true); 
+			}else{
+				this.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", false);
 			}
 
 			const productPackfilter = this.byId("idProductPackfilter").getSelectedKey();
 
 			if(productPackfilter){
 				andFilters.push(new sap.ui.model.Filter("ProductPackId", "EQ", productPackfilter));
+			}
+
+			if(expiringSoonFilter){
+				andFilters.push(new sap.ui.model.Filter("ExpiringSoon", "EQ", true));
 			}
 
 			let sSearch = this.byId("idSearch").getProperty("value");
@@ -360,6 +381,143 @@ sap.ui.define([
 		onProductPackIdsReceived: function(evt){
 			// add empty item
 			this.byId("idProductPackfilter").insertItem(new sap.ui.core.Item());
+		},
+
+		/**
+		 * Apply the new Price to all of the existing Customer prices, 
+		 * which means creating new entries for CustomerPrices 
+		 * (same InstituteID/ProductPackID but with new MaterialNumber and ValidFrom as today's date)
+		 * @param {Object} evt - Event object
+		 */
+		onApplyNewPricePress: function(evt){
+
+			const _that = this;
+			const priceAgreementsTableItems = this.byId("list").getItems();
+			const priceAgreements = priceAgreementsTableItems.map(item => item.getBindingContext().getObject());
+			const filterTxt = this.byId("idslctfilter").getSelectedItem().getText();
+
+			if(priceAgreements.length <= 0){
+				sap.m.MessageBox.warning(`There are no Price Agreements with ${filterTxt}.`);
+				return;
+			}
+
+			const _fnOnClose = async function(sAction){
+
+				if (sAction === "YES") {
+
+					// apply the new price on each price agreement
+					await Promise.all(priceAgreements.map(pr => _that.applyNewPrice.call(_that, pr)));
+
+					// apply new SKU on each price agreement
+					await Promise.all(priceAgreements.map(pr => _that.applyNewSKU.call(_that, pr)));
+
+					// clear the filter and refresh the binding
+					_that.byId("idslctfilter").setSelectedKey();
+					_that.getView().byId("list").getBinding("items").aApplicationFilters = [];
+					_that.getView().byId("list").getBinding("items").filter();
+
+					_that.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", false);
+
+					// navigate to master page
+					_that.getOwnerComponent().oListSelector.clearMasterListSelection();
+					_that.getRouter().navTo("master");
+				
+				} 
+
+			};
+
+			sap.m.MessageBox.warning("Are you sure you want to apply the new price to all of the existing customer prices?", {
+				actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+				styleClass: "sapUiSizeCompact",
+				onClose: _fnOnClose
+			});
+			
+		},
+
+		/**
+		 * Calculates newNetOfferPrice from the ConsumerPrice (master data update),
+		 * updates the PriceAgreement ListPrice and RetailPrice with the ConsumerPrice and 
+		 * updates the CustomerPrices, if any available, whith the newly calculated newNetOfferPrice
+		 * 
+		 * @param {Object} priceAgreement 
+		 * @returns {Promise}
+		 */
+		applyNewPrice: async function(priceAgreement){
+
+			if(!priceAgreement.ConsumerPrice){
+				return;
+			}
+
+			const uom = priceAgreement.UoM;
+			const customerPricesPaths = priceAgreement.CustomerPrices.__list;
+			const consumerPrice = this.getView().getModel().getProperty(`/${priceAgreement.ConsumerPrice.__ref}`);
+
+			// calulate the new NetOfferPrice
+			let newNetOfferPrice = "";
+			if(uom === "Pack"){
+				newNetOfferPrice = consumerPrice.MaxPriceNhsPP * (1 - priceAgreement.Discount);
+				// update the PriceAgreement prices
+				priceAgreement.ListPrice = consumerPrice.ConsumerPriceExclPP;
+				priceAgreement.RetailPrice = consumerPrice.MaxPriceNhsPP;
+			}else{
+				newNetOfferPrice = consumerPrice.MaxPriceNhsPU * (1 - priceAgreement.Discount);
+				// update the PriceAgreement prices
+				priceAgreement.ListPrice = consumerPrice.ConsumerPriceExclPU;
+				priceAgreement.RetailPrice = consumerPrice.MaxPriceNhsPU;
+			}
+
+			// update the Price Agreement price
+			priceAgreement.Price = newNetOfferPrice;
+
+			// update CustomerPrices, if any available, whith the newly calculated newNetOfferPrice
+			const customerPrices = customerPricesPaths.map(path => {
+				const customerPriceObj = this.getView().getModel().getProperty(`/${path}`);
+				customerPriceObj.Price = newNetOfferPrice;
+				return this.paState.createCustomerPriceObject(customerPriceObj);
+			});
+
+			// save changes
+			const saveCustomerPricePromises = customerPrices.map(cp => this.paState.saveCustomerPrice(cp));
+			const savePriceAgreement = this.paState.savePriceAgreement(this.paState.createPriceAgreementObject(priceAgreement));
+			
+			return await Promise.all(saveCustomerPricePromises, savePriceAgreement);
+
+		},
+
+		/**
+		 * Creates CustomerPrices for new SKU. 
+		 * New SKU is a records of CandidatePrices for which a CustomerPrice with the same 
+		 * InstituteID and ProductPackId but a different Material number exists.
+		 * @param {Object} priceAgreement 
+		 * @returns {Promise}
+		 */
+		applyNewSKU: async function(priceAgreement){
+
+			const candidatePrices = await this.paState.getCandidatePrices({
+				priceAgreementId: priceAgreement.ID
+			});
+
+			const appliedCandidatePrices = candidatePrices.filter(cp => cp.applied);
+			const newSKUsWithoutCustomerPrice = [];
+
+			appliedCandidatePrices.forEach(acp => {
+				const newSKUs = candidatePrices.filter(cp => !cp.applied && cp.instituteId === acp.instituteId);
+				newSKUsWithoutCustomerPrice.push(...newSKUs);
+			});
+
+			// Create CustomerPrices
+			await Promise.all(newSKUsWithoutCustomerPrice.map(candidate => {
+
+				candidate.applied = true;
+				candidate.price = priceAgreement.Price;
+				candidate.validFrom = new Date();
+                candidate.validTo = priceAgreement.ExpiryDate;
+
+				const customerPrice = this.paState.createCustomerPriceObject(candidate.getJSON());
+				
+				return this.paState.saveCustomerPrice(customerPrice);
+			}));
+
 		},
 
 	});

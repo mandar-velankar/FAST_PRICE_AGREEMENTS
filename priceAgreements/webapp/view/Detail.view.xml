@@ -83,9 +83,6 @@
 										change=".handleDateChange"
 										valueState="{pa>/priceAgreement/expiryDateValueState}" enabled="{pa>/editMode}"/>
 
-								<m:Label text="{i18n>price}" design="Bold" required="false"/>
-								<m:Input value="{pa>/priceAgreement/price} " description="EUR"  enabled="false"/>
-
 								<m:Label text="{i18n>listPrice}" design="Bold" required="false"/>
 								<m:Input value="{pa>/priceAgreement/listPrice} "  description="EUR" enabled="false"/>
 
@@ -94,6 +91,9 @@
 
 								<m:Label text="{i18n>Discount}" design="Bold" required="false"/>
 								<m:Input value="{pa>/priceAgreement/discount}"  enabled="false"/>
+
+								<m:Label text="{i18n>price}" design="Bold" required="false"/>
+								<m:Input value="{pa>/priceAgreement/price} " description="EUR"  enabled="false"/>
 
 								<core:Title text=""/>
 								<m:Label text="{i18n>awardedVol}" design="Bold" required="false"/>
@@ -221,6 +221,30 @@
 															}
 														}" 
 													/>
+												</m:cells>
+											</m:ColumnListItem>
+										</m:items>
+									</m:Table>
+								</m:IconTabFilter>
+								<m:IconTabFilter text="FOC" key="foc">
+									<m:Table id="idFocTable" 
+										mode="SingleSelectMaster"
+										selectionChange=".onFocItemSelect"
+										items="{pa>/priceAgreement/foc}"
+									>
+										<m:columns>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+												<m:Label text="Product" wrapping="true"/>
+											</m:Column>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+												<m:Label text="FOC" wrapping="true"/>
+											</m:Column>
+										</m:columns>
+										<m:items>
+											<m:ColumnListItem>
+												<m:cells>
+													<m:Text text="{pa>productPackId}"/>
+													<m:Text text="{= ${pa>freeGoods_ABS_PCT} === 'PCT' ? ${pa>freeGoods} * 100 : ${pa>freeGoods}} {= ${pa>freeGoods_ABS_PCT} === 'PCT' ? '%' : 'units'}"/>
 												</m:cells>
 											</m:ColumnListItem>
 										</m:items>

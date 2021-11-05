@@ -21,10 +21,24 @@ sap.ui.define([
         },
         getPriceAgreement: function (id) {
             this.setProperty("priceAgreement", new PriceAgreement());
-            return Promise.all([this.getService().getPriceAgreement(id), this.getService().getCandidatePrices(id, null)])
+            return Promise.all([
+                this.getService().getPriceAgreement(id), 
+                this.getService().getCandidatePrices({
+                    priceAgreementId: id
+                })])
                 .then(response => {
                     this.setProperty("priceAgreement", new PriceAgreement(response[0].data));
                     this.getPriceAgreementInstance().setCandidatePrices(response[1].data.results);
+                    this.updateModel();
+                    return this.getProperty("priceAgreement");
+                })
+                .then(priceAgreement => {
+                    const productCode = priceAgreement.productPackId;
+                    const countryCode = priceAgreement.countryCode;
+                    return this.getService().getPriceAgreementFOC({productCode, countryCode});
+                })
+                .then(response => {
+                    this.getPriceAgreementInstance().setPriceAgreementFOC(response.data.results);
                     this.updateModel();
                     return this.getProperty("priceAgreement");
                 });
@@ -32,21 +46,24 @@ sap.ui.define([
         getPriceAgreementInstance: function () {
             return this.getProperty("priceAgreement");
         },
-        savePriceAgreement: function () {
-            const priceAgreement = this.getProperty("priceAgreement");
-
+        savePriceAgreement: function (priceAgreement) {
             if (priceAgreement.iD) {
                 return this.getService().updatePriceAgreement(priceAgreement);
             }
 
         },
-        getCandidatePrices: function (priceAgreementId, materialNumber) {
+
+        createPriceAgreementObject: function(priceAgreement){
+            if(priceAgreement){
+                return new PriceAgreement(priceAgreement);
+            }
+        },
+
+        getCandidatePrices: function (filters) {
             // this.setProperty("candidatePrices", []);
             this.getPriceAgreementInstance().setCandidatePrices([]);
-            return this.getService().getCandidatePrices(priceAgreementId, materialNumber).then(response => {
+            return this.getService().getCandidatePrices(filters).then(response => {
                 this.getPriceAgreementInstance().setCandidatePrices(response.data.results);
-                // const candidatePrices = response.data.results.map(item => new CandidatePrice(item));
-                // this.setProperty("candidatePrices", candidatePrices);
                 this.updateModel();
                 return this.getPriceAgreementInstance().getCandidatePrices();
             });
@@ -77,6 +94,17 @@ sap.ui.define([
             return Promise.all(promises);
 
         },
+
+        createCustomerPriceObject: function(customerPriceData){
+            if(customerPriceData){
+                return new CustomerPrice(customerPriceData);
+            }
+        },
+
+        saveCustomerPrice: function (customerPrice) {
+            return this.getService().saveCustomerPrice(customerPrice);
+        },
+
         setEditMode: function (sEditMode) {
             if (sEditMode) {
                 this.backupPriceAgreement();

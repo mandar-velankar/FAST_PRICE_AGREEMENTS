@@ -11,7 +11,7 @@
 		<f:title>
 			<f:DynamicPageTitle>
 				<f:heading>
-					<Title text="Price Agreements (n)"/>
+					<Title text="Price Agreements"/>
 				</f:heading>
 			</f:DynamicPageTitle>
 		</f:title>
@@ -40,7 +40,13 @@
 						}">
 						<core:Item key="{ProductPackId}" text="{ProductName}" />
 					</Select>
-					<ToolbarSpacer/>				
+					<ToolbarSpacer/>
+						<Button
+							id="idApplyNewPrice"
+							text="Apply price"
+							enabled="{masterView>/btnApplyNewPriceEnabled}"
+							type="Emphasized"
+							press=".onApplyNewPricePress"/>				
 						<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
 						<Button icon="sap-icon://filter" text="" press=".onOpenViewSettings"/>
 				</OverflowToolbar>
@@ -54,7 +60,7 @@
 								descending: false
 							},
 							parameters: {
-								expand: 'Product/ProductPack,Tender,Institute'
+								expand: 'Product/ProductPack,Tender,Institute,CustomerPrices,ConsumerPrice'
 							}
 						}"
 						class="sapFDynamicPageAlignContent"
@@ -67,6 +73,11 @@
 						growingThreshold="15"
 						growingScrollToLoad="false">
 					<columns>
+						<Column>
+							<header>
+								<ObjectIdentifier title="{i18n>TenderId}" />
+							</header>
+						</Column>
 						<Column>
 							<header>
 								<ObjectIdentifier title="{i18n>Reference}" />
@@ -84,18 +95,19 @@
 						</Column>
 						<Column>
 							<header>
-								<ObjectIdentifier title="{i18n>EffectiveDate}" />
+								<ObjectIdentifier title="{i18n>effectiveDate}" />
 							</header>
 						</Column>
 						<Column>
 							<header>
-								<ObjectIdentifier title="{i18n>ExpiryDate}" />
+								<ObjectIdentifier title="{i18n>expiryDate}" />
 							</header>
 						</Column>
 					</columns>
 					<items>
 						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="{= ${Synchronized} === true ? 'None' : 'Warning'}" id="items">
 							<cells>
+								<Text text="{Tender/TenderID}"/>
 								<Text text="{Tender/TenderName}"/>
 								<Text text="{Product/ProductPack/PRODUCTPACKNAME}"/>
 								<Text text="{Price}"/>
