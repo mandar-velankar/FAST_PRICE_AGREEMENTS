@@ -256,6 +256,7 @@ sap.ui.define([
 				.then(this.paState.savePriceAgreement.bind(this.paState, this.paState.getPriceAgreementInstance()))
 				.then(() => {
 					this.paState.setEditMode(false);
+					this.onCloseDetailPress();
 				});
 		},
 

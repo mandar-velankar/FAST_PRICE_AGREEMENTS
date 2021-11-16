@@ -166,7 +166,7 @@
 													</m:Switch>
 													<m:Text text="{pa>price}"/> 
 													<m:Text text="{
-															path: 'pa>validFrom',
+															path: 'pa>effectiveDate',
 															type: 'sap.ui.model.type.Date',
 															formatOptions: {
 																pattern: 'yyyy-MM-dd'
@@ -174,7 +174,7 @@
 														}" 
 													/>
 													<m:Text text="{
-															path: 'pa>validTo',
+															path: 'pa>expiryDate',
 															type: 'sap.ui.model.type.Date',
 															formatOptions: {
 																pattern: 'yyyy-MM-dd'
