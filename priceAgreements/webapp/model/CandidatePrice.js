@@ -27,8 +27,8 @@ sap.ui.define([
                 "materialNumber",
                 "price",
                 "synchronized",
-                "validFrom",
-                "validTo"
+                "effectiveDate",
+                "expiryDate"
             ]);
 
         },
