@@ -77,10 +77,12 @@ sap.ui.define([
             // create customerPrices object based on candidatePrices
             const customerPrices = candidatePrices.map(candidate => {
                 candidate.price = priceAgreement.price;
-                candidate.validTo = priceAgreement.expiryDate;
+                candidate.expiryDate = priceAgreement.expiryDate;
 
                 const customerPrice = new CustomerPrice(candidate.getJSON());
 
+                // if candidate has a customerPriceId then it has an existsing CustomerPrice
+                // therefore we add the ID
                 if (candidate.customerPriceId) {
                     customerPrice['iD'] = candidate.customerPriceId;
                 }
