@@ -103,7 +103,7 @@
 								<m:Input value="{pa>/priceAgreement/deliveredVolume}" description="Units" enabled="false"/>
 
 								<m:Label text="{i18n>Residue}" design="Bold" required="false"/>
-								<m:Input value="{= Math.round(100 * (1 - (${pa>/priceAgreement/deliveredVolume}/${pa>/priceAgreement/awardedVolume}))) }" enabled="false"/>
+								<m:Input value="{= Math.round(100 * (1 - (${pa>/priceAgreement/deliveredVolume}/${pa>/priceAgreement/awardedVolume}))) }" enabled="false" description="%"/>
 
 							</form:content>
 					</form:SimpleForm>
