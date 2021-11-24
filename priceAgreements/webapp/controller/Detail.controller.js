@@ -260,6 +260,35 @@ sap.ui.define([
 				});
 		},
 
+		onSynchronize: function(evt){
+
+			const oViewModel = this.getModel("detailView");
+			oViewModel.setProperty("/busy", true);
+			const oDetailView = this.getView();
+			oDetailView.setBusyIndicatorDelay(0);
+			oDetailView.setBusy(true);
+			
+			this.paState.syncPriceAgreements([this.sObjectId])
+				.then(() => 
+				{
+					const oMasterTableBinding = this.getOwnerComponent().oListSelector._oList.getBinding("items");
+					oMasterTableBinding.refresh();
+					oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
+						this.onCloseDetailPress();
+						oViewModel.setProperty("/busy", false);
+						oDetailView.setBusy(false);
+						MessageBox.success("Price Agreement successfully synchronized");
+					});
+					
+				})
+				.catch(err => {
+					oViewModel.setProperty("/busy", false);
+					oDetailView.setBusy(false);
+					this.onCloseDetailPress();
+					MessageBox.error("Synchronization of Price Agreement failed. Please try again.");
+				});
+		},
+
 	});
 
 });

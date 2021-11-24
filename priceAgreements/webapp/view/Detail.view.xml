@@ -36,7 +36,7 @@
 				
 				<!-- ACTIONS -->
 				<actions>
-					<m:Button id="syncrButtonId" icon="sap-icon://synchronize" text="Synchronize" type="Emphasized" press="._onSynchronize"  visible="{= !${soa>/creationMode} }"/>
+					<m:Button id="syncrButtonId" icon="sap-icon://synchronize" text="Synchronize" type="Emphasized" press=".onSynchronize"  visible="{= !${soa>/creationMode} }"/>
 					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${pa>/editMode} === false }"/>
 				</actions>
 				
