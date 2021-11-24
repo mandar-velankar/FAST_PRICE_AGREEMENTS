@@ -118,6 +118,18 @@ sap.ui.define([
             return this.odata("/CandidatePrices").get(mParameters);
         },
 
+		syncPriceAgreements: function(ids){
+
+			if(!ids || !Array.isArray(ids) || ids.length <= 0) return "You must provide a list of PriceAgreement IDs";
+
+			const data = {
+				"ids": ids
+			};
+
+			return this.odata("/syncPriceAgreements").post(data);
+
+		},
+
     });
     return PriceAgreementService;
 });
