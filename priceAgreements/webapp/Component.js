@@ -5,8 +5,10 @@ sap.ui.define([
 	"./controller/ListSelector",
 	"./controller/ErrorHandler",
 	"./service/PriceAgreementService",
-	"./state/PriceAgreementState"
-], function (UIComponent, Device, models, ListSelector, ErrorHandler,PriceAgreementService,PriceAgreementState) {
+	"./state/PriceAgreementState",
+	'sap/f/FlexibleColumnLayoutSemanticHelper',
+	'sap/f/library'
+], function (UIComponent, Device, models, ListSelector, ErrorHandler,PriceAgreementService,PriceAgreementState,FlexibleColumnLayoutSemanticHelper, fioriLibrary) {
 	"use strict";
 
 	return UIComponent.extend("com.bayer.tender.priceagreements.Component", {
@@ -74,6 +76,31 @@ sap.ui.define([
 		},
 		getState: function (stateName) {
 			return this[stateName + "State"];
+		},
+
+		getHelper: function () {
+			return this._getFcl().then(function(oFCL) {
+				var oSettings = {
+					defaultTwoColumnLayoutType: fioriLibrary.LayoutType.TwoColumnsMidExpanded,
+					defaultThreeColumnLayoutType: fioriLibrary.LayoutType.ThreeColumnsMidExpanded,
+					initialColumnsCount: 2
+				};
+				return (FlexibleColumnLayoutSemanticHelper.getInstanceFor(oFCL, oSettings));
+			});
+		},
+
+		_getFcl: function () {
+			return new Promise(function(resolve, reject) {
+				var oFCL = this.getRootControl().byId('layout');
+				if (!oFCL) {
+					this.getRootControl().attachAfterInit(function(oEvent) {
+						resolve(oEvent.getSource().byId('layout'));
+					}, this);
+					return;
+				}
+				resolve(oFCL);
+
+			}.bind(this));
 		}
 
 	});
