@@ -35,6 +35,8 @@ sap.ui.define([
 
 			this.setModel(oViewModel, "detailDetailView");
 
+
+
 			
 
 			this.paState = this.getOwnerComponent().getState(this.getOwnerComponent().PA);
@@ -42,6 +44,10 @@ sap.ui.define([
 			this.oObjectPageLayout = this.byId("DetailPage");
 			this.paState.setDetailPage(this.oObjectPageLayout);
 
+		},
+
+		onExit: function () {
+			this.oRouter.getRoute("objectDetail").detachPatternMatched(this._onObjectMatched, this);
 		},
 
 		/* =========================================================== */
@@ -55,65 +61,17 @@ sap.ui.define([
 		 * @private
 		 */
 		_onObjectMatched: function (oEvent) {
-
-			this.sObjectId = oEvent.getParameter("arguments").objectId;
-			this.productId = oEvent.getParameter("arguments").productId;
 			this.layout = oEvent.getParameter("arguments").layout;
-
 			this.getModel("appView").setProperty("/layout", this.layout);
-
-			/*this.getModel().metadataLoaded().then(function () {
-				var sObjectPath = this.getModel().createKey("PublicSalesOpportunities", {
-					ID: this.sObjectId
-				});
-				this._bindView("/" + sObjectPath);
-			}.bind(this));*/
+			this._delivery = oEvent.getParameter("arguments").deliveryId || this._delivery || "0";
+			this.sObjectId = oEvent.getParameter("arguments").objectId;
+			this.getView().bindElement({
+				path: "/priceAgreement/Deliveries/" + this._delivery,
+				model: "pa"
+			});
 
 		},
 
-		/**
-		 * Binds the view to the object path. Makes sure that detail view displays
-		 * a busy indicator while data for the corresponding element binding is loaded.
-		 * @function
-		 * @param {string} sObjectPath path to the object to be bound to the view.
-		 * @private
-		 */
-		_bindView: function (sObjectPath) {
-			// Set busy indicator during view binding
-			var oViewModel = this.getModel("detailDetailView");
-
-			// If the view was not bound yet its not busy, only if the binding requests data it is set to busy again
-			oViewModel.setProperty("/busy", false);
-
-			const product = this.soaState.getProductFromSelectedOpportunityByProductId(this.productId);
-			this.soaState.setSelectedProduct(product);
-		},
-
-
-		_onMetadataLoaded: function () {
-			var iOriginalViewBusyDelay = this.getView().getBusyIndicatorDelay(),
-				oViewModel = this.getModel("detailDetailView");
-
-			// Make sure busy indicator is displayed immediately when
-			// detail view is displayed for the first time
-			oViewModel.setProperty("/delay", 0);
-
-			// Binding the view will set it to not busy - so the view is always busy if it is not bound
-			oViewModel.setProperty("/busy", true);
-			// Restore original busy indicator delay for the detail view
-			oViewModel.setProperty("/delay", iOriginalViewBusyDelay);
-		},
-
-		/**
-		 * Set the full screen mode to false and navigate to master page
-		 */
-		onCloseDetailPress: function () {
-			this.getModel("appView").setProperty("/actionButtonsInfo/midColumn/fullScreen", false);
-			// No item should be selected on master after detail page is closed
-			this.getOwnerComponent().oListSelector.clearMasterListSelection();
-			this.getRouter().navTo("master");
-			this.soaState.clearSelectedOpportunity();
-		},
 
 		/**
 		 * Toggle between full and non full screen mode.
@@ -139,7 +97,7 @@ sap.ui.define([
 				this.oRouter.navTo("objectDetail", {
 					layout: oNextUIState.layout,
 					objectId: this.sObjectId,
-					productId: this.productId
+					deliveryId: this._delivery
 				});
 			}.bind(this));
 		},
@@ -150,7 +108,7 @@ sap.ui.define([
 				this.oRouter.navTo("objectDetail", {
 					layout: "ThreeColumnsMidExpanded",
 					objectId: this.sObjectId,
-					productId: this.productId
+					deliveryId: this._delivery
 				});
 			}.bind(this));
 		},

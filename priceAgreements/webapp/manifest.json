@@ -108,7 +108,7 @@
 					]
 				},
 				{
-					"pattern": "PriceAgreements/{objectId}/{layout}",
+					"pattern": "PriceAgreements/{objectId}/delivery/{deliveryId}/{layout}",
 					"name": "objectDetail",
 					"target": [
 						"master",

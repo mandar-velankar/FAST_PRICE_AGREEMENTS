@@ -40,6 +40,7 @@ sap.ui.define([
 			this.paState.setDetailPage(this.oObjectPageLayout);
 
 			this.getRouter().getRoute("object").attachPatternMatched(this._onObjectMatched, this);
+			this.getRouter().getRoute("objectDetail").attachPatternMatched(this._onObjectMatched, this);
 
 			this.setModel(oViewModel, "detailView");
 
@@ -297,6 +298,11 @@ sap.ui.define([
 		},
 
 		onDeliveryPress: function(oEvent){
+					const objContext = oEvent.getParameter("listItem").getBindingContext("pa");
+					const selectedObj = objContext?.getObject();
+
+					var deliveryPath = objContext.getPath(),
+					delivery = deliveryPath.split("/").slice(-1).pop();
 		
 					let oNextUIState = "";
 		
@@ -304,7 +310,8 @@ sap.ui.define([
 						oNextUIState = oHelper.getNextUIState(2);
 						this.oRouter.navTo("objectDetail", {
 							layout: oNextUIState.layout,
-							objectId: 1,
+							objectId: selectedObj?.PriceAgreementId,
+							deliveryId: delivery
 						});
 					}.bind(this));
 					
