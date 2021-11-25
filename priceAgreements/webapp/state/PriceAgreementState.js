@@ -125,6 +125,16 @@ sap.ui.define([
             return this.getService().syncPriceAgreements(ids);
         },
 
+        //detailPage so we can access it everywhere
+		getDetailPage: function () {
+		    return this.detailPage;	
+		},
+
+        //keep detailPage so we can access it everywhere
+        setDetailPage: function (oDetailPage){
+            this.detailPage = oDetailPage;
+		}
+
     });
 
     return PriceAgreementState;

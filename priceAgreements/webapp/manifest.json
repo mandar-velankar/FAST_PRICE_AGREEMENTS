@@ -106,6 +106,15 @@
 						"master",
 						"object"
 					]
+				},
+				{
+					"pattern": "PriceAgreements/{objectId}/delivery/{deliveryId}/{layout}",
+					"name": "objectDetail",
+					"target": [
+						"master",
+						"object",
+						"objectDetail"
+					]
 				}
 			],
 
@@ -120,6 +129,10 @@
 					"viewId": "detail",
 					"viewLevel": 1,
 					"controlAggregation": "midColumnPages"
+				},
+				"objectDetail": {
+					"viewName": "DetailDetail",
+					"controlAggregation": "endColumnPages"
 				},
 				"detailObjectNotFound": {
 					"viewName": "DetailObjectNotFound",

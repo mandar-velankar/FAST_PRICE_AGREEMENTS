@@ -14,7 +14,7 @@
 	xmlns:tnt="sap.tnt">
 
 	<!-- ObjectPage Layout -->
-	<ObjectPageLayout showFooter="{pa>/editMode}">
+	<ObjectPageLayout showFooter="{pa>/editMode}" id="DetailPage">
 
 	<headerTitle>
 			<ObjectPageDynamicHeaderTitle>
@@ -190,7 +190,7 @@
 									<m:Table id="DeliveriesTableID" 
 										mode="SingleSelectMaster"
 										delete="onDeleteDelivery"
-										selectionChange=".onDeliveryItemSelect"
+										selectionChange=".onDeliveryPress"
 										items="{pa>/priceAgreement/Deliveries}"
 									>
 										<m:columns>
@@ -208,7 +208,7 @@
 											</m:Column>
 										</m:columns>
 										<m:items>
-											<m:ColumnListItem >
+											<m:ColumnListItem press="onDeliveryPress" detailPress="onDeliveryPress">
 												<m:cells>
 													<m:Text text="{pa>InstituteName}"/>
 													<m:Text text="{
