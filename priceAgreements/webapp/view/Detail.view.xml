@@ -14,7 +14,7 @@
 	xmlns:tnt="sap.tnt">
 
 	<!-- ObjectPage Layout -->
-	<ObjectPageLayout showFooter="{pa>/editMode}">
+	<ObjectPageLayout showFooter="{pa>/editMode}" id="DetailPage">
 
 	<headerTitle>
 			<ObjectPageDynamicHeaderTitle>
@@ -36,7 +36,7 @@
 				
 				<!-- ACTIONS -->
 				<actions>
-					<m:Button id="syncrButtonId" icon="sap-icon://synchronize" text="Synchronize" type="Emphasized" press="._onSynchronize"  visible="{= !${soa>/creationMode} }"/>
+					<m:Button id="syncrButtonId" icon="sap-icon://synchronize" text="Synchronize" type="Emphasized" press=".onSynchronize"  visible="{= !${soa>/creationMode} }"/>
 					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${pa>/editMode} === false }"/>
 				</actions>
 				
@@ -103,7 +103,7 @@
 								<m:Input value="{pa>/priceAgreement/deliveredVolume}" description="Units" enabled="false"/>
 
 								<m:Label text="{i18n>Residue}" design="Bold" required="false"/>
-								<m:Input value="{= Math.round(100 * (1 - (${pa>/priceAgreement/deliveredVolume}/${pa>/priceAgreement/awardedVolume}))) }" enabled="false"/>
+								<m:Input value="{= Math.round(100 * (1 - (${pa>/priceAgreement/deliveredVolume}/${pa>/priceAgreement/awardedVolume}))) }" enabled="false" description="%"/>
 
 							</form:content>
 					</form:SimpleForm>
@@ -190,7 +190,7 @@
 									<m:Table id="DeliveriesTableID" 
 										mode="SingleSelectMaster"
 										delete="onDeleteDelivery"
-										selectionChange=".onDeliveryItemSelect"
+										selectionChange=".onDeliveryPress"
 										items="{pa>/priceAgreement/Deliveries}"
 									>
 										<m:columns>
@@ -208,7 +208,7 @@
 											</m:Column>
 										</m:columns>
 										<m:items>
-											<m:ColumnListItem >
+											<m:ColumnListItem press="onDeliveryPress" detailPress="onDeliveryPress">
 												<m:cells>
 													<m:Text text="{pa>InstituteName}"/>
 													<m:Text text="{

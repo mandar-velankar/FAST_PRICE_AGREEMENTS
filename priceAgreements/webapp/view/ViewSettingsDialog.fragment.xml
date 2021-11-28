@@ -14,6 +14,14 @@
 				text="{i18n>masterSort2}"
 				key="Product/ProductPack/PRODUCTPACKNAME"
 				selected="true"/>
+			<ViewSettingsItem
+				text="{i18n>masterSort3}"
+				key="ExpiryDate"
+				selected="true"/>
+			<ViewSettingsItem
+				text="{i18n>masterSort4}"
+				key="EffectiveDate"
+				selected="true"/>
 		</sortItems>
 
 	</ViewSettingsDialog>

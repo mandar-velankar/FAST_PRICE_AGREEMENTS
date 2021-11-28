@@ -119,7 +119,21 @@ sap.ui.define([
         restorePriceAgreement: function () {
             this.priceAgreementData && this.setProperty("priceAgreement", new PriceAgreement(this.priceAgreementData));
             this.updateModel();
-        }
+        },
+
+        syncPriceAgreements: function(ids){
+            return this.getService().syncPriceAgreements(ids);
+        },
+
+        //detailPage so we can access it everywhere
+		getDetailPage: function () {
+		    return this.detailPage;	
+		},
+
+        //keep detailPage so we can access it everywhere
+        setDetailPage: function (oDetailPage){
+            this.detailPage = oDetailPage;
+		}
 
     });
 
