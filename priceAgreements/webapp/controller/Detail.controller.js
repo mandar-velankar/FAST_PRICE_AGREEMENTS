@@ -268,6 +268,10 @@ sap.ui.define([
 				});
 		},
 
+		/**
+		 * Sychronizes CustomerPrices with SAP
+		 * @param {*} evt On click event
+		 */
 		onSynchronize: function(evt){
 
 			const oViewModel = this.getModel("detailView");
