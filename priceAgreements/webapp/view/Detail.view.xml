@@ -240,12 +240,16 @@
 											<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
 												<m:Label text="FOC" wrapping="true"/>
 											</m:Column>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+												<m:Label text="FOC Step" wrapping="true"/>
+											</m:Column>
 										</m:columns>
 										<m:items>
 											<m:ColumnListItem>
 												<m:cells>
-													<m:Text text="{pa>productPackId}"/>
+													<m:Text text="{pa>productPackName}"/>
 													<m:Text text="{= ${pa>freeGoods_ABS_PCT} === 'PCT' ? ${pa>freeGoods} * 100 : ${pa>freeGoods}} {= ${pa>freeGoods_ABS_PCT} === 'PCT' ? '%' : 'units'}"/>
+													<m:Text text="{= ${pa>freeGoods_Step} === '0' ? '' : ${pa>freeGoods_Step} + ' units' }"/>
 												</m:cells>
 											</m:ColumnListItem>
 										</m:items>
