@@ -70,14 +70,16 @@
 								<m:Input value="{path: 'pa>/priceAgreement/effectiveDate',
 										type: 'sap.ui.model.type.Date',
 										formatOptions: {
-											pattern: 'yyyy-MM-dd'
+											pattern: 'yyyy-MM-dd',
+											UTC:true
 										}}"  enabled="false"/>
 
 								<m:Label text="{i18n>expiryDate}" design="Bold"  required="true"/>
 								<m:DatePicker id="expiryDateID" value="{path: 'pa>/priceAgreement/expiryDate',
 										type: 'sap.ui.model.type.Date',
 										formatOptions: {
-											pattern: 'yyyy-MM-dd'
+											pattern: 'yyyy-MM-dd',
+											UTC:true
 										}}" 
 										valueFormat="yyyy-MM-dd"
 										change=".handleDateChange"
@@ -169,7 +171,8 @@
 															path: 'pa>effectiveDate',
 															type: 'sap.ui.model.type.Date',
 															formatOptions: {
-																pattern: 'yyyy-MM-dd'
+																pattern: 'yyyy-MM-dd',
+																UTC:true
 															}
 														}" 
 													/>
@@ -177,7 +180,8 @@
 															path: 'pa>expiryDate',
 															type: 'sap.ui.model.type.Date',
 															formatOptions: {
-																pattern: 'yyyy-MM-dd'
+																pattern: 'yyyy-MM-dd',
+																UTC:true
 															}
 														}" 
 													/>
@@ -215,7 +219,8 @@
 															path: 'pa>WADAT_IST',
 															type: 'sap.ui.model.type.Date',
 															formatOptions: {
-																pattern: 'yyyy-MM-dd'
+																pattern: 'yyyy-MM-dd',
+																UTC:true
 															}
 														}" 
 													/>
