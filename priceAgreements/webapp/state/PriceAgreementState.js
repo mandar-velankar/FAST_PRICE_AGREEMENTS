@@ -32,16 +32,6 @@ sap.ui.define([
                     this.updateModel();
                     return this.getProperty("priceAgreement");
                 })
-                .then(priceAgreement => {
-                    const productCode = priceAgreement.productPackId;
-                    const countryCode = priceAgreement.countryCode;
-                    return this.getService().getPriceAgreementFOC({productCode, countryCode});
-                })
-                .then(response => {
-                    this.getPriceAgreementInstance().setPriceAgreementFOC(response.data.results);
-                    this.updateModel();
-                    return this.getProperty("priceAgreement");
-                });
         },
         getPriceAgreementInstance: function () {
             return this.getProperty("priceAgreement");
