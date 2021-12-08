@@ -14,7 +14,7 @@
 	xmlns:tnt="sap.tnt">
 
 	<!-- ObjectPage Layout -->
-	<ObjectPageLayout showFooter="{pa>/editMode}">
+	<ObjectPageLayout showFooter="{pa>/editMode}" id="DetailPage">
 
 	<headerTitle>
 			<ObjectPageDynamicHeaderTitle>
@@ -36,7 +36,7 @@
 				
 				<!-- ACTIONS -->
 				<actions>
-					<m:Button id="syncrButtonId" icon="sap-icon://synchronize" text="Synchronize" type="Emphasized" press="._onSynchronize"  visible="{= !${soa>/creationMode} }"/>
+					<m:Button id="syncrButtonId" icon="sap-icon://synchronize" text="Synchronize" type="Emphasized" press=".onSynchronize"  visible="{= !${soa>/creationMode} }"/>
 					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${pa>/editMode} === false }"/>
 				</actions>
 				
@@ -70,14 +70,16 @@
 								<m:Input value="{path: 'pa>/priceAgreement/effectiveDate',
 										type: 'sap.ui.model.type.Date',
 										formatOptions: {
-											pattern: 'yyyy-MM-dd'
+											pattern: 'yyyy-MM-dd',
+											UTC:true
 										}}"  enabled="false"/>
 
 								<m:Label text="{i18n>expiryDate}" design="Bold"  required="true"/>
 								<m:DatePicker id="expiryDateID" value="{path: 'pa>/priceAgreement/expiryDate',
 										type: 'sap.ui.model.type.Date',
 										formatOptions: {
-											pattern: 'yyyy-MM-dd'
+											pattern: 'yyyy-MM-dd',
+											UTC:true
 										}}" 
 										valueFormat="yyyy-MM-dd"
 										change=".handleDateChange"
@@ -103,7 +105,7 @@
 								<m:Input value="{pa>/priceAgreement/deliveredVolume}" description="Units" enabled="false"/>
 
 								<m:Label text="{i18n>Residue}" design="Bold" required="false"/>
-								<m:Input value="{= Math.round(100 * (1 - (${pa>/priceAgreement/deliveredVolume}/${pa>/priceAgreement/awardedVolume}))) }" enabled="false"/>
+								<m:Input value="{= Math.round(100 * (1 - (${pa>/priceAgreement/deliveredVolume}/${pa>/priceAgreement/awardedVolume}))) }" enabled="false" description="%"/>
 
 							</form:content>
 					</form:SimpleForm>
@@ -157,7 +159,7 @@
 										<m:items>
 											<m:ColumnListItem highlight="Indication04">
 												<m:cells>
-													<m:Text text="{pa>instituteId}"/>
+													<m:Text text="{pa>instituteName}"/>
 													<m:Text text="{pa>materialNumber}"/>
 													<m:Switch state="{pa>applied}" customTextOn="Yes" customTextOff="No" enabled="{= ${pa>/editMode} &amp;&amp; !${pa>applied} }">
 														<m:layoutData>
@@ -169,7 +171,8 @@
 															path: 'pa>effectiveDate',
 															type: 'sap.ui.model.type.Date',
 															formatOptions: {
-																pattern: 'yyyy-MM-dd'
+																pattern: 'yyyy-MM-dd',
+																UTC:true
 															}
 														}" 
 													/>
@@ -177,7 +180,8 @@
 															path: 'pa>expiryDate',
 															type: 'sap.ui.model.type.Date',
 															formatOptions: {
-																pattern: 'yyyy-MM-dd'
+																pattern: 'yyyy-MM-dd',
+																UTC:true
 															}
 														}" 
 													/>
@@ -190,7 +194,7 @@
 									<m:Table id="DeliveriesTableID" 
 										mode="SingleSelectMaster"
 										delete="onDeleteDelivery"
-										selectionChange=".onDeliveryItemSelect"
+										selectionChange=".onDeliveryPress"
 										items="{pa>/priceAgreement/Deliveries}"
 									>
 										<m:columns>
@@ -208,14 +212,15 @@
 											</m:Column>
 										</m:columns>
 										<m:items>
-											<m:ColumnListItem >
+											<m:ColumnListItem press="onDeliveryPress" detailPress="onDeliveryPress">
 												<m:cells>
 													<m:Text text="{pa>InstituteName}"/>
 													<m:Text text="{
 															path: 'pa>WADAT_IST',
 															type: 'sap.ui.model.type.Date',
 															formatOptions: {
-																pattern: 'yyyy-MM-dd'
+																pattern: 'yyyy-MM-dd',
+																UTC:true
 															}
 														}" 
 													/>
@@ -231,7 +236,7 @@
 									<m:Table id="idFocTable" 
 										mode="SingleSelectMaster"
 										selectionChange=".onFocItemSelect"
-										items="{pa>/priceAgreement/foc}"
+										items="{pa>/priceAgreement/FOC}"
 									>
 										<m:columns>
 											<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
@@ -240,12 +245,16 @@
 											<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
 												<m:Label text="FOC" wrapping="true"/>
 											</m:Column>
+											<m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+												<m:Label text="FOC Step" wrapping="true"/>
+											</m:Column>
 										</m:columns>
 										<m:items>
 											<m:ColumnListItem>
 												<m:cells>
-													<m:Text text="{pa>productPackId}"/>
-													<m:Text text="{= ${pa>freeGoods_ABS_PCT} === 'PCT' ? ${pa>freeGoods} * 100 : ${pa>freeGoods}} {= ${pa>freeGoods_ABS_PCT} === 'PCT' ? '%' : 'units'}"/>
+													<m:Text text="{pa>ProductPackName}"/>
+													<m:Text text="{= ${pa>FreeGoods_ABS_PCT} === 'PCT' ? ${pa>FreeGoods} * 100 : ${pa>FreeGoods}} {= ${pa>FreeGoods_ABS_PCT} === 'PCT' ? '%' : 'units'}"/>
+													<m:Text text="{= ${pa>FreeGoods_Step} === '0' ? '' : ${pa>FreeGoods_Step} + ' units' }"/>
 												</m:cells>
 											</m:ColumnListItem>
 										</m:items>

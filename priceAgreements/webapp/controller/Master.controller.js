@@ -394,6 +394,7 @@ sap.ui.define([
 			const _that = this;
 			const priceAgreementsTableItems = this.byId("list").getItems();
 			const priceAgreements = priceAgreementsTableItems.map(item => item.getBindingContext().getObject());
+			const priceAgreementIDs = priceAgreements.map(pr => pr.ID);
 			const filterTxt = this.byId("idslctfilter").getSelectedItem().getText();
 
 			if(priceAgreements.length <= 0){
@@ -405,11 +406,17 @@ sap.ui.define([
 
 				if (sAction === "YES") {
 
+					_that.getView().setBusyIndicatorDelay(0);
+					_that.getView().setBusy(true);
+
 					// apply the new price on each price agreement
 					await Promise.all(priceAgreements.map(pr => _that.applyNewPrice.call(_that, pr)));
 
 					// apply new SKU on each price agreement
 					await Promise.all(priceAgreements.map(pr => _that.applyNewSKU.call(_that, pr)));
+
+					// synchronize with sap backend
+					await _that.paState.syncPriceAgreements(priceAgreementIDs);
 
 					// clear the filter and refresh the binding
 					_that.byId("idslctfilter").setSelectedKey();
@@ -421,6 +428,8 @@ sap.ui.define([
 					// navigate to master page
 					_that.getOwnerComponent().oListSelector.clearMasterListSelection();
 					_that.getRouter().navTo("master");
+
+					_that.getView().setBusy(false);
 				
 				} 
 

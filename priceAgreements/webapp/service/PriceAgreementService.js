@@ -11,39 +11,7 @@ sap.ui.define([
         },
         getPriceAgreement: function (id) {
             const keyPath = this.model.createKey("/PriceAgreements",{ID:id});
-            return this.odata(keyPath).get({urlParameters:{$expand:"Materials,Institute,Tender,Product/ProductPack,CustomerPrices,Deliveries"}});
-        },
-
-		getPriceAgreementFOC: function (filters) {
-
-			if(!filters){
-				return "Please provide filter object.";
-			}
-
-            var aFilters = [];
-
-			if (filters.hasOwnProperty("productCode")) {
-				aFilters.push( new Filter({
-					path: 'ProductCode',
-					operator: FilterOperator.EQ,
-					value1: filters.productCode
-				}));
-			}
-
-            if (filters.hasOwnProperty("countryCode")) {
-				aFilters.push(new Filter({
-					path: 'CountryCode',
-					operator: FilterOperator.EQ,
-					value1: filters.countryCode
-				}));
-			}
-
-			var mParameters = {
-				filters: aFilters
-				
-			};
-
-            return this.odata("/PriceAgreementFOC").get(mParameters);
+            return this.odata(keyPath).get({urlParameters:{$expand:"Materials,Institute,Tender,Product/ProductPack,CustomerPrices,Deliveries,FOC"}});
         },
 
 		updatePriceAgreement: function(priceAgreement){
@@ -117,6 +85,18 @@ sap.ui.define([
 
             return this.odata("/CandidatePrices").get(mParameters);
         },
+
+		syncPriceAgreements: function(ids){
+
+			if(!ids || !Array.isArray(ids) || ids.length <= 0) return "You must provide a list of PriceAgreement IDs";
+
+			const data = {
+				"ids": ids
+			};
+
+			return this.odata("/syncPriceAgreements").post(data);
+
+		},
 
     });
     return PriceAgreementService;

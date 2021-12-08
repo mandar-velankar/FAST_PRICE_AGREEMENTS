@@ -32,16 +32,6 @@ sap.ui.define([
                     this.updateModel();
                     return this.getProperty("priceAgreement");
                 })
-                .then(priceAgreement => {
-                    const productCode = priceAgreement.productPackId;
-                    const countryCode = priceAgreement.countryCode;
-                    return this.getService().getPriceAgreementFOC({productCode, countryCode});
-                })
-                .then(response => {
-                    this.getPriceAgreementInstance().setPriceAgreementFOC(response.data.results);
-                    this.updateModel();
-                    return this.getProperty("priceAgreement");
-                });
         },
         getPriceAgreementInstance: function () {
             return this.getProperty("priceAgreement");
@@ -119,7 +109,21 @@ sap.ui.define([
         restorePriceAgreement: function () {
             this.priceAgreementData && this.setProperty("priceAgreement", new PriceAgreement(this.priceAgreementData));
             this.updateModel();
-        }
+        },
+
+        syncPriceAgreements: function(ids){
+            return this.getService().syncPriceAgreements(ids);
+        },
+
+        //detailPage so we can access it everywhere
+		getDetailPage: function () {
+		    return this.detailPage;	
+		},
+
+        //keep detailPage so we can access it everywhere
+        setDetailPage: function (oDetailPage){
+            this.detailPage = oDetailPage;
+		}
 
     });
 

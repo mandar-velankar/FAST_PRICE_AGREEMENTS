@@ -1,0 +1,70 @@
+<mvc:View
+	controllerName="com.bayer.tender.priceagreements.controller.DetailDetail"
+	xmlns="sap.f"
+	xmlns:m="sap.m"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:form="sap.ui.layout.form"
+>
+	<DynamicPage
+		id="idDynamicPage"
+		toggleHeaderOnTitleClick="false"
+	>
+		<title>
+			<DynamicPageTitle>
+				<heading>
+					<m:FlexBox
+						wrap="Wrap"
+						fitContainer="true"
+						alignItems="Center"
+					>
+						<m:Title
+							text="Delivery Details"
+							wrapping="true"
+							class="sapUiTinyMarginEnd"
+						/>
+					</m:FlexBox>
+				</heading>
+				<navigationActions>
+					<m:OverflowToolbarButton
+						type="Transparent"
+						icon="sap-icon://full-screen"
+						press=".handleFullScreen"
+						tooltip="Enter Full Screen Mode"
+						visible="{= !${detailDetailView>/actionButtonsInfo/fullScreen}}"
+					/>
+					<m:OverflowToolbarButton
+						type="Transparent"
+						icon="sap-icon://exit-full-screen"
+						press=".handleExitFullScreen"
+						tooltip="Exit Full Screen Mode"
+						visible="{= ${detailDetailView>/actionButtonsInfo/fullScreen}}"
+					/>
+					<m:OverflowToolbarButton
+						type="Transparent"
+						icon="sap-icon://decline"
+						press=".handleClose"
+						tooltip="Close column"
+						visible="{= ${detailDetailView>/actionButtonsInfo/endColumn/closeColumn} !== null }"
+					/>
+				</navigationActions>
+			</DynamicPageTitle>
+		</title>
+		<content>
+			<form:SimpleForm
+				editable="true"
+				maxContainerCols="1"
+				layout="ColumnLayout"
+				columnsL="1"
+			>
+				<form:content>
+					<m:Label text="Delivery Type"/>
+					<m:Text text="{pa>LFART}"/>
+					<m:Label text="Batch Number"/>
+					<m:Text text="{pa>CHARG}"/>
+					<m:Label text="Document number of the reference document"/>
+					<m:Text text="{pa>VGBEL}"/>
+				</form:content>
+			</form:SimpleForm>
+		</content>
+	</DynamicPage>
+</mvc:View>
