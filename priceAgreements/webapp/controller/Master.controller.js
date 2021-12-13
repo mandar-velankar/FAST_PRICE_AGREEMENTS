@@ -349,6 +349,13 @@ sap.ui.define([
 			if (sSearch.length > 0) {
 
 				orFilters.push(new Filter({
+					path: "TenderId",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
 					path: "Tender/TenderName",
 					operator: FilterOperator.Contains,
 					value1: sSearch,
