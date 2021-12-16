@@ -80,8 +80,17 @@ sap.ui.define([
             const candidatePrices = this.getPriceAgreementInstance().getCandidatePrices().filter(cap => cap.applied); // get only the applied candidatePrices
             const priceAgreement = this.getProperty("priceAgreement");
 
+
+
             // create customerPrices object based on candidatePrices
             const customerPrices = candidatePrices.map(candidate => {
+
+                // 1) loopen over priceAgreement.FOC
+                // 2) indien  FOC.productcode === candidate.productcode( dus main product), 1 extra entry saven voor de main product FOC
+                // 3) Voor de andere FOC's, alle materialen ophalen via priceAgreement.MaterialsFOC. loopen over elk materiaal en 1 entry per materiaal naar customerprices wegschrijven
+                
+            
+
                 candidate.price = priceAgreement.price;
                 candidate.expiryDate = priceAgreement.expiryDate;
 

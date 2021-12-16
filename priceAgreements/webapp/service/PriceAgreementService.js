@@ -11,7 +11,7 @@ sap.ui.define([
         },
         getPriceAgreement: function (id) {
             const keyPath = this.model.createKey("/PriceAgreements",{ID:id});
-            return this.odata(keyPath).get({urlParameters:{$expand:"Materials,Institute,Tender,Product/ProductPack,CustomerPrices,Deliveries,FOC"}});
+            return this.odata(keyPath).get({urlParameters:{$expand:"Materials,Institute,Tender,Product/ProductPack,CustomerPrices,Deliveries,FOC,MaterialsFOC"}});
         },
 
 		updatePriceAgreement: function(priceAgreement){
@@ -97,6 +97,47 @@ sap.ui.define([
 			return this.odata("/syncPriceAgreements").post(data);
 
 		},
+
+		getFocMaterials: function (filters) {
+
+			if(!filters){
+				return "Please provide filter object.";
+			}
+
+            var aFilters = [];
+
+			if (filters.hasOwnProperty("priceAgreementId")) {
+				aFilters.push( new Filter({
+					path: 'PriceAgreementId',
+					operator: FilterOperator.EQ,
+					value1: filters.priceAgreementId
+				}));
+			}
+
+            if (filters.hasOwnProperty("materialNumber")) {
+				aFilters.push(new Filter({
+					path: 'MaterialNumber',
+					operator: FilterOperator.EQ,
+					value1: filters.materialNumber
+				}));
+			}
+
+			if (filters.hasOwnProperty("applied")) {
+				aFilters.push(new Filter({
+					path: 'Applied',
+					operator: FilterOperator.EQ,
+					value1: filters.applied
+				}));
+			}
+
+            
+			var mParameters = {
+				filters: aFilters
+				
+			};
+
+            return this.odata("/CandidatePrices").get(mParameters);
+        },
 
     });
     return PriceAgreementService;
