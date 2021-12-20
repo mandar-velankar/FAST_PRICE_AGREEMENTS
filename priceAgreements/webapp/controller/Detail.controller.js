@@ -322,6 +322,26 @@ sap.ui.define([
 					this.onCloseDetailPress();
 					MessageBox.error("Synchronization of Price Agreement failed. Please try again.");
 				});
+
+			this.paState.syncFOCcustPrices([this.sObjectId])
+				.then(() => 
+				{
+					const oMasterTableBinding = this.getOwnerComponent().oListSelector._oList.getBinding("items");
+					oMasterTableBinding.refresh();
+					oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
+						this.onCloseDetailPress();
+						oViewModel.setProperty("/busy", false);
+						oDetailView.setBusy(false);
+						MessageBox.success("FOC prices successfully synchronized");
+					});
+					
+				})
+				.catch(err => {
+					oViewModel.setProperty("/busy", false);
+					oDetailView.setBusy(false);
+					this.onCloseDetailPress();
+					MessageBox.error("Synchronization of Price Agreement failed. Please try again.");
+				});
 		},
 
 		onDeliveryPress: function(oEvent){

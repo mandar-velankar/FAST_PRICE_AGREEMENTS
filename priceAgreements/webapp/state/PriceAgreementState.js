@@ -85,9 +85,21 @@ sap.ui.define([
             // create customerPrices object based on candidatePrices
             const customerPrices = candidatePrices.map(candidate => {
 
+                
                 // 1) loopen over priceAgreement.FOC
-                // 2) indien  FOC.productcode === candidate.productcode( dus main product), 1 extra entry saven voor de main product FOC
-                // 3) Voor de andere FOC's, alle materialen ophalen via priceAgreement.MaterialsFOC. loopen over elk materiaal en 1 entry per materiaal naar customerprices wegschrijven
+                priceAgreement.FOC.forEach((focProduct, index) => {
+                    
+                    // 2) indien  FOC.productcode === candidate.productcode( dus main product), 1 extra entry saven voor de main product FOC
+                    if(focProduct.ProductCode === candidate.productPackId){
+
+                    } else {
+                        if(1 === 1){
+
+                        }
+                        // 3) Voor de andere FOC's, alle materialen ophalen via priceAgreement.MaterialsFOC. loopen over elk materiaal en 1 entry per materiaal naar customerprices wegschrijven
+                        //const focCustomerPrice = new CustomerPrice(focProduct.getJSON());
+                    }
+                });
                 
             
 
@@ -145,6 +157,10 @@ sap.ui.define([
 
         syncPriceAgreements: function(ids){
             return this.getService().syncPriceAgreements(ids);
+        },
+
+        syncFOCcustPrices: function(ids){
+            return this.getService().syncFOCcustPrices(ids);
         },
 
         //detailPage so we can access it everywhere
