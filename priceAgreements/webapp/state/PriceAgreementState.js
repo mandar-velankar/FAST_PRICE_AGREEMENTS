@@ -103,6 +103,13 @@ sap.ui.define([
             }
             this.setProperty("editMode", sEditMode);
         },
+        hasPAExpiryDateChanged:function(){
+            var originalPriceAgreement;
+            if(this.priceAgreementData){
+                originalPriceAgreement = new PriceAgreement(this.priceAgreementData);
+            }
+            return ( originalPriceAgreement && originalPriceAgreement.expiryDate !== this.getPriceAgreementInstance().expiryDate ) || false;
+        },
         backupPriceAgreement: function () {
             this.priceAgreementData = this.getPriceAgreementInstance().getAll();
         },
