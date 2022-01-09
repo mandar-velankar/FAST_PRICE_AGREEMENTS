@@ -465,7 +465,9 @@ sap.ui.define([
 			}
 
 			const uom = priceAgreement.UoM;
-			const customerPricesPaths = priceAgreement.CustomerPrices.__list;
+			//only works when already viewed in detail - otherwise will be empty
+			// const customerPricesPaths = priceAgreement.CustomerPrices.__list;
+			
 			const consumerPrice = this.getView().getModel().getProperty(`/${priceAgreement.ConsumerPrice.__ref}`);
 
 			// calulate the new NetOfferPrice
@@ -486,14 +488,16 @@ sap.ui.define([
 			priceAgreement.Price = newNetOfferPrice;
 
 			// update CustomerPrices, if any available, whith the newly calculated newNetOfferPrice
-			const customerPrices = customerPricesPaths.map(path => {
-				const customerPriceObj = this.getView().getModel().getProperty(`/${path}`);
-				customerPriceObj.Price = newNetOfferPrice;
-				return this.paState.createCustomerPriceObject(customerPriceObj);
-			});
+			// const customerPrices = customerPricesPaths.map(path => {
+			// 	const customerPriceObj = this.getView().getModel().getProperty(`/${path}`);
+			// 	customerPriceObj.Price = newNetOfferPrice;
+			// 	return this.paState.createCustomerPriceObject(customerPriceObj);
+			// });
+			
 
 			// save changes
-			const saveCustomerPricePromises = customerPrices.map(cp => this.paState.saveCustomerPrice(cp));
+			
+			const saveCustomerPricePromises = await this.paState.updateCustomerPrices(priceAgreement.ID,newNetOfferPrice);
 			const savePriceAgreement = this.paState.savePriceAgreement(this.paState.createPriceAgreementObject(priceAgreement));
 			
 			return await Promise.all(saveCustomerPricePromises, savePriceAgreement);
