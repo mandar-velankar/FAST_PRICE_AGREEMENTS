@@ -323,7 +323,7 @@ sap.ui.define([
 					MessageBox.error("Synchronization of Price Agreement failed. Please try again.");
 				});
 
-			this.paState.syncFOCcustPrices([this.sObjectId])
+			/*this.paState.syncFOCcustPrices([this.sObjectId])
 				.then(() => 
 				{
 					const oMasterTableBinding = this.getOwnerComponent().oListSelector._oList.getBinding("items");
@@ -341,7 +341,7 @@ sap.ui.define([
 					oDetailView.setBusy(false);
 					this.onCloseDetailPress();
 					MessageBox.error("Synchronization of Price Agreement failed. Please try again.");
-				});
+				});*/
 		},
 
 		onDeliveryPress: function(oEvent){

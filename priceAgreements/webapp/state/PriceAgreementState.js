@@ -91,19 +91,14 @@ sap.ui.define([
                 priceAgreement.FOC.forEach((focProduct, index) => {
                     
                     // 2) indien  FOC.productcode === candidate.productcode( dus main product), 1 extra entry saven voor de main product FOC
-                    /*if(focProduct.ProductCode === candidate.productPackId){
-
+                    if(focProduct.ProductCode === candidate.productPackId){
+                        const focCustomerPrice = new CustomerPrice(focProduct.getJSON());
                     } else {
-                        if(1 === 1){
-
-                        }*/
                         // 3) Voor de andere FOC's, alle materialen ophalen via priceAgreement.MaterialsFOC. loopen over elk materiaal en 1 entry per materiaal naar customerprices wegschrijven
-                        //const focCustomerPrice = new CustomerPrice(focProduct.getJSON());
-                    /*}*/
+                        const focCustomerPrice = new CustomerPrice(focProduct.getJSON());
+                    }
                 });
                 
-            
-
                 candidate.price = priceAgreement.price;
                 candidate.expiryDate = priceAgreement.expiryDate;
 
