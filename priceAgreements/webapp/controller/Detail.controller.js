@@ -266,7 +266,24 @@ sap.ui.define([
 				MessageBox.error(this.getText("requiredFields"));
 				return false;
 			}
-			this.paState.saveCandidatePrices()
+			//expiry date changed + already synchronized ==> price agreement in SAP should be cancelled first
+			if(this.paState.hasPAExpiryDateChanged() && this.paState.getPriceAgreementInstance().synchronized){
+				MessageBox.warning(this.getResourceBundle().getText("confirmCancelExisting"), {
+					actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+					emphasizedAction: MessageBox.Action.YES,
+					onClose: (action)=>{
+						if(action === MessageBox.Action.YES){
+							this.savePriceAgreement();
+						}
+					}
+				});
+			}else{
+				this.savePriceAgreement();
+			}
+			
+		},
+		savePriceAgreement:function(){
+			return this.paState.saveCandidatePrices()
 				.then(this.paState.savePriceAgreement.bind(this.paState, this.paState.getPriceAgreementInstance()))
 				.then(() => {
 					this.paState.setEditMode(false);
