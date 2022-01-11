@@ -11,7 +11,7 @@ sap.ui.define([
         },
         getPriceAgreement: function (id) {
             const keyPath = this.model.createKey("/PriceAgreements",{ID:id});
-            return this.odata(keyPath).get({urlParameters:{$expand:"Materials,Institute,Tender,Product/ProductPack,CustomerPrices,Deliveries,FOC,MaterialsFOC"}});
+            return this.odata(keyPath).get({urlParameters:{$expand:"Materials,Institute,Tender,Product/ProductPack,CustomerPrices,Deliveries,FOC,MaterialsFOC,MaterialsFOC/FreeGoodsOther,MaterialsFOC/FreeGoodsOther/Materials"}});
         },
 
 		updatePriceAgreement: function(priceAgreement){
