@@ -82,12 +82,9 @@ sap.ui.define([
             const priceAgreement = this.getProperty("priceAgreement");
             var custPriceFOC = {};
             var CustomerPrices = [];
+            var currentProductId;
 
-
-                
-              
-
-                // create customerPrices object based on candidatePrices
+            // create customerPrices object based on candidatePrices
             candidatePrices.forEach((candidate) => {
                 
                 candidate.price = priceAgreement.price;
@@ -105,6 +102,7 @@ sap.ui.define([
 
                 // 1) loopen over priceAgreement.FOC
                priceAgreement.FOC.forEach((focProduct) => {
+                   currentProductId = focProduct.ProductPackId;
                     
                 // 2) indien  FOC.productcode === candidate.productcode( dus main product), 1 extra entry saven voor de main product FOC
                 if(focProduct.ProductPackId === candidate.productPackId){
@@ -131,6 +129,8 @@ sap.ui.define([
                     priceAgreement.MaterialsFOC[0].FreeGoodsOther.results.forEach((FOC) => {
 
                         // loopen over elk materiaal en 1 entry per materiaal naar customerprices wegschrijven
+
+                        if(FOC.ProductPackId === currentProductId){
                         FOC.Materials.results.forEach((Material) => {
 
                             custPriceFOC = {
@@ -152,7 +152,7 @@ sap.ui.define([
 
 
                         });
-                    
+                    }
 
                 });
                 }
