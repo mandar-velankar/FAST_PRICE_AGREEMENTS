@@ -425,6 +425,9 @@ sap.ui.define([
 					// synchronize with sap backend
 					await _that.paState.syncPriceAgreements(priceAgreementIDs);
 
+					// synchronize with sap backend
+					await _that.paState.syncFocCustPrices(priceAgreementIDs);
+
 					// clear the filter and refresh the binding
 					_that.byId("idslctfilter").setSelectedKey();
 					_that.getView().byId("list").getBinding("items").aApplicationFilters = [];

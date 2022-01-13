@@ -202,8 +202,8 @@ sap.ui.define([
             return this.getService().syncPriceAgreements(ids);
         },
 
-        syncFOCcustPrices: function(ids){
-            return this.getService().syncFOCcustPrices(ids);
+        syncFocCustPrices: function(ids){
+            return this.getService().syncFocCustPrices(ids);
         },
 
         //detailPage so we can access it everywhere

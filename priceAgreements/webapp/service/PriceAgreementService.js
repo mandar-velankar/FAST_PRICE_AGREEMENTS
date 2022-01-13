@@ -139,7 +139,7 @@ sap.ui.define([
             return this.odata("/CandidatePrices").get(mParameters);
         },
 		
-		syncFOCcustPrices: function(ids){
+		syncFocCustPrices: function(ids){
 
 			if(!ids || !Array.isArray(ids) || ids.length <= 0) return "You must provide a list of PriceAgreement IDs";
 
@@ -147,7 +147,7 @@ sap.ui.define([
 				"ids": ids
 			};
 
-			return this.odata("/syncFOCcustPrices").post(data);
+			return this.odata("/syncFocCustPrices").post(data);
 
 		},
 
