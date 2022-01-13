@@ -124,9 +124,8 @@ sap.ui.define([
                     CustomerPrices.push(new CustomerPrice(custPriceFOC));
                     
                 } else {
-                    
                     // 3) Voor de andere FOC's, alle materialen ophalen via priceAgreement.MaterialsFOC. 
-                    priceAgreement.MaterialsFOC[0].FreeGoodsOther.results.forEach((FOC) => {
+                    priceAgreement.MaterialsFOC.FreeGoodsOther.results.forEach((FOC) => {
 
                         // loopen over elk materiaal en 1 entry per materiaal naar customerprices wegschrijven
 
