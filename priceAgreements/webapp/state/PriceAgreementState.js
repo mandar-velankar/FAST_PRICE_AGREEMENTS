@@ -74,14 +74,19 @@ sap.ui.define([
                 return this.getPriceAgreementInstance().getCandidatePrices();
             });
         },
+
         saveCandidatePrices: function () {
 
             // const candidatePrices = this.getProperty("candidatePrices").filter(cap => cap.applied); // get only the applied candidatePrices
             const candidatePrices = this.getPriceAgreementInstance().getCandidatePrices().filter(cap => cap.applied); // get only the applied candidatePrices
             const priceAgreement = this.getProperty("priceAgreement");
+            var custPriceFOC = {};
+            var CustomerPrices = [];
+            var currentProductId;
 
             // create customerPrices object based on candidatePrices
-            const customerPrices = candidatePrices.map(candidate => {
+            candidatePrices.forEach((candidate) => {
+                
                 candidate.price = priceAgreement.price;
                 candidate.expiryDate = priceAgreement.expiryDate;
 
@@ -92,11 +97,70 @@ sap.ui.define([
                 if (candidate.customerPriceId) {
                     customerPrice['iD'] = candidate.customerPriceId;
                 }
+                customerPrice.priceCondition = "YLTP";
+                CustomerPrices.push(customerPrice);
 
-                return customerPrice;
+                // 1) loopen over priceAgreement.FOC
+               priceAgreement.FOC.forEach((focProduct) => {
+                   currentProductId = focProduct.ProductPackId;
+                    
+                // 2) indien  FOC.productcode === candidate.productcode( dus main product), 1 extra entry saven voor de main product FOC
+                if(focProduct.ProductPackId === candidate.productPackId){
+                    custPriceFOC = {
+                        "CountryCode": candidate.countryCode,
+                        "EffectiveDate": candidate.effectiveDate,
+                        "ExpiryDate": candidate.expiryDate,
+                        "InstituteId": candidate.instituteId,
+                        "MaterialNumber": candidate.materialNumber,
+                        "Price": candidate.price,
+                        "PriceAgreementId": candidate.priceAgreementId,
+                        "ProductPackId": candidate.productPackId,
+                        "Synchronized": candidate.synchronized,
+                        "FOCproductPackID": candidate.productPackId ,
+                        "FOCmaterialNumber": candidate.materialNumber,
+                        "PriceCondition": "YA03"
+                    }
+                    
+                    CustomerPrices.push(new CustomerPrice(custPriceFOC));
+                    
+                } else {
+                    // 3) Voor de andere FOC's, alle materialen ophalen via priceAgreement.MaterialsFOC. 
+                    priceAgreement.MaterialsFOC.FreeGoodsOther.results.forEach((FOC) => {
+
+                        // loopen over elk materiaal en 1 entry per materiaal naar customerprices wegschrijven
+
+                        if(FOC.ProductPackId === currentProductId){
+                        FOC.Materials.results.forEach((Material) => {
+
+                            custPriceFOC = {
+                                "CountryCode": candidate.countryCode,
+                                "EffectiveDate": candidate.effectiveDate,
+                                "ExpiryDate": candidate.expiryDate,
+                                "InstituteId": candidate.instituteId,
+                                "MaterialNumber": candidate.materialNumber,
+                                "Price": candidate.price,
+                                "PriceAgreementId": candidate.priceAgreementId,
+                                "ProductPackId": candidate.productPackId,
+                                "Synchronized": candidate.synchronized,
+                                "FOCproductPackID": Material.ProductPackID,
+                                "FOCmaterialNumber": Material.SKUCode,
+                                "PriceCondition": "YA03"
+                            }
+                            CustomerPrices.push(new CustomerPrice(custPriceFOC));
+
+
+
+                        });
+                    }
+
+                });
+                }
+            });
             });
 
-            const promises = customerPrices.map(cp => this.getService().saveCustomerPrice(cp));
+                
+
+            const promises = CustomerPrices.map(cp => this.getService().saveCustomerPrice(cp));
 
 
             return Promise.all(promises);
@@ -136,6 +200,10 @@ sap.ui.define([
 
         syncPriceAgreements: function(ids){
             return this.getService().syncPriceAgreements(ids);
+        },
+
+        syncFocCustPrices: function(ids){
+            return this.getService().syncFocCustPrices(ids);
         },
 
         //detailPage so we can access it everywhere

@@ -34,8 +34,11 @@ sap.ui.define([
                 data.customerPrices && this.setCustomerPrices(data.customerPrices);//used for backup restore
                 data.CustomerPrices && this.setCustomerPrices(data.CustomerPrices.results);
                 data.candidatePrices && this.setCandidatePrices(data.candidatePrices);//used for backup restore
+                this.MaterialsFOC = data.MaterialsFOC;
             }
         },
+
+
         setCandidatePrices:function(candidatePrices){
             this.candidatePrices = (candidatePrices && candidatePrices.map(candidatePrice => new CandidatePrice(candidatePrice)) ) || [];
         },
