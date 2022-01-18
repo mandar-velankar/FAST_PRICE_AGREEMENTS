@@ -28,7 +28,8 @@ sap.ui.define([
                 "expiryDate",
                 "priceCondition",
                 "fOCproductPackID",
-                "fOCmaterialNumber"
+                "fOCmaterialNumber",
+                "applied"
             ]);
         },
         getAll: function () {
