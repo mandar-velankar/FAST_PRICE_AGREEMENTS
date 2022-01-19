@@ -318,6 +318,8 @@ sap.ui.define([
 			var hasNewMaterialsFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newmaterialnumberskey';
 			const updatedRetailPriceFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'updatedretailpricekey';
 			const expiringSoonFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'expiringsoonkey';
+			const newAgreementFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newagreementskey';
+			
 
 			if(updatedRetailPriceFilter){
 				andFilters.push(new sap.ui.model.Filter("hasNewPrice", "EQ", updatedRetailPriceFilter));
@@ -342,6 +344,10 @@ sap.ui.define([
 
 			if(expiringSoonFilter){
 				andFilters.push(new sap.ui.model.Filter("ExpiringSoon", "EQ", true));
+			}
+
+			if(newAgreementFilter){
+				andFilters.push(new sap.ui.model.Filter("isNewPriceAgreement", "EQ", true));
 			}
 
 			let sSearch = this.byId("idSearch").getProperty("value");

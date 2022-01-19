@@ -98,6 +98,7 @@ sap.ui.define([
                     customerPrice['iD'] = candidate.customerPriceId;
                 }
                 customerPrice.priceCondition = "YLTP";
+                customerPrice.applied = true;
                 CustomerPrices.push(customerPrice);
 
                 // 1) loopen over priceAgreement.FOC
@@ -118,7 +119,8 @@ sap.ui.define([
                         "Synchronized": candidate.synchronized,
                         "FOCproductPackID": candidate.productPackId ,
                         "FOCmaterialNumber": candidate.materialNumber,
-                        "PriceCondition": "YA03"
+                        "PriceCondition": "YA03",
+                        "Applied": true
                     }
                     
                     CustomerPrices.push(new CustomerPrice(custPriceFOC));
@@ -144,7 +146,8 @@ sap.ui.define([
                                 "Synchronized": candidate.synchronized,
                                 "FOCproductPackID": Material.ProductPackID,
                                 "FOCmaterialNumber": Material.SKUCode,
-                                "PriceCondition": "YA03"
+                                "PriceCondition": "YA03",
+                                "Applied": true
                             }
                             CustomerPrices.push(new CustomerPrice(custPriceFOC));
 
