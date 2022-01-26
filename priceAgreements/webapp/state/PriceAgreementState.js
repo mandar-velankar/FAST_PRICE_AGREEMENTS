@@ -39,18 +39,22 @@ sap.ui.define([
         getPriceAgreementInstance: function () {
             return this.getProperty("priceAgreement");
         },
-        updateCustomerPrices:async function(priceAgreementId,newNetOfferPrice){
-            let customerPrices = await this.getCandidatePricesByID(priceAgreementId);
-			if(customerPrices && customerPrices.data && customerPrices.data.results){
-				customerPrices = customerPrices.data.results;
-			}else{
-				customerPrices = [];
-			}
-			customerPrices = customerPrices.map(customerPrice => {
-				customerPrice.Price = newNetOfferPrice;
-				return this.createCustomerPriceObject(customerPrice);
-			});
-            return customerPrices.map(cp => this.saveCustomerPrice(cp));
+        updateCustomerPrices:async function(priceAgreement,newNetOfferPrice){
+            //getCandidatePrices
+            let candidatePrices = await this.getCandidatePricesByID(priceAgreement.iD);
+            priceAgreement.setCandidatePrices(candidatePrices.data.results);
+			// if(customerPrices && customerPrices.data && customerPrices.data.results){
+			// 	customerPrices = customerPrices.data.results;
+			// }else{
+			// 	customerPrices = [];
+			// }
+			// customerPrices = customerPrices.map(customerPrice => {
+			// 	customerPrice.Price = newNetOfferPrice;
+            //     customerPrice.Applied = true;
+			// 	return this.createCustomerPriceObject(customerPrice);
+			// });
+            // return customerPrices.map(cp => this.saveCustomerPrice(cp));
+            return this.saveCandidatePrice(priceAgreement,priceAgreement.getCandidatePrices());
         },
         savePriceAgreement: function (priceAgreement) {
             if (priceAgreement.iD) {
@@ -76,10 +80,15 @@ sap.ui.define([
         },
 
         saveCandidatePrices: function () {
-
-            // const candidatePrices = this.getProperty("candidatePrices").filter(cap => cap.applied); // get only the applied candidatePrices
             const candidatePrices = this.getPriceAgreementInstance().getCandidatePrices().filter(cap => cap.applied); // get only the applied candidatePrices
             const priceAgreement = this.getProperty("priceAgreement");
+            return this.saveCandidatePrice(priceAgreement,candidatePrices);
+        },
+        saveCandidatePrice:function(priceAgreement,candidatePrices){
+
+            // const candidatePrices = this.getProperty("candidatePrices").filter(cap => cap.applied); // get only the applied candidatePrices
+            // const candidatePrices = this.getPriceAgreementInstance().getCandidatePrices().filter(cap => cap.applied); // get only the applied candidatePrices
+            // const priceAgreement = this.getProperty("priceAgreement");
             var custPriceFOC = {};
             var CustomerPrices = [];
             var currentProductId;
