@@ -506,7 +506,7 @@ sap.ui.define([
 
 			// save changes
 			
-			const saveCustomerPricePromises = await this.paState.updateCustomerPrices(this.paState.createPriceAgreementObject(priceAgreement),newNetOfferPrice);
+			const saveCustomerPricePromises = await this.paState.updateCustomerPrices(priceAgreement);//,newNetOfferPrice);
 			const savePriceAgreement = this.paState.savePriceAgreement(this.paState.createPriceAgreementObject(priceAgreement));
 			
 			return await Promise.all(saveCustomerPricePromises, savePriceAgreement);

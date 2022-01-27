@@ -39,22 +39,27 @@ sap.ui.define([
         getPriceAgreementInstance: function () {
             return this.getProperty("priceAgreement");
         },
-        updateCustomerPrices:async function(priceAgreement,newNetOfferPrice){
+        updateCustomerPrices:async function(priceAgreement){
+            // other solutions, but MaterialsFOC is not loaded in master so undefined. 
+            // if this would be need in master list, this could improve performance for update customer prices in mass
+            // const model = this.getService().model;
+            // const pathPA = model.createKey("/PriceAgreements",{
+            //     ID:priceAgreement.ID
+            // });
+            // priceAgreement.FOC = model.getProperty(`${pathPA}/FOC`).map(path => model.getProperty(`/${path}`));
+            // if(!priceAgreement.MaterialsFOC){
+            //     priceAgreement.MaterialsFOC = { FreeGoodsOther : {} };
+            // }
+            // priceAgreement.MaterialsFOC.FreeGoodsOther = model.getProperty(`${pathPA}/MaterialsFOC/FreeGoodsOther`);
+            // const pa = this.paState.createPriceAgreementObject(priceAgreement);
             //getCandidatePrices
-            let candidatePrices = await this.getCandidatePricesByID(priceAgreement.iD);
-            priceAgreement.setCandidatePrices(candidatePrices.data.results);
-			// if(customerPrices && customerPrices.data && customerPrices.data.results){
-			// 	customerPrices = customerPrices.data.results;
-			// }else{
-			// 	customerPrices = [];
-			// }
-			// customerPrices = customerPrices.map(customerPrice => {
-			// 	customerPrice.Price = newNetOfferPrice;
-            //     customerPrice.Applied = true;
-			// 	return this.createCustomerPriceObject(customerPrice);
-			// });
-            // return customerPrices.map(cp => this.saveCustomerPrice(cp));
-            return this.saveCandidatePrice(priceAgreement,priceAgreement.getCandidatePrices());
+            const [responsePA,responseCandidate] = await Promise.all([
+                this.getService().getPriceAgreement(priceAgreement.ID),
+                this.getCandidatePricesByID(priceAgreement.ID)
+            ]);
+            const pa = new PriceAgreement(responsePA.data);
+            pa.setCandidatePrices(responseCandidate.data.results);
+            return this.saveCandidatePrice(pa,pa.getCandidatePrices());
         },
         savePriceAgreement: function (priceAgreement) {
             if (priceAgreement.iD) {
