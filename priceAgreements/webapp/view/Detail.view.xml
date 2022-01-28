@@ -131,7 +131,7 @@
 														items="{ 
 															path: 'pa>/priceAgreement/materials'
 														}">
-														<core:Item key="{pa>materialNumber}" text="{pa>materialNumber}" />
+														<core:Item key="{pa>sKUCode}" text="{pa>sKUCode}" />
 													</m:Select>
 												</m:content>
 											</m:OverflowToolbar>
