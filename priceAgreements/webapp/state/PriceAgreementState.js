@@ -39,18 +39,27 @@ sap.ui.define([
         getPriceAgreementInstance: function () {
             return this.getProperty("priceAgreement");
         },
-        updateCustomerPrices:async function(priceAgreementId,newNetOfferPrice){
-            let customerPrices = await this.getCandidatePricesByID(priceAgreementId);
-			if(customerPrices && customerPrices.data && customerPrices.data.results){
-				customerPrices = customerPrices.data.results;
-			}else{
-				customerPrices = [];
-			}
-			customerPrices = customerPrices.map(customerPrice => {
-				customerPrice.Price = newNetOfferPrice;
-				return this.createCustomerPriceObject(customerPrice);
-			});
-            return customerPrices.map(cp => this.saveCustomerPrice(cp));
+        updateCustomerPrices:async function(priceAgreement){
+            // other solutions, but MaterialsFOC is not loaded in master so undefined. 
+            // if this would be need in master list, this could improve performance for update customer prices in mass
+            // const model = this.getService().model;
+            // const pathPA = model.createKey("/PriceAgreements",{
+            //     ID:priceAgreement.ID
+            // });
+            // priceAgreement.FOC = model.getProperty(`${pathPA}/FOC`).map(path => model.getProperty(`/${path}`));
+            // if(!priceAgreement.MaterialsFOC){
+            //     priceAgreement.MaterialsFOC = { FreeGoodsOther : {} };
+            // }
+            // priceAgreement.MaterialsFOC.FreeGoodsOther = model.getProperty(`${pathPA}/MaterialsFOC/FreeGoodsOther`);
+            // const pa = this.paState.createPriceAgreementObject(priceAgreement);
+            //getCandidatePrices
+            const [responsePA,responseCandidate] = await Promise.all([
+                this.getService().getPriceAgreement(priceAgreement.ID),
+                this.getCandidatePricesByID(priceAgreement.ID)
+            ]);
+            const pa = new PriceAgreement(responsePA.data);
+            pa.setCandidatePrices(responseCandidate.data.results);
+            return this.saveCandidatePrice(pa,pa.getCandidatePrices());
         },
         savePriceAgreement: function (priceAgreement) {
             if (priceAgreement.iD) {
@@ -76,10 +85,15 @@ sap.ui.define([
         },
 
         saveCandidatePrices: function () {
-
-            // const candidatePrices = this.getProperty("candidatePrices").filter(cap => cap.applied); // get only the applied candidatePrices
             const candidatePrices = this.getPriceAgreementInstance().getCandidatePrices().filter(cap => cap.applied); // get only the applied candidatePrices
             const priceAgreement = this.getProperty("priceAgreement");
+            return this.saveCandidatePrice(priceAgreement,candidatePrices);
+        },
+        saveCandidatePrice:function(priceAgreement,candidatePrices){
+
+            // const candidatePrices = this.getProperty("candidatePrices").filter(cap => cap.applied); // get only the applied candidatePrices
+            // const candidatePrices = this.getPriceAgreementInstance().getCandidatePrices().filter(cap => cap.applied); // get only the applied candidatePrices
+            // const priceAgreement = this.getProperty("priceAgreement");
             var custPriceFOC = {};
             var CustomerPrices = [];
             var currentProductId;
