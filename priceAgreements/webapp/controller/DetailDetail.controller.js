@@ -125,12 +125,6 @@ sap.ui.define([
 
 		},
 
-
-		setEditMode: function(isEditable){
-			this.soaState.setEditMode(isEditable);
-			this.oDynamicPage.setShowFooter(isEditable);
-		},
-
 		onExit: function () {
 			this.oRouter.getRoute("master").detachPatternMatched(this._onObjectMatched, this);
 			this.oRouter.getRoute("detail").detachPatternMatched(this._onObjectMatched, this);

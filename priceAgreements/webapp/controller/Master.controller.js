@@ -318,6 +318,8 @@ sap.ui.define([
 			var hasNewMaterialsFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newmaterialnumberskey';
 			const updatedRetailPriceFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'updatedretailpricekey';
 			const expiringSoonFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'expiringsoonkey';
+			const newAgreementFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newagreementskey';
+			
 
 			if(updatedRetailPriceFilter){
 				andFilters.push(new sap.ui.model.Filter("hasNewPrice", "EQ", updatedRetailPriceFilter));
@@ -344,9 +346,20 @@ sap.ui.define([
 				andFilters.push(new sap.ui.model.Filter("ExpiringSoon", "EQ", true));
 			}
 
+			if(newAgreementFilter){
+				andFilters.push(new sap.ui.model.Filter("isNewPriceAgreement", "EQ", true));
+			}
+
 			let sSearch = this.byId("idSearch").getProperty("value");
 
 			if (sSearch.length > 0) {
+
+				orFilters.push(new Filter({
+					path: "TenderId",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
 
 				orFilters.push(new Filter({
 					path: "Tender/TenderName",
@@ -418,6 +431,9 @@ sap.ui.define([
 					// synchronize with sap backend
 					await _that.paState.syncPriceAgreements(priceAgreementIDs);
 
+					// synchronize with sap backend
+					await _that.paState.syncFocCustPrices(priceAgreementIDs);
+
 					// clear the filter and refresh the binding
 					_that.byId("idslctfilter").setSelectedKey();
 					_that.getView().byId("list").getBinding("items").aApplicationFilters = [];
@@ -458,7 +474,9 @@ sap.ui.define([
 			}
 
 			const uom = priceAgreement.UoM;
-			const customerPricesPaths = priceAgreement.CustomerPrices.__list;
+			//only works when already viewed in detail - otherwise will be empty
+			// const customerPricesPaths = priceAgreement.CustomerPrices.__list;
+			
 			const consumerPrice = this.getView().getModel().getProperty(`/${priceAgreement.ConsumerPrice.__ref}`);
 
 			// calulate the new NetOfferPrice
@@ -479,14 +497,16 @@ sap.ui.define([
 			priceAgreement.Price = newNetOfferPrice;
 
 			// update CustomerPrices, if any available, whith the newly calculated newNetOfferPrice
-			const customerPrices = customerPricesPaths.map(path => {
-				const customerPriceObj = this.getView().getModel().getProperty(`/${path}`);
-				customerPriceObj.Price = newNetOfferPrice;
-				return this.paState.createCustomerPriceObject(customerPriceObj);
-			});
+			// const customerPrices = customerPricesPaths.map(path => {
+			// 	const customerPriceObj = this.getView().getModel().getProperty(`/${path}`);
+			// 	customerPriceObj.Price = newNetOfferPrice;
+			// 	return this.paState.createCustomerPriceObject(customerPriceObj);
+			// });
+			
 
 			// save changes
-			const saveCustomerPricePromises = customerPrices.map(cp => this.paState.saveCustomerPrice(cp));
+			
+			const saveCustomerPricePromises = await this.paState.updateCustomerPrices(priceAgreement);//,newNetOfferPrice);
 			const savePriceAgreement = this.paState.savePriceAgreement(this.paState.createPriceAgreementObject(priceAgreement));
 			
 			return await Promise.all(saveCustomerPricePromises, savePriceAgreement);

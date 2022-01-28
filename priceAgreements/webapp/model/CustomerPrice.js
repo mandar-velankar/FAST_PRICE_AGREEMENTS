@@ -25,7 +25,11 @@ sap.ui.define([
                 "price",
                 "synchronized",
                 "effectiveDate",
-                "expiryDate"
+                "expiryDate",
+                "priceCondition",
+                "fOCproductPackID",
+                "fOCmaterialNumber",
+                "applied"
             ]);
         },
         getAll: function () {

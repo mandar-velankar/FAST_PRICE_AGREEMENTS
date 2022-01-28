@@ -266,7 +266,24 @@ sap.ui.define([
 				MessageBox.error(this.getText("requiredFields"));
 				return false;
 			}
-			this.paState.saveCandidatePrices()
+			//expiry date changed + already synchronized ==> price agreement in SAP should be cancelled first
+			if(this.paState.hasPAExpiryDateChanged() && this.paState.getPriceAgreementInstance().synchronized){
+				MessageBox.warning(this.getResourceBundle().getText("confirmCancelExisting"), {
+					actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+					emphasizedAction: MessageBox.Action.YES,
+					onClose: (action)=>{
+						if(action === MessageBox.Action.YES){
+							this.savePriceAgreement();
+						}
+					}
+				});
+			}else{
+				this.savePriceAgreement();
+			}
+			
+		},
+		savePriceAgreement:function(){
+			return this.paState.saveCandidatePrices()
 				.then(this.paState.savePriceAgreement.bind(this.paState, this.paState.getPriceAgreementInstance()))
 				.then(() => {
 					this.paState.setEditMode(false);
@@ -286,6 +303,26 @@ sap.ui.define([
 			oDetailView.setBusyIndicatorDelay(0);
 			oDetailView.setBusy(true);
 			
+			this.paState.syncFocCustPrices([this.sObjectId])
+				.then(() => 
+				{
+					const oMasterTableBinding = this.getOwnerComponent().oListSelector._oList.getBinding("items");
+					oMasterTableBinding.refresh();
+					oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
+						this.onCloseDetailPress();
+						oViewModel.setProperty("/busy", false);
+						oDetailView.setBusy(false);
+						MessageBox.success("Customer Prices successfully synchronized");
+					});
+					
+				})
+				.catch(err => {
+					oViewModel.setProperty("/busy", false);
+					oDetailView.setBusy(false);
+					this.onCloseDetailPress();
+					MessageBox.error("Synchronization of Customer Prices failed. Please try again.");
+				});
+
 			this.paState.syncPriceAgreements([this.sObjectId])
 				.then(() => 
 				{
@@ -305,6 +342,26 @@ sap.ui.define([
 					this.onCloseDetailPress();
 					MessageBox.error("Synchronization of Price Agreement failed. Please try again.");
 				});
+
+			/*this.paState.syncFOCcustPrices([this.sObjectId])
+				.then(() => 
+				{
+					const oMasterTableBinding = this.getOwnerComponent().oListSelector._oList.getBinding("items");
+					oMasterTableBinding.refresh();
+					oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
+						this.onCloseDetailPress();
+						oViewModel.setProperty("/busy", false);
+						oDetailView.setBusy(false);
+						MessageBox.success("FOC prices successfully synchronized");
+					});
+					
+				})
+				.catch(err => {
+					oViewModel.setProperty("/busy", false);
+					oDetailView.setBusy(false);
+					this.onCloseDetailPress();
+					MessageBox.error("Synchronization of Price Agreement failed. Please try again.");
+				});*/
 		},
 
 		onDeliveryPress: function(oEvent){
