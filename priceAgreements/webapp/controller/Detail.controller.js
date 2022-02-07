@@ -43,8 +43,6 @@ sap.ui.define([
 			this.getRouter().getRoute("objectDetail").attachPatternMatched(this._onObjectMatched, this);
 
 			this.setModel(oViewModel, "detailView");
-
-			// this.getOwnerComponent().getModel().metadataLoaded().then(this._onMetadataLoaded.bind(this));
 		},
 
 		/* =========================================================== */
@@ -106,90 +104,7 @@ sap.ui.define([
 
 				this.paState.getPriceAgreement(this.sObjectId);
 				// this.paState.getCandidatePrices(this.sObjectId, null);
-				// var sObjectPath = this.getModel().createKey("PriceAgreements", {
-				// 	ID :  sObjectId
-				// });
-				// this._bindView("/" + sObjectPath);
 			}.bind(this));
-		},
-
-		/**
-		 * Binds the view to the object path. Makes sure that detail view displays
-		 * a busy indicator while data for the corresponding element binding is loaded.
-		 * @function
-		 * @param {string} sObjectPath path to the object to be bound to the view.
-		 * @private
-		 */
-		_bindView: function (sObjectPath) {
-			// Set busy indicator during view binding
-			var oViewModel = this.getModel("detailView");
-
-			// If the view was not bound yet its not busy, only if the binding requests data it is set to busy again
-			oViewModel.setProperty("/busy", false);
-
-			this.getView().bindElement({
-				path: sObjectPath,
-				events: {
-					change: this._onBindingChange.bind(this),
-					dataRequested: function () {
-						oViewModel.setProperty("/busy", true);
-					},
-					dataReceived: function () {
-						oViewModel.setProperty("/busy", false);
-					}
-				}
-			});
-		},
-
-		_onBindingChange: function () {
-			var oView = this.getView(),
-				oElementBinding = oView.getElementBinding();
-
-			// No data for the binding
-			if (!oElementBinding.getBoundContext()) {
-				this.getRouter().getTargets().display("detailObjectNotFound");
-				// if object could not be found, the selection in the master list
-				// does not make sense anymore.
-				this.getOwnerComponent().oListSelector.clearMasterListSelection();
-				return;
-			}
-
-			var sPath = oElementBinding.getPath(),
-				oResourceBundle = this.getResourceBundle(),
-				oObject = oView.getModel().getObject(sPath),
-				sObjectId = oObject.ID,
-				sObjectName = oObject.ID,
-				oViewModel = this.getModel("detailView");
-
-			this.getOwnerComponent().oListSelector.selectAListItem(sPath);
-
-			oViewModel.setProperty("/shareSendEmailSubject",
-				oResourceBundle.getText("shareSendEmailObjectSubject", [sObjectId]));
-			oViewModel.setProperty("/shareSendEmailMessage",
-				oResourceBundle.getText("shareSendEmailObjectMessage", [sObjectName, sObjectId, location.href]));
-		},
-
-		_onMetadataLoaded: function () {
-			// Store original busy indicator delay for the detail view
-			var iOriginalViewBusyDelay = this.getView().getBusyIndicatorDelay(),
-				oViewModel = this.getModel("detailView"),
-				oLineItemTable = this.byId("lineItemsList"),
-				iOriginalLineItemTableBusyDelay = oLineItemTable.getBusyIndicatorDelay();
-
-			// Make sure busy indicator is displayed immediately when
-			// detail view is displayed for the first time
-			oViewModel.setProperty("/delay", 0);
-			oViewModel.setProperty("/lineItemTableDelay", 0);
-
-			oLineItemTable.attachEventOnce("updateFinished", function () {
-				// Restore original busy indicator delay for line item table
-				oViewModel.setProperty("/lineItemTableDelay", iOriginalLineItemTableBusyDelay);
-			});
-
-			// Binding the view will set it to not busy - so the view is always busy if it is not bound
-			oViewModel.setProperty("/busy", true);
-			// Restore original busy indicator delay for the detail view
-			oViewModel.setProperty("/delay", iOriginalViewBusyDelay);
 		},
 
 		/**
@@ -258,7 +173,20 @@ sap.ui.define([
 				onClose: onClose
 			});
 		},
+		setBusy:function(status){
+			const viewModel = this.getModel("detailView");
+			const detailView = this.getView();
 
+			viewModel.setProperty("/busy", status);
+
+			detailView.setBusyIndicatorDelay(0);
+			detailView.setBusy(status);
+		},
+		refreshMaster:function(){
+			const oMasterTableBinding = this.getOwnerComponent().oListSelector._oList.getBinding("items");
+			oMasterTableBinding.refresh();
+			return oMasterTableBinding;
+		},
 		onFooterSavePress: async function (oEvent) {
 			const isValid = this.paState.getPriceAgreementInstance().isValid();
 			this.paState.updateModel();
@@ -283,11 +211,18 @@ sap.ui.define([
 			
 		},
 		savePriceAgreement:function(){
+			this.setBusy(true);
 			return this.paState.saveCandidatePrices()
 				.then(this.paState.savePriceAgreement.bind(this.paState, this.paState.getPriceAgreementInstance()))
 				.then(() => {
 					this.paState.setEditMode(false);
-					this.onCloseDetailPress();
+					//update view with saved values from database - to be sure that UI and DB are in sync
+					this.paState.getPriceAgreement(this.sObjectId);
+					//update master - UI5 framework triggers refresh automatically after merge/update
+					//not needed otherwise will reload twice
+					// this.refreshMaster();
+				}).finally(()=>{
+					this.setBusy(false);
 				});
 		},
 
@@ -296,52 +231,41 @@ sap.ui.define([
 		 * @param {*} evt On click event
 		 */
 		onSynchronize: function(evt){
-
-			const oViewModel = this.getModel("detailView");
-			oViewModel.setProperty("/busy", true);
-			const oDetailView = this.getView();
-			oDetailView.setBusyIndicatorDelay(0);
-			oDetailView.setBusy(true);
+			this.setBusy(true);
 			
 			this.paState.syncFocCustPrices([this.sObjectId])
 				.then(() => 
 				{
-					const oMasterTableBinding = this.getOwnerComponent().oListSelector._oList.getBinding("items");
-					oMasterTableBinding.refresh();
+					const oMasterTableBinding = this.refreshMaster();
 					oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
 						this.onCloseDetailPress();
-						oViewModel.setProperty("/busy", false);
-						oDetailView.setBusy(false);
 						MessageBox.success("Customer Prices successfully synchronized");
 					});
 					
 				})
 				.catch(err => {
-					oViewModel.setProperty("/busy", false);
-					oDetailView.setBusy(false);
 					this.onCloseDetailPress();
 					MessageBox.error("Synchronization of Customer Prices failed. Please try again.");
+				}).finally(()=>{
+					this.setBusy(false);
 				});
 
 			this.paState.syncPriceAgreements([this.sObjectId])
 				.then(() => 
 				{
-					const oMasterTableBinding = this.getOwnerComponent().oListSelector._oList.getBinding("items");
-					oMasterTableBinding.refresh();
+					const oMasterTableBinding = this.refreshMaster();
 					oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
 						this.onCloseDetailPress();
-						oViewModel.setProperty("/busy", false);
-						oDetailView.setBusy(false);
 						MessageBox.success("Price Agreement successfully synchronized");
 					});
 					
 				})
 				.catch(err => {
-					oViewModel.setProperty("/busy", false);
-					oDetailView.setBusy(false);
 					this.onCloseDetailPress();
 					MessageBox.error("Synchronization of Price Agreement failed. Please try again.");
-				});
+				}).finally(()=>{
+					this.setBusy(false);
+				});;
 
 			/*this.paState.syncFOCcustPrices([this.sObjectId])
 				.then(() => 
