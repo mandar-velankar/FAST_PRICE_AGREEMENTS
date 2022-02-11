@@ -36,7 +36,9 @@
 				
 				<!-- ACTIONS -->
 				<actions>
-					<m:Button id="syncrButtonId" icon="sap-icon://synchronize" text="Synchronize" type="Emphasized" press=".onSynchronize" enabled="{= !${pa>/priceAgreement/synchronized}}"/>
+					<m:Button id="syncrButtonId" icon="sap-icon://synchronize" text="Synchronize" type="Emphasized" press=".onSynchronize" enabled="{= !${pa>/priceAgreement/synchronized} &amp;&amp; 
+																																					${pa>/priceAgreement/customerPrices}.length > 0 
+																																					}"/>
 					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${pa>/editMode} === false }"/>
 				</actions>
 				
