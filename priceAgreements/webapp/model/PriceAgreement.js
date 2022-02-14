@@ -106,6 +106,15 @@ sap.ui.define([
 
             return data;
         },
+        getProductPackId:function(){
+            return this.productPackId;
+        },
+        getInstituteId:function(){
+            return this.instituteId;
+        },
+        getExpiryDate:function(){
+            return this.expiryDate;
+        },
 
         getAll: function () {
             let all = {...this};
