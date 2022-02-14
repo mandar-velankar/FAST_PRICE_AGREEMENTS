@@ -137,9 +137,9 @@ sap.ui.define([
 		onMaterialNumberChange: function () {
 			// set filter
 			const selectedMaterial = parseInt(this.byId("idMaterialNumberSelect").getSelectedItem().getKey());
-			if(selectedMaterial){
+			if (selectedMaterial) {
 				this.paState.getCandidatePrices({
-					priceAgreementId: this.sObjectId, 
+					priceAgreementId: this.sObjectId,
 					materialNumber: selectedMaterial
 				});
 			} else {
@@ -161,7 +161,7 @@ sap.ui.define([
 			this.paState.updateModel();
 		},
 		onFooterCancelPress: function (oEvent) {
-			const onClose = (action)=>{
+			const onClose = (action) => {
 				if (action === MessageBox.Action.YES) {
 					this.paState.setEditMode(false);
 					this.paState.restorePriceAgreement();
@@ -173,7 +173,7 @@ sap.ui.define([
 				onClose: onClose
 			});
 		},
-		setBusy:function(status){
+		setBusy: function (status) {
 			const viewModel = this.getModel("detailView");
 			const detailView = this.getView();
 
@@ -182,7 +182,7 @@ sap.ui.define([
 			detailView.setBusyIndicatorDelay(0);
 			detailView.setBusy(status);
 		},
-		refreshMaster:function(){
+		refreshMaster: function () {
 			const oMasterTableBinding = this.getOwnerComponent().oListSelector._oList.getBinding("items");
 			oMasterTableBinding.refresh();
 			return oMasterTableBinding;
@@ -195,22 +195,49 @@ sap.ui.define([
 				return false;
 			}
 			//expiry date changed + already synchronized ==> price agreement in SAP should be cancelled first
-			if(this.paState.hasPAExpiryDateChanged() && this.paState.getPriceAgreementInstance().synchronized){
-				MessageBox.warning(this.getResourceBundle().getText("confirmCancelExisting"), {
+			Promise.resolve((this.paState.hasPAExpiryDateChanged() && this.paState.getPriceAgreementInstance().synchronized)).then((confirm) => {
+				if(confirm){
+					return this.confirmCancelMessage("Existing");
+				}
+				return true;
+			}).then(() => {
+				return this.paState.findActivePriceAgreement();
+			}).then((paFound) => {
+				if (paFound && paFound.data && paFound.data.results && paFound.data.results.length > 1) {
+					return this.confirmCancelMessage("ExistingPA");
+				} 
+				return true;
+			}).then((ok) => {
+				this.savePA();
+			});
+			// MessageBox.warning(this.getResourceBundle().getText("confirmCancelExisting"), {
+			// 	actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+			// 	emphasizedAction: MessageBox.Action.YES,
+			// 	onClose: (action) => {
+			// 		if (action === MessageBox.Action.YES) {
+			// 			this.savePriceAgreement();
+			// 		}
+			// 	}
+			// });
+			// } else {
+			// 	this.savePA();
+			// }
+
+		},
+		confirmCancelMessage: function (type) {
+			return new Promise((resolve, reject)=>{
+				MessageBox.warning(this.getResourceBundle().getText(`confirmCancel${type}`), {
 					actions: [MessageBox.Action.YES, MessageBox.Action.NO],
 					emphasizedAction: MessageBox.Action.YES,
-					onClose: (action)=>{
-						if(action === MessageBox.Action.YES){
-							this.savePriceAgreement();
-						}
+					onClose: (action) => {
+						if (action === MessageBox.Action.YES) {
+							resolve(true);
+						} else { reject("Do nothing"); }
 					}
 				});
-			}else{
-				this.savePriceAgreement();
-			}
-			
+			});
 		},
-		savePriceAgreement:function(){
+		savePA: function () {
 			this.setBusy(true);
 			return this.paState.saveCandidatePrices()
 				.then(this.paState.savePriceAgreement.bind(this.paState, this.paState.getPriceAgreementInstance()))
@@ -221,7 +248,7 @@ sap.ui.define([
 					//update master - UI5 framework triggers refresh automatically after merge/update
 					//not needed otherwise will reload twice
 					// this.refreshMaster();
-				}).finally(()=>{
+				}).finally(() => {
 					this.setBusy(false);
 				});
 		},
@@ -230,40 +257,38 @@ sap.ui.define([
 		 * Sychronizes CustomerPrices with SAP
 		 * @param {*} evt On click event
 		 */
-		onSynchronize: function(evt){
+		onSynchronize: function (evt) {
 			this.setBusy(true);
-			
+
 			this.paState.syncFocCustPrices([this.sObjectId])
-				.then(() => 
-				{
+				.then(() => {
 					const oMasterTableBinding = this.refreshMaster();
 					oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
 						this.onCloseDetailPress();
 						MessageBox.success("Customer Prices successfully synchronized");
 					});
-					
+
 				})
 				.catch(err => {
 					this.onCloseDetailPress();
 					MessageBox.error("Synchronization of Customer Prices failed. Please try again.");
-				}).finally(()=>{
+				}).finally(() => {
 					this.setBusy(false);
 				});
 
 			this.paState.syncPriceAgreements([this.sObjectId])
-				.then(() => 
-				{
+				.then(() => {
 					const oMasterTableBinding = this.refreshMaster();
 					oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
 						this.onCloseDetailPress();
 						MessageBox.success("Price Agreement successfully synchronized");
 					});
-					
+
 				})
 				.catch(err => {
 					this.onCloseDetailPress();
 					MessageBox.error("Synchronization of Price Agreement failed. Please try again.");
-				}).finally(()=>{
+				}).finally(() => {
 					this.setBusy(false);
 				});;
 
@@ -288,25 +313,25 @@ sap.ui.define([
 				});*/
 		},
 
-		onDeliveryPress: function(oEvent){
-					const objContext = oEvent.getParameter("listItem").getBindingContext("pa");
-					const selectedObj = objContext?.getObject();
+		onDeliveryPress: function (oEvent) {
+			const objContext = oEvent.getParameter("listItem").getBindingContext("pa");
+			const selectedObj = objContext?.getObject();
 
-					var deliveryPath = objContext.getPath(),
-					delivery = deliveryPath.split("/").slice(-1).pop();
-		
-					let oNextUIState = "";
-		
-					this.oOwnerComponent.getHelper().then(function (oHelper) {
-						oNextUIState = oHelper.getNextUIState(2);
-						this.oRouter.navTo("objectDetail", {
-							layout: oNextUIState.layout,
-							objectId: selectedObj?.PriceAgreementId,
-							deliveryId: delivery
-						});
-					}.bind(this));
-					
-			
+			var deliveryPath = objContext.getPath(),
+				delivery = deliveryPath.split("/").slice(-1).pop();
+
+			let oNextUIState = "";
+
+			this.oOwnerComponent.getHelper().then(function (oHelper) {
+				oNextUIState = oHelper.getNextUIState(2);
+				this.oRouter.navTo("objectDetail", {
+					layout: oNextUIState.layout,
+					objectId: selectedObj?.PriceAgreementId,
+					deliveryId: delivery
+				});
+			}.bind(this));
+
+
 		}
 
 	});
