@@ -67,11 +67,7 @@
 						width="auto"
 						updateFinished=".onUpdateFinished"
 						alternateRowColors="true"
-						contextualWidth="Auto" 
-						popinLayout="Block"
-						growing="true"
-						growingThreshold="15"
-						growingScrollToLoad="false">
+						contextualWidth="Auto">
 					<columns>
 						<Column>
 							<header>
