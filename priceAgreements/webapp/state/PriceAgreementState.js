@@ -83,7 +83,13 @@ sap.ui.define([
                 return this.getPriceAgreementInstance().getCandidatePrices();
             });
         },
-
+        findActivePriceAgreement:function(){
+            const priceAgreement = this.getPriceAgreementInstance();
+            const instituteId = priceAgreement.getInstituteId();
+            const productPackId = priceAgreement.getProductPackId();
+            // const expiryDate = ;//priceAgreement.getExpiryDate()
+            return this.getService().getPriceAgreementsByInstituteProduct(instituteId,productPackId,new Date());
+        },
         saveCandidatePrices: function () {
             const candidatePrices = this.getPriceAgreementInstance().getCandidatePrices().filter(cap => cap.applied); // get only the applied candidatePrices
             const priceAgreement = this.getProperty("priceAgreement");
