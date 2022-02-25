@@ -1,95 +1,149 @@
 {
-  "_version": "1.32.0",
-  "sap.app": {
-    "id": "com.bayer.tender.priceagreements.priceagreements",
-    "type": "application",
-    "i18n": "i18n/i18n.properties",
-    "applicationVersion": {
-      "version": "1.0.0"
-    },
-    "title": "{{appTitle}}",
-    "description": "{{appDescription}}",
-    "resources": "resources.json",
-    "ach": "ach"
-  },
-  "sap.ui": {
-    "technology": "UI5",
-    "icons": {
-      "icon": "sap-icon://task",
-      "favIcon": "",
-      "phone": "",
-      "phone@2": "",
-      "tablet": "",
-      "tablet@2": ""
-    },
-    "deviceTypes": {
-      "desktop": true,
-      "tablet": true,
-      "phone": true
-    }
-  },
+	"_version": "1.32.0",
 
-  "sap.ui5": {
-    "flexEnabled": false,
-    "rootView": {
-      "viewName": "com.bayer.tender.priceagreements.priceagreements.view.App",
-      "type": "XML",
-      "async": true,
-      "id": "App"
-    },
-    "dependencies": {
-      "minUI5Version": "1.66.0",
-      "libs": {
-        "sap.ui.core": {},
-        "sap.m": {},
-        "sap.ui.layout": {}
-      }
-    },
-    "contentDensities": {
-      "compact": true,
-      "cozy": true
-    },
-    "models": {
-      "i18n": {
-        "type": "sap.ui.model.resource.ResourceModel",
-        "settings": {
-          "bundleName": "com.bayer.tender.priceagreements.priceagreements.i18n.i18n"
-        }
-      }
-    },
-    "resources": {
-      "css": [
-        {
-          "uri": "css/style.css"
-        }
-      ]
-    },
-    "routing": {
-      "config": {
-        "routerClass": "sap.m.routing.Router",
-        "viewType": "XML",
-        "async": true,
-        "viewPath": "com.bayer.tender.priceagreements.priceagreements.view",
-        "controlAggregation": "pages",
-        "controlId": "app",
-        "clearControlAggregation": false
-      },
-      "routes": [
-        {
-          "name": "RouteApp",
-          "pattern": "RouteApp",
-          "target": ["TargetApp"]
-        }
-      ],
-      "targets": {
-        "TargetApp": {
-          "viewType": "XML",
-          "transition": "slide",
-          "clearControlAggregation": false,
-          "viewId": "App",
-          "viewName": "App"
-        }
-      }
-    }
-  }
+	"sap.app": {
+		"id": "com.bayer.tender.priceagreements",
+		"type": "application",
+		"i18n": "i18n/i18n.properties",
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
+
+		"applicationVersion": {
+		"version": "0.0.7"
+		},
+		"resources": "resources.json",
+		"dataSources": {
+			"mainService": {
+				"uri": "/v2/priceagreement/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0",
+					"localUri": "localService/metadata.xml"
+				}
+			}
+		}
+	},
+
+	"sap.ui": {
+		"technology": "UI5",
+		"icons": {
+			"icon": "sap-icon://detail-view",
+			"favIcon": "",
+			"phone": "",
+			"phone@2": "",
+			"tablet": "",
+			"tablet@2": ""
+		},
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		}
+	},
+
+	"sap.ui5": {
+		"rootView": {
+			"viewName": "com.bayer.tender.priceagreements.view.App",
+			"type": "XML",
+			"async": true,
+			"id": "app"
+		},
+		
+		"resourceRoots":{
+			"com.bayer.tender.uilib": "./libraries/uilib/src/com/bayer/tender/uilib"
+		},
+		"dependencies": {
+			"minUI5Version": "1.90.0",
+			"libs": {
+				"sap.ui.core": {},
+				"sap.m": {},
+				"sap.f": {},
+				"com.bayer.tender.uilib":{}
+			}
+		},
+
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "com.bayer.tender.priceagreements.i18n.i18n"
+				}
+			},
+			"": {
+				"dataSource": "mainService",
+				"preload": true
+			}
+		},
+
+		"routing": {
+			"config": {
+				"routerClass": "sap.f.routing.Router",
+				"viewType": "XML",
+				"viewPath": "com.bayer.tender.priceagreements.view",
+				"controlId": "layout",
+				"controlAggregation": "beginColumnPages",
+				"bypassed": {
+					"target": "notFound"
+				},
+				"async": true
+			},
+
+			"routes": [
+				{
+					"pattern": "",
+					"name": "master",
+					"target": "master"
+				},
+				{
+					"pattern": "PriceAgreements/{objectId}",
+					"name": "object",
+					"target": [
+						"master",
+						"object"
+					]
+				},
+				{
+					"pattern": "PriceAgreements/{objectId}/delivery/{deliveryId}/{layout}",
+					"name": "objectDetail",
+					"target": [
+						"master",
+						"object",
+						"objectDetail"
+					]
+				}
+			],
+
+			"targets": {
+				"master": {
+					"viewName": "Master",
+					"viewLevel": 1,
+					"viewId": "master"
+				},
+				"object": {
+					"viewName": "Detail",
+					"viewId": "detail",
+					"viewLevel": 1,
+					"controlAggregation": "midColumnPages"
+				},
+				"objectDetail": {
+					"viewName": "DetailDetail",
+					"controlAggregation": "endColumnPages"
+				},
+				"detailObjectNotFound": {
+					"viewName": "DetailObjectNotFound",
+					"viewId": "detailObjectNotFound",
+					"controlAggregation": "midColumnPages"
+				},
+				"notFound": {
+					"viewName": "NotFound",
+					"viewId": "notFound"
+				}
+			}
+		}
+	}
 }

@@ -1,0 +1,134 @@
+<mvc:View
+	controllerName="com.bayer.tender.priceagreements.controller.Master"
+	xmlns="sap.m"
+	xmlns:semantic="sap.f.semantic"
+	xmlns:f="sap.f"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:core="sap.ui.core">
+
+	<f:DynamicPage id="dynamicPageId" toggleHeaderOnTitleClick="false">
+		<!-- DynamicPage Title -->
+		<f:title>
+			<f:DynamicPageTitle>
+				<f:heading>
+					<Title text="Price Agreements"/>
+				</f:heading>
+			</f:DynamicPageTitle>
+		</f:title>
+
+		<!-- DynamicPage Content -->
+		<f:content>
+			<VBox fitContainer="true">
+				<OverflowToolbar class="sapFDynamicPageAlignContent">
+					<Select	id="idslctfilter" change=".setFilter">
+						<core:Item key="" text=""/>
+						<core:Item key="newAgreementsKey" text="New Agreements"/>
+						<core:Item key="newMaterialNumbersKey" text="New Material Numbers"/>
+						<core:Item key="updatedRetailPriceKey" text="Updated Retail Price"/>
+						<core:Item key="expiringSoonKey" text="Expiring Soon"/>
+						<core:Item key="expiredKey" text="Expired"/>
+					</Select>
+					<Label text="{i18n>Product}"/>
+					<Select  
+						id="idProductPackfilter"
+						change=".setFilter" 
+						items="{ 
+							path: '/PriceAgreementProductNames',
+							events: {
+								dataReceived: '.onProductPackIdsReceived'
+							}
+						}">
+						<core:Item key="{ProductPackId}" text="{ProductName}" />
+					</Select>
+					<ToolbarSpacer/>
+						<Button
+							id="idApplyNewPrice"
+							text="Apply price"
+							enabled="{masterView>/btnApplyNewPriceEnabled}"
+							type="Emphasized"
+							press=".onApplyNewPricePress"/>				
+						<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
+						<Button icon="sap-icon://filter" text="" press=".onOpenViewSettings"/>
+				</OverflowToolbar>
+				<Table
+						id="list"
+						inset="false"
+						items="{
+							path: '/PriceAgreements',
+							sorter: {
+								path: 'ID',
+								descending: false
+							},
+							parameters: {
+								expand: 'Product/ProductPack,Tender,Institute,CustomerPrices,ConsumerPrice,FOC'
+							}
+						}"
+						class="sapFDynamicPageAlignContent"
+						width="auto"
+						updateFinished=".onUpdateFinished"
+						alternateRowColors="true"
+						contextualWidth="Auto">
+					<columns>
+						<Column>
+							<header>
+								<ObjectIdentifier title="{i18n>TenderId}" />
+							</header>
+						</Column>
+						<Column>
+							<header>
+								<ObjectIdentifier title="{i18n>Reference}" />
+							</header>
+						</Column>
+						<Column visible="true">
+							<header>
+								<ObjectIdentifier title="{i18n>Product}" />
+							</header>
+						</Column>
+						<Column visible="true">
+							<header>
+								<ObjectIdentifier title="{i18n>Price}" />
+							</header>
+						</Column>
+						<Column>
+							<header>
+								<ObjectIdentifier title="{i18n>effectiveDate}" />
+							</header>
+						</Column>
+						<Column>
+							<header>
+								<ObjectIdentifier title="{i18n>expiryDate}" />
+							</header>
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="{= ${Synchronized} === true ? 'None' : 'Warning'}" id="items">
+							<cells>
+								<Text text="{Tender/TenderID}"/>
+								<Text text="{Tender/TenderName}"/>
+								<Text text="{Product/ProductPack/PRODUCTPACKNAME}"/>
+								<Text text="{Price}"/>
+								<Text text="{
+										path: 'EffectiveDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd'
+										}
+									}" 
+								/>
+								<Text text="{
+										path: 'ExpiryDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd'
+										}
+									}" 
+								/>
+							</cells>
+						</ColumnListItem>
+					</items>
+				</Table>
+			</VBox>
+		</f:content>
+	</f:DynamicPage>
+
+</mvc:View>
