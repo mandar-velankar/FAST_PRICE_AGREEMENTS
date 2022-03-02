@@ -63,7 +63,13 @@
 
 		    <ObjectPageSection showTitle="false" visible="true">
 					<ObjectPageSubSection mode="Expanded" title="Price Agreement Details">
-						<form:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
+                    <m:VBox>   
+                    <m:Text text="{detailView>/selectedProductUoM}"/>
+						<m:RadioButtonGroup id="rbgUoM" columns="2" selectedIndex="{= ${detailView>/selectedProductUoM} === 'Pack' ? 0 : 1}" select=".onRbgUoMChange">
+						    <m:RadioButton id="rbgPack" text="Pack" />
+						    <m:RadioButton id="rbgUnit" text="Unit" />
+					    </m:RadioButtonGroup>
+                        <form:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12"
 										adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2"
 										singleContainerFullSize="false" backgroundDesign="Solid" id="opportunityDetailsFormId">
 							<form:content>
@@ -88,7 +94,7 @@
 										valueState="{pa>/priceAgreement/expiryDateValueState}" enabled="{pa>/editMode}"/>
 
 								<m:Label text="{i18n>listPrice}" design="Bold" required="false"/>
-								<m:Input value="{pa>/priceAgreement/listPrice} "  description="EUR" enabled="false"/>
+								<m:Input value="{pa>/priceAgreement/listPrice} "  description="EUR" enabled="false" />
 
 								<m:Label text="{i18n>RetailPrice}" design="Bold" required="false"/>
 								<m:Input value="{pa>/priceAgreement/retailPrice}" description="EUR" enabled="false" />
@@ -111,6 +117,7 @@
 
 							</form:content>
 					</form:SimpleForm>
+                    </m:VBox>     
 					</ObjectPageSubSection>
 
 					<ObjectPageSubSection mode="Expanded">

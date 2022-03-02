@@ -21,7 +21,6 @@ sap.ui.define([
 		/* =========================================================== */
 
 		onInit: function () {
-
 			this.oOwnerComponent = this.getOwnerComponent();
 			this.oRouter = this.oOwnerComponent.getRouter();
 
@@ -31,7 +30,8 @@ sap.ui.define([
 			var oViewModel = new JSONModel({
 				busy: false,
 				delay: 0,
-				lineItemListTitle: this.getResourceBundle().getText("detailLineItemTableHeading")
+				lineItemListTitle: this.getResourceBundle().getText("detailLineItemTableHeading"),
+                selectedProductUoM: ""
 			});
 			this.paState = this.getOwnerComponent().getState(this.getOwnerComponent().PA);
 			this.setModel(this.paState.getModel(), "pa");
@@ -101,10 +101,12 @@ sap.ui.define([
 			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
 
 			this.getModel().metadataLoaded().then(function () {
+				this.paState.getPriceAgreement(this.sObjectId).then(function () {
+                    this._setSelectedProductUoM(this.paState.getPriceAgreementInstance().uoM);
 
-				this.paState.getPriceAgreement(this.sObjectId);
+                }.bind(this));
 				// this.paState.getCandidatePrices(this.sObjectId, null);
-			}.bind(this));
+			}.bind(this))
 		},
 
 		/**
@@ -332,7 +334,17 @@ sap.ui.define([
 			}.bind(this));
 
 
-		}
+		},
+
+        onRbgUoMChange: function(evt){
+			const selectedIndex = evt.getParameter("selectedIndex");
+			const uom = selectedIndex === 0 ? "Pack" : "Unit";
+			this._setSelectedProductUoM(uom);
+		},
+
+		_setSelectedProductUoM(uom){
+			this.getView().getModel("detailView").setProperty("/selectedProductUoM", uom);
+		},
 
 	});
 
