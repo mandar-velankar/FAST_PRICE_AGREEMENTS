@@ -64,7 +64,7 @@
 		    <ObjectPageSection showTitle="false" visible="true">
 					<ObjectPageSubSection mode="Expanded" title="Price Agreement Details">
                     <m:VBox>   
-                    <m:Text text="{detailView>/selectedProductUoM}"/>
+                    <m:Text text="{pa>/priceAgreement/uoM}"/>
 						<m:RadioButtonGroup id="rbgUoM" columns="2" selectedIndex="{= ${detailView>/selectedProductUoM} === 'Pack' ? 0 : 1}" select=".onRbgUoMChange">
 						    <m:RadioButton id="rbgPack" text="Pack" />
 						    <m:RadioButton id="rbgUnit" text="Unit" />
@@ -93,17 +93,27 @@
 										change=".handleDateChange"
 										valueState="{pa>/priceAgreement/expiryDateValueState}" enabled="{pa>/editMode}"/>
 
-								<m:Label text="{i18n>listPrice}" design="Bold" required="false"/>
-								<m:Input value="{pa>/priceAgreement/listPrice} "  description="EUR" enabled="false" />
-
-								<m:Label text="{i18n>RetailPrice}" design="Bold" required="false"/>
-								<m:Input value="{pa>/priceAgreement/retailPrice}" description="EUR" enabled="false" />
+								
+                                <m:Label text="{i18n>listPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
+								<m:Input visible="{= ${detailView>/selectedProductUoM} === 'Pack'}" value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/listPrice} : ${pa>/priceAgreement/listPrice}*${pa>/priceAgreement/product/productPack/pACKFACTOR}  }"  description="EUR" enabled="false" />
+                                <m:Label text="{i18n>listPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'}"/>
+                                <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/listPrice} : ${pa>/priceAgreement/listPrice}/${pa>/priceAgreement/product/productPack/pACKFACTOR}  }"  description="EUR" enabled="false" />                                
+								
+                                <m:Label text="{i18n>RetailPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
+								<m:Input visible="{= ${detailView>/selectedProductUoM} === 'Pack'}" value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/retailPrice} : ${pa>/priceAgreement/retailPrice}*${pa>/priceAgreement/product/productPack/pACKFACTOR}  }"  description="EUR" enabled="false" />
+                                <m:Label text="{i18n>RetailPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'}"/>
+                                <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/retailPrice} : ${pa>/priceAgreement/retailPrice}/${pa>/priceAgreement/product/productPack/pACKFACTOR}  }"  description="EUR" enabled="false" />
+                                
 
 								<m:Label text="{i18n>Discount}" design="Bold" required="false"/>
 								<m:Input value="{pa>/priceAgreement/discount}"  enabled="false"/>
 
-								<m:Label text="{i18n>price}" design="Bold" required="false"/>
-								<m:Input value="{pa>/priceAgreement/price} " description="EUR"  enabled="false"/>
+                                <m:Label text="{i18n>price}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
+								<m:Input visible="{= ${detailView>/selectedProductUoM} === 'Pack'}" value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/price} : ${pa>/priceAgreement/price}*${pa>/priceAgreement/product/productPack/pACKFACTOR}  }"  description="EUR" enabled="false" />
+                                <m:Label text="{i18n>price}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'}"/>
+                                <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/price} : (${pa>/priceAgreement/price}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(1)  }"  description="EUR" enabled="false" />
+
+                                
 
 								<core:Title text=""/>
 								<m:Label text="{i18n>awardedVol}" design="Bold" required="false"/>
