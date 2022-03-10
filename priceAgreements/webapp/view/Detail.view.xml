@@ -64,7 +64,6 @@
 		    <ObjectPageSection showTitle="false" visible="true">
 					<ObjectPageSubSection mode="Expanded" title="Price Agreement Details">
                     <m:VBox>   
-                    <m:Text text="{pa>/priceAgreement/uoM}"/>
 						<m:RadioButtonGroup id="rbgUoM" columns="2" selectedIndex="{= ${detailView>/selectedProductUoM} === 'Pack' ? 0 : 1}" select=".onRbgUoMChange">
 						    <m:RadioButton id="rbgPack" text="Pack" />
 						    <m:RadioButton id="rbgUnit" text="Unit" />
