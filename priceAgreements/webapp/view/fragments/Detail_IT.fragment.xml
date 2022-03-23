@@ -50,7 +50,7 @@
                         <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/retailPrice} : ${pa>/priceAgreement/retailPrice}/${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" description="EUR" enabled="false" />
 
 
-                        <m:Label text="{i18n>Discount}" design="Bold" required="false"/>
+                        <m:Label text="{i18n>AdditionalDiscount}" design="Bold" required="false"/>
                         <m:Input value="{pa>/priceAgreement/discount}" enabled="false"/>
 
                         <m:Label text="{i18n>price}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>

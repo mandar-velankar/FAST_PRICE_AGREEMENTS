@@ -19,7 +19,15 @@
                     <m:RadioButton text="Pack" />
                     <m:RadioButton text="Unit" />
                 </m:RadioButtonGroup>
-                <form:SimpleForm editable="true" layout="ResponsiveGridLayout" labelSpanXL="5" labelSpanL="5" labelSpanM="12" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2" singleContainerFullSize="false" backgroundDesign="Solid" id="opportunityDetailsFormId">
+                <form:SimpleForm 
+                    title="Descuento Especial -- ADD condition type"
+                    editable="true" 
+                    layout="ResponsiveGridLayout" 
+                    labelSpanXL="5" 
+                    labelSpanL="5" labelSpanM="12" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" 
+                    emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2" singleContainerFullSize="false" 
+                    backgroundDesign="Solid" 
+                    id="opportunityDetailsFormId">
                     <form:content>
                         <core:Title text=""/>
                         <m:Label text="{i18n>effectiveDate}" design="Bold" required="false"/>
@@ -39,24 +47,60 @@
 										}}" valueFormat="yyyy-MM-dd" change=".handleDateChange" valueState="{pa>/priceAgreement/expiryDateValueState}" enabled="{pa>/editMode}"/>
 
 
-                        <m:Label text="{i18n>listPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
+                        <m:Label text="{i18n>PVL}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
                         <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Pack'}" value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/listPrice} : ${pa>/priceAgreement/listPrice}*${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" description="EUR" enabled="false" />
-                        <m:Label text="{i18n>listPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'}"/>
+                        <m:Label text="{i18n>PVL}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'}"/>
                         <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/listPrice} : ${pa>/priceAgreement/listPrice}/${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" description="EUR" enabled="false" />
+                        
+                        <m:Label text="{i18n>Discount}" design="Bold" required="false"/>
+                        <m:Input value="{pa>/priceAgreement/discount}" enabled="false"/>
 
-                        <m:Label text="{i18n>RetailPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
+                        <m:Label text="{i18n>RoyalDecree}" design="Bold" required="true"/> 
+                        <m:Select selectedKey="{fastAppData>RoyalDecree}" enabled="false"> 
+                            <m:items>
+                                <core:Item key="" text="" />
+                                <core:Item key="Yes" text="Yes" />
+                                <core:Item key="No" text="No" />									
+                            </m:items>
+                        </m:Select>
+                        <m:Input value="{fastAppData>RoyalDecreePercentage}" type="Number" description="%" enabled="false" fieldWidth="60%"/>
+
+                        <!-- Precio Neto only -->
+                        <m:Label text="{i18n>StandardDiscount}" design="Bold" required="true"/>
+                        <m:Input value="{= ${fastAppData>StandardDiscount} * 100}" description="%" type="Number" enabled="false" fieldWidth="80%"/>
+                        <m:Label text="{i18n>AdditionalDiscount}" design="Bold" required="true"/>
+                        <m:Input value="{= ${fastAppData>AdditionalDiscount} * 100}" description="%" type="Number" enabled="false" fieldWidth="80%"/>
+                        <m:Label text="{i18n>NetPriceBeforeRC}" design="Bold" required="true"/>
+                        <m:Input value="{fastAppData>NetPriceWithoutTaxBeforeDeductionRD}" type="Number" enabled="false" fieldWidth="80%" liveChange=".calculateDiscountsAndNetPricesPrecioNeto"/>
+                        <m:Label text="{i18n>NetPriceAfterRC}" design="Bold" required="true"/>
+                        <m:Input value="{fastAppData>NetPriceWithoutTaxAfterDeductionRD}" type="Number" enabled="false" fieldWidth="80%"/>
+                        <m:Label text="{i18n>MaximumPrice}" design="Bold" required="true"/>
+                        <m:Input value="{fastAppData>MaximumPrice}" type="Number" enabled="false" fieldWidth="80%" liveChange=".validateMaximumPrice"/>
+                        
+                        
+                        <m:Label text="{i18n>NetPriceWOtax}" design="Bold" required="true"/>
+                        <m:Input value="{fastAppData>NetPriceWithoutTax}" type="Number" enabled="false" fieldWidth="80%"/>    
+                        <m:Label text="{i18n>Tax}" design="Bold" required="true"/>
+                        <m:Input value="{fastAppData>Tax}" type="Number" description="%" enabled="false" fieldWidth="80%"/>
+                        <m:Label text="{i18n>NetPriceWtax}" design="Bold" required="true"/>
+                        <m:Input value="{fastAppData>NetPriceWithTax}" type="Number" enabled="false" fieldWidth="80%"/> <!-- Used for Descuento Comercial -->
+                        <m:Input value="{fastAppData>NetPriceWithTaxAfterDeductionRD}" type="Number" enabled="false" fieldWidth="80%"/> <!-- Used for Precio Neto -->
+
+                        <!-- Descuento Especial only -->
+                        <m:Label text="{i18n>NetPriceWOtax}" design="Bold" required="true"/>
+                        <m:Input value="{= ${fastAppData>NetPriceWithoutTax} ? ${fastAppData>NetPriceWithoutTax} : 0}" type="Number" enabled="false" fieldWidth="80%"/>
+
+                        
+
+                        <!-- <m:Label text="{i18n>RetailPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
                         <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Pack'}" value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/retailPrice} : ${pa>/priceAgreement/retailPrice}*${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" description="EUR" enabled="false" />
                         <m:Label text="{i18n>RetailPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'}"/>
                         <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/retailPrice} : ${pa>/priceAgreement/retailPrice}/${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" description="EUR" enabled="false" />
 
-
-                        <m:Label text="{i18n>Discount}" design="Bold" required="false"/>
-                        <m:Input value="{pa>/priceAgreement/discount}" enabled="false"/>
-
                         <m:Label text="{i18n>price}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
                         <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Pack'}" value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/price} : ${pa>/priceAgreement/price}*${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" description="EUR" enabled="false" />
                         <m:Label text="{i18n>price}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'}"/>
-                        <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/price} : (${pa>/priceAgreement/price}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(1)  }" description="EUR" enabled="false" />
+                        <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/price} : (${pa>/priceAgreement/price}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(1)  }" description="EUR" enabled="false" /> -->
 
 
 
@@ -182,6 +226,53 @@
                     </m:IconTabFilter>
                     <m:IconTabFilter text="FOC" key="foc">
                         <m:Table id="idFocTable" mode="SingleSelectMaster" selectionChange=".onFocItemSelect" items="{pa>/priceAgreement/FOC}">
+                            <m:columns>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Product" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="FOC" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="FOC Step" wrapping="true"/>
+                                </m:Column>
+                            </m:columns>
+                            <m:items>
+                                <m:ColumnListItem>
+                                    <m:cells>
+                                        <m:Text text="{pa>ProductPackName}"/>
+                                        <m:Text text="{= ${pa>FreeGoods_ABS_PCT} === 'PCT' ? ${pa>FreeGoods} * 100 : ${pa>FreeGoods}} {= ${pa>FreeGoods_ABS_PCT} === 'PCT' ? '%' : 'units'}"/>
+                                        <m:Text text="{= ${pa>FreeGoods_Step} === '0' ? '' : ${pa>FreeGoods_Step} + ' units' }"/>
+                                    </m:cells>
+                                </m:ColumnListItem>
+                            </m:items>
+                        </m:Table>
+                    </m:IconTabFilter>
+                    <m:IconTabFilter text="Rappel" key="rappel">
+                        <m:HBox alignItems="Center">
+                            <m:Label text="{i18n>Liquidation}" class="sapUiTinyMarginEnd"/>
+                            <m:Select selectedKey="{fastAppData>Liquidation}" enabled="{fastAppData>/EditMode}"> 
+                                <m:items>
+                                    <core:Item key="" text="" />
+                                    <core:Item key="Monthly" text="Monthly" />
+                                    <core:Item key="Quarterly" text="Quarterly" />
+                                    <core:Item key="Annually" text="Annually" />									
+                                </m:items>
+                            </m:Select>
+                        </m:HBox>
+                        <m:HBox alignItems="Center">
+                            <m:Label text="{i18n>PaymentBackDate}" class="sapUiTinyMarginEnd"/>
+                            <m:DatePicker
+                                    value="{fastAppData>RefundDate}" 
+                                    valueFormat="yyyy-MM-dd" 
+                                    displayFormat="long"
+                                    placeholder="Enter Date"
+                                    change="handleChange"
+                                    enabled="false"
+                                    class="sapUiSmallMarginBottom"/>
+                        </m:HBox>
+                        
+                        <m:Table id="idRappedlTable" mode="SingleSelectMaster" items="{pa>/priceAgreement/rappel}">
                             <m:columns>
                                 <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
                                     <m:Label text="Product" wrapping="true"/>
