@@ -5,8 +5,9 @@ sap.ui.define([
 	"sap/m/library",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-	"sap/m/MessageBox"
-], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterOperator, MessageBox) {
+	"sap/m/MessageBox",
+	"sap/ui/core/Fragment"
+], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterOperator, MessageBox, Fragment) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
@@ -44,6 +45,7 @@ sap.ui.define([
 
 			this.setModel(oViewModel, "detailView");
 		},
+
 
 		/* =========================================================== */
 		/* event handlers                                              */
@@ -97,16 +99,41 @@ sap.ui.define([
 		 * @private
 		 */
 		_onObjectMatched: function (oEvent) {
+
+			this.getView().setBusyIndicatorDelay(0);
+			this.getView().setBusy(true);
 			this.sObjectId = oEvent.getParameter("arguments").objectId;
 			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
 
 			this.getModel().metadataLoaded().then(function () {
-				this.paState.getPriceAgreement(this.sObjectId).then(function () {
+				this.paState.getPriceAgreement(this.sObjectId).then(function (priceAgreement) {
                     this._setSelectedProductUoM(this.paState.getPriceAgreementInstance().uoM);
-
+					this.addCountryDetailFragments(priceAgreement.countryCode);
+					this.getView().setBusy(false);
                 }.bind(this));
 				// this.paState.getCandidatePrices(this.sObjectId, null);
 			}.bind(this))
+		},
+
+		addCountryDetailFragments: function(sCountryCode){
+			// clear the objectPage first
+            const objectPage = this.byId("DetailPage");
+			objectPage.destroySections();
+
+            const sFragmentPath = "com.bayer.tender.priceagreements.view.fragments";
+
+            if(sCountryCode) {
+				Fragment.load({
+					id: this.getView().getId(),
+					name: sFragmentPath.concat(".Detail_",sCountryCode),
+					controller: this
+				})
+				.then(function (ObjectPageSection) {
+					if(ObjectPageSection.getMetadata().getName() === "sap.uxap.ObjectPageSection"){                
+						objectPage.addSection(ObjectPageSection);
+					}
+				}.bind(this));
+            }
 		},
 
 		/**
