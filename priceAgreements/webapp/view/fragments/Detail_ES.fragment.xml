@@ -55,7 +55,7 @@
                         <m:Label text="{i18n>Discount}" design="Bold" required="false"/>
                         <m:Input value="{pa>/priceAgreement/discount}" enabled="false"/>
 
-                        <m:Label text="{i18n>RoyalDecree}" design="Bold" required="true"/> 
+                        <m:Label text="{i18n>RoyalDecree}" design="Bold" required="false"/> 
                         <m:Select selectedKey="{fastAppData>RoyalDecree}" enabled="false"> 
                             <m:items>
                                 <core:Item key="" text="" />
@@ -66,28 +66,28 @@
                         <m:Input value="{fastAppData>RoyalDecreePercentage}" type="Number" description="%" enabled="false" fieldWidth="60%"/>
 
                         <!-- Precio Neto only -->
-                        <m:Label text="{i18n>StandardDiscount}" design="Bold" required="true"/>
+                        <m:Label text="{i18n>StandardDiscount}" design="Bold" required="false"/>
                         <m:Input value="{= ${fastAppData>StandardDiscount} * 100}" description="%" type="Number" enabled="false" fieldWidth="80%"/>
-                        <m:Label text="{i18n>AdditionalDiscount}" design="Bold" required="true"/>
+                        <m:Label text="{i18n>AdditionalDiscount}" design="Bold" required="false"/>
                         <m:Input value="{= ${fastAppData>AdditionalDiscount} * 100}" description="%" type="Number" enabled="false" fieldWidth="80%"/>
-                        <m:Label text="{i18n>NetPriceBeforeRC}" design="Bold" required="true"/>
+                        <m:Label text="{i18n>NetPriceBeforeRC}" design="Bold" required="false"/>
                         <m:Input value="{fastAppData>NetPriceWithoutTaxBeforeDeductionRD}" type="Number" enabled="false" fieldWidth="80%" liveChange=".calculateDiscountsAndNetPricesPrecioNeto"/>
-                        <m:Label text="{i18n>NetPriceAfterRC}" design="Bold" required="true"/>
+                        <m:Label text="{i18n>NetPriceAfterRC}" design="Bold" required="false"/>
                         <m:Input value="{fastAppData>NetPriceWithoutTaxAfterDeductionRD}" type="Number" enabled="false" fieldWidth="80%"/>
-                        <m:Label text="{i18n>MaximumPrice}" design="Bold" required="true"/>
+                        <m:Label text="{i18n>MaximumPrice}" design="Bold" required="false"/>
                         <m:Input value="{fastAppData>MaximumPrice}" type="Number" enabled="false" fieldWidth="80%" liveChange=".validateMaximumPrice"/>
                         
                         
-                        <m:Label text="{i18n>NetPriceWOtax}" design="Bold" required="true"/>
+                        <m:Label text="{i18n>NetPriceWOtax}" design="Bold" required="false"/>
                         <m:Input value="{fastAppData>NetPriceWithoutTax}" type="Number" enabled="false" fieldWidth="80%"/>    
-                        <m:Label text="{i18n>Tax}" design="Bold" required="true"/>
+                        <m:Label text="{i18n>Tax}" design="Bold" required="false"/>
                         <m:Input value="{fastAppData>Tax}" type="Number" description="%" enabled="false" fieldWidth="80%"/>
-                        <m:Label text="{i18n>NetPriceWtax}" design="Bold" required="true"/>
+                        <m:Label text="{i18n>NetPriceWtax}" design="Bold" required="false"/>
                         <m:Input value="{fastAppData>NetPriceWithTax}" type="Number" enabled="false" fieldWidth="80%"/> <!-- Used for Descuento Comercial -->
                         <m:Input value="{fastAppData>NetPriceWithTaxAfterDeductionRD}" type="Number" enabled="false" fieldWidth="80%"/> <!-- Used for Precio Neto -->
 
                         <!-- Descuento Especial only -->
-                        <m:Label text="{i18n>NetPriceWOtax}" design="Bold" required="true"/>
+                        <m:Label text="{i18n>NetPriceWOtax}" design="Bold" required="false"/>
                         <m:Input value="{= ${fastAppData>NetPriceWithoutTax} ? ${fastAppData>NetPriceWithoutTax} : 0}" type="Number" enabled="false" fieldWidth="80%"/>
 
                         
