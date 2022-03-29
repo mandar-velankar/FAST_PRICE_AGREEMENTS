@@ -20,6 +20,16 @@
 		<f:content>
 			<VBox fitContainer="true">
 				<OverflowToolbar class="sapFDynamicPageAlignContent">
+                    <Select id="idSlctCountry"  
+                            items="{ path: '/UserCountry', sorter: { path: 'Country/CountryName' }, parameters: { expand: 'Country' },
+                                     events: {
+								        dataReceived: '.onUserCountriesReceived'
+							         }
+                                    }"
+							change=".setFilter"
+							visible="{= ${appView>/layout} === 'OneColumn' }">
+							<core:Item key="{CountryCode}" text="{Country/CountryName}"/>
+					</Select>
 					<Select	id="idslctfilter" change=".setFilter">
 						<core:Item key="" text=""/>
 						<core:Item key="newAgreementsKey" text="New Agreements"/>
@@ -28,7 +38,7 @@
 						<core:Item key="expiringSoonKey" text="Expiring Soon"/>
 						<core:Item key="expiredKey" text="Expired"/>
 					</Select>
-					<Label text="{i18n>Product}"/>
+					<Label text="{i18n>Product}" visible="{= ${appView>/layout} === 'OneColumn' }"/>
 					<Select  
 						id="idProductPackfilter"
 						change=".setFilter" 
