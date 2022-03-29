@@ -179,8 +179,26 @@ sap.ui.define([
 		},
 
 		onEditModePress: function () {
+			const bValid = this._validateEditMode();
+			if(bValid) this.paState.setEditMode(true);
+		},
+		
+		_validateEditMode: function(){
+			const countryCode = this.paState.getProperty("priceAgreement").getTender().getCountryCode();
+			const bValid = this._validateCountryEditMode(countryCode);
+			return bValid;
+		},
 
-			this.paState.setEditMode(true);
+		_validateCountryEditMode: function(countryCode){
+			const tender = this.paState.getProperty("priceAgreement").getTender();
+			const bSynchronised = this.paState.getProperty("priceAgreement").synchronized;
+			if(countryCode === "ES"){
+				if(bSynchronised && tender.getClassification() === "Commercial Agreement"){
+					MessageBox.error("This commercial agreement is already synchronised with SAP. \nCommercial agreements cannot be extended. A new commercial agreement must be created to proceed.");
+					return false;
+				}
+			}
+			return true;
 		},
 
 		handleDateChange: function (oEvent) {
