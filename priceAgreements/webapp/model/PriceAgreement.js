@@ -6,8 +6,9 @@ sap.ui.define([
     "./Candidate",
     "./Material",
     "./CustomerPrice",
-    "./CandidatePrice"
-], function (BaseObject,Institute,Product,Tender,Candidate,CustomerPrice, Material,CandidatePrice) {
+    "./CandidatePrice",
+    "./PriceCondition"
+], function (BaseObject,Institute,Product,Tender,Candidate,CustomerPrice,Material,CandidatePrice,PriceCondition) {
     "use strict";
 
     var PriceAgreement = BaseObject.extend("com.bayer.tender.priceagreements.model.PriceAgreement", {
@@ -21,6 +22,7 @@ sap.ui.define([
             this.materials = [];
             this.customerPrices = [];
             this.candidatePrices = [];
+            this.priceConditions = [];
             this.expiryDateValueState="None";
             if (data) {
                 //copy array's manually to objects
@@ -34,6 +36,7 @@ sap.ui.define([
                 data.customerPrices && this.setCustomerPrices(data.customerPrices);//used for backup restore
                 data.CustomerPrices && this.setCustomerPrices(data.CustomerPrices.results);
                 data.candidatePrices && this.setCandidatePrices(data.candidatePrices);//used for backup restore
+                data.PriceConditions && this.setPriceConditions(data.PriceConditions.results);
                 this.MaterialsFOC = data.MaterialsFOC;
             }
         },
@@ -41,6 +44,9 @@ sap.ui.define([
 
         setCandidatePrices:function(candidatePrices){
             this.candidatePrices = (candidatePrices && candidatePrices.map(candidatePrice => new CandidatePrice(candidatePrice)) ) || [];
+        },
+        setPriceConditions:function(priceConditions){
+            this.priceConditions = priceConditions.map(priceCondition => new PriceCondition(priceCondition));
         },
         setInstitute: function (institute){
             if(institute){
@@ -72,6 +78,12 @@ sap.ui.define([
         },
         getCandidatePrices: function(){
             return this.candidatePrices || [];
+        },
+        getPriceConditions: function(){
+            return this.priceConditions || [];
+        },
+        getMainPriceCondition: function(){
+            return this.priceConditions.find(priceCondition => priceCondition.getClassification().isMain);
         },
         getInstitute: function (){
             return this.institute || undefined;
@@ -129,6 +141,7 @@ sap.ui.define([
             all.materials = this.materials.map(material=>material.getAll());
             all.customerPrices = this.customerPrices.map(customerPrice=>customerPrice.getAll());
             all.candidatePrices = this.candidatePrices.map(candidatePrice=>candidatePrice.getAll());
+            all.priceConditions = this.priceConditions.map(priceCondition => priceCondition.getAll());
             
             return all;
         }
