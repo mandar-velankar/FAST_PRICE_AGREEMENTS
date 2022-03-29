@@ -319,7 +319,11 @@ sap.ui.define([
 			const updatedRetailPriceFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'updatedretailpricekey';
 			const expiringSoonFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'expiringsoonkey';
 			const newAgreementFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newagreementskey';
+            const oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "";
 			
+			if (oCountry != ""){
+				andFilters.push(new sap.ui.model.Filter("CountryCode", "EQ", oCountry));
+			}
 
 			if(updatedRetailPriceFilter){
 				andFilters.push(new sap.ui.model.Filter("hasNewPrice", "EQ", updatedRetailPriceFilter));
@@ -391,9 +395,35 @@ sap.ui.define([
 
 		},
 
+        /**
+		 * Get list of countries 
+		 */
+        getCountries: function(){
+			this.getView().setBusy(true);
+
+			return this.paState.getCountries()
+			.then(() => {
+				this.getView().setBusy(false);
+			})
+			.catch((error) => {
+				console.error(error);
+				this.getView().setBusy(false);
+				this.getRouter().getTargets().display("detailObjectNotFound");
+				this.getOwnerComponent().oListSelector.clearMasterListSelection();
+				this.getView().setBusy(true);
+				this.showNoAccessMessage("User ID doesn't have access");
+				throw(error);
+			});
+		},        
+
 		onProductPackIdsReceived: function(evt){
 			// add empty item
 			this.byId("idProductPackfilter").insertItem(new sap.ui.core.Item());
+		},
+
+        onUserCountriesReceived: function(evt){
+			// add empty item
+			this.byId("idSlctCountry").insertItem(new sap.ui.core.Item());
 		},
 
 		/**
