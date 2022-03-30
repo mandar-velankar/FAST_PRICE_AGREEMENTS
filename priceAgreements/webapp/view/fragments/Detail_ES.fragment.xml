@@ -1,0 +1,324 @@
+<core:FragmentDefinition 
+    xmlns:core="sap.ui.core"
+    xmlns="sap.uxap" 
+	xmlns:m="sap.m" 
+	xmlns:f="sap.f"
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns:t="sap.ui.table" 
+	xmlns:l="sap.ui.layout"
+	xmlns:viz.data="sap.viz.ui5.data" 
+	xmlns:viz="sap.viz.ui5.controls" 
+	xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+	xmlns:tnt="sap.tnt">
+
+    <ObjectPageSection showTitle="false" visible="true">
+        <ObjectPageSubSection mode="Expanded" title="Price Agreement Details">
+            <m:VBox>
+                <m:RadioButtonGroup columns="2" selectedIndex="{= ${detailView>/selectedProductUoM} === 'Pack' ? 0 : 1}" select=".onRbgUoMChange">
+                    <m:RadioButton text="Pack" />
+                    <m:RadioButton text="Unit" />
+                </m:RadioButtonGroup>
+                <form:SimpleForm 
+                    title="Descuento Especial -- ADD condition type"
+                    editable="true" 
+                    layout="ResponsiveGridLayout" 
+                    labelSpanXL="5" 
+                    labelSpanL="5" labelSpanM="12" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" 
+                    emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2" singleContainerFullSize="false" 
+                    backgroundDesign="Solid" 
+                    id="opportunityDetailsFormId">
+                    <form:content>
+                        <core:Title text=""/>
+                        <m:Label text="{i18n>effectiveDate}" design="Bold" required="false"/>
+                        <m:Input value="{path: 'pa>/priceAgreement/effectiveDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd',
+											UTC:true
+										}}" enabled="false"/>
+
+                        <m:Label text="{i18n>expiryDate}" design="Bold" required="true"/>
+                        <m:DatePicker id="expiryDateID" value="{path: 'pa>/priceAgreement/expiryDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd',
+											UTC:true
+										}}" valueFormat="yyyy-MM-dd" change=".handleDateChange" valueState="{pa>/priceAgreement/expiryDateValueState}" enabled="{pa>/editMode}"/>
+
+
+                        <m:Label text="{i18n>PVL}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
+                        <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Pack'}" value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/listPrice} : ${pa>/priceAgreement/listPrice}*${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" description="EUR" enabled="false" />
+                        <m:Label text="{i18n>PVL}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'}"/>
+                        <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/listPrice} : ${pa>/priceAgreement/listPrice}/${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" description="EUR" enabled="false" />
+                        
+                        <m:Label text="{i18n>Discount}" design="Bold" required="false"/>
+                        <m:Input value="{pa>/priceAgreement/discount}" enabled="false"/>
+
+                        <m:Label text="{i18n>RoyalDecree}" design="Bold" required="false"/> 
+                        <m:Select selectedKey="{fastAppData>RoyalDecree}" enabled="false"> 
+                            <m:items>
+                                <core:Item key="" text="" />
+                                <core:Item key="Yes" text="Yes" />
+                                <core:Item key="No" text="No" />									
+                            </m:items>
+                        </m:Select>
+                        <m:Input value="{fastAppData>RoyalDecreePercentage}" type="Number" description="%" enabled="false" fieldWidth="60%"/>
+
+                        <!-- Precio Neto only -->
+                        <m:Label text="{i18n>StandardDiscount}" design="Bold" required="false"/>
+                        <m:Input value="{= ${fastAppData>StandardDiscount} * 100}" description="%" type="Number" enabled="false" fieldWidth="80%"/>
+                        <m:Label text="{i18n>AdditionalDiscount}" design="Bold" required="false"/>
+                        <m:Input value="{= ${fastAppData>AdditionalDiscount} * 100}" description="%" type="Number" enabled="false" fieldWidth="80%"/>
+                        <m:Label text="{i18n>NetPriceBeforeRC}" design="Bold" required="false"/>
+                        <m:Input value="{fastAppData>NetPriceWithoutTaxBeforeDeductionRD}" type="Number" enabled="false" fieldWidth="80%" liveChange=".calculateDiscountsAndNetPricesPrecioNeto"/>
+                        <m:Label text="{i18n>NetPriceAfterRC}" design="Bold" required="false"/>
+                        <m:Input value="{fastAppData>NetPriceWithoutTaxAfterDeductionRD}" type="Number" enabled="false" fieldWidth="80%"/>
+                        <m:Label text="{i18n>MaximumPrice}" design="Bold" required="false"/>
+                        <m:Input value="{fastAppData>MaximumPrice}" type="Number" enabled="false" fieldWidth="80%" liveChange=".validateMaximumPrice"/>
+                        
+                        
+                        <m:Label text="{i18n>NetPriceWOtax}" design="Bold" required="false"/>
+                        <m:Input value="{fastAppData>NetPriceWithoutTax}" type="Number" enabled="false" fieldWidth="80%"/>    
+                        <m:Label text="{i18n>Tax}" design="Bold" required="false"/>
+                        <m:Input value="{fastAppData>Tax}" type="Number" description="%" enabled="false" fieldWidth="80%"/>
+                        <m:Label text="{i18n>NetPriceWtax}" design="Bold" required="false"/>
+                        <m:Input value="{fastAppData>NetPriceWithTax}" type="Number" enabled="false" fieldWidth="80%"/> <!-- Used for Descuento Comercial -->
+                        <m:Input value="{fastAppData>NetPriceWithTaxAfterDeductionRD}" type="Number" enabled="false" fieldWidth="80%"/> <!-- Used for Precio Neto -->
+
+                        <!-- Descuento Especial only -->
+                        <m:Label text="{i18n>NetPriceWOtax}" design="Bold" required="false"/>
+                        <m:Input value="{= ${fastAppData>NetPriceWithoutTax} ? ${fastAppData>NetPriceWithoutTax} : 0}" type="Number" enabled="false" fieldWidth="80%"/>
+
+                        
+
+                        <!-- <m:Label text="{i18n>RetailPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
+                        <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Pack'}" value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/retailPrice} : ${pa>/priceAgreement/retailPrice}*${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" description="EUR" enabled="false" />
+                        <m:Label text="{i18n>RetailPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'}"/>
+                        <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/retailPrice} : ${pa>/priceAgreement/retailPrice}/${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" description="EUR" enabled="false" />
+
+                        <m:Label text="{i18n>price}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
+                        <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Pack'}" value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/price} : ${pa>/priceAgreement/price}*${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" description="EUR" enabled="false" />
+                        <m:Label text="{i18n>price}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'}"/>
+                        <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/price} : (${pa>/priceAgreement/price}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(1)  }" description="EUR" enabled="false" /> -->
+
+
+
+                        <core:Title text=""/>
+                        <m:Label text="{i18n>awardedVol}" design="Bold" required="false"/>
+                        <m:Input value="{pa>/priceAgreement/awardedVolume}" description="Units" enabled="false"/>
+
+                        <m:Label text="{i18n>deliveredVol}" design="Bold" required="false"/>
+                        <m:Input value="{pa>/priceAgreement/deliveredVolume}" description="Units" enabled="false"/>
+
+                        <m:Label text="{i18n>Residue}" design="Bold" required="false"/>
+                        <m:Input value="{= Math.round(100 * (1 - (${pa>/priceAgreement/deliveredVolume}/${pa>/priceAgreement/awardedVolume}))) }" enabled="false" description="%"/>
+
+                    </form:content>
+                </form:SimpleForm>
+            </m:VBox>
+        </ObjectPageSubSection>
+
+        <ObjectPageSubSection mode="Expanded">
+            <m:IconTabBar>
+                <m:items>
+                    <!-- Customer Prices Tab -->
+                    <m:IconTabFilter text="Customer Prices" key="customerPrices">
+                        <m:Table id="MaterialsTableID" mode="SingleSelectMaster" delete="onDeleteProduct" selectionChange=".onProductItemSelect" items="{pa>/priceAgreement/candidatePrices}">
+                            <m:headerToolbar>
+                                <m:OverflowToolbar>
+                                    <m:content>
+                                        <m:Label text="{i18n>materialNo}" />
+                                        <m:Select id="idMaterialNumberSelect" change=".onMaterialNumberChange" items="{ 
+															path: 'pa>/priceAgreement/materials'
+														}">
+                                            <core:Item key="{pa>sKUCode}" text="{pa>sKUCode}" />
+                                        </m:Select>
+                                    </m:content>
+                                </m:OverflowToolbar>
+                            </m:headerToolbar>
+                            <m:columns>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Institute" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Material No." wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+                                    <m:Label text="Apply" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+                                    <m:Label text="Price" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+                                    <m:Label text="Effective Date" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+                                    <m:Label text="Expiry Date" wrapping="true"/>
+                                </m:Column>
+                            </m:columns>
+                            <m:items>
+                                <m:ColumnListItem highlight="Indication04">
+                                    <m:cells>
+                                        <m:Text text="{pa>instituteName}"/>
+                                        <m:Text text="{pa>materialNumber}"/>
+                                        <m:Switch state="{pa>applied}" customTextOn="Yes" customTextOff="No" enabled="{= ${pa>/editMode} &amp;&amp; !${pa>applied} }">
+                                            <m:layoutData>
+                                                <m:FlexItemData growFactor="1" />
+                                            </m:layoutData>
+                                        </m:Switch>
+                                        <m:Text text="{pa>price}"/>
+                                        <m:Text text="{
+															path: 'pa>effectiveDate',
+															type: 'sap.ui.model.type.Date',
+															formatOptions: {
+																pattern: 'yyyy-MM-dd',
+																UTC:true
+															}
+														}" />
+                                        <m:Text text="{
+															path: 'pa>expiryDate',
+															type: 'sap.ui.model.type.Date',
+															formatOptions: {
+																pattern: 'yyyy-MM-dd',
+																UTC:true
+															}
+														}" />
+                                    </m:cells>
+                                </m:ColumnListItem>
+                            </m:items>
+                        </m:Table>
+                    </m:IconTabFilter>
+                    <!-- Deliveries Tab -->
+                    <m:IconTabFilter text="Deliveries" key="deliveries">
+                        <m:Table id="DeliveriesTableID" mode="SingleSelectMaster" delete="onDeleteDelivery" selectionChange=".onDeliveryPress" items="{pa>/priceAgreement/Deliveries}">
+                            <m:columns>
+                                <m:Column >
+                                    <m:Label text="Institute Name" wrapping="true"/>
+                                </m:Column>
+                                <m:Column >
+                                    <m:Label text="Date" wrapping="true"/>
+                                </m:Column>
+                                <m:Column >
+                                    <m:Label text="Quantity" wrapping="true"/>
+                                </m:Column>
+                                <m:Column >
+                                    <m:Label text="UoM" wrapping="true"/>
+                                </m:Column>
+                            </m:columns>
+                            <m:items>
+                                <m:ColumnListItem press="onDeliveryPress" detailPress="onDeliveryPress">
+                                    <m:cells>
+                                        <m:Text text="{pa>InstituteName}"/>
+                                        <m:Text text="{
+															path: 'pa>WADAT_IST',
+															type: 'sap.ui.model.type.Date',
+															formatOptions: {
+																pattern: 'yyyy-MM-dd',
+																UTC:true
+															}
+														}" />
+                                        <m:Text text="{pa>ANZPK}"/>
+                                        <m:Text text="{pa>VRKME}"/>
+
+                                    </m:cells>
+                                </m:ColumnListItem>
+                            </m:items>
+                        </m:Table>
+                    </m:IconTabFilter>
+                    <!-- FOC Tab -->
+                    <m:IconTabFilter text="FOC" key="foc">
+                        <m:Table id="idFocTable" mode="SingleSelectMaster" selectionChange=".onFocItemSelect" items="{pa>/priceAgreement/FOC}">
+                            <m:columns>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Product" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Royal Decree" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Min Amount" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Bonus" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Potential Savings" wrapping="true"/>
+                                </m:Column>
+                            </m:columns>
+                            <m:items>
+                                <m:ColumnListItem>
+                                    <m:cells>
+                                        <m:Text text="{pa>dummy}"/>
+                                        <m:Text text="{pa>dummy}"/>
+                                        <m:Text text="{pa>dummy}"/>
+                                        <m:Text text="{pa>dummy}"/>
+                                        <m:Text text="{pa>dummy}"/>
+                                    </m:cells>
+                                </m:ColumnListItem>
+                            </m:items>
+                        </m:Table>
+                    </m:IconTabFilter>
+                    <!-- Rappel Tab -->
+                    <m:IconTabFilter text="Rappel" key="rappel">
+                        <m:VBox>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="{i18n>Liquidation}" width="10em" class="sapUiTinyMarginEnd"/>
+                                <m:Select selectedKey="{fastAppData>Liquidation}" enabled="{fastAppData>/EditMode}"> 
+                                    <m:items>
+                                        <core:Item key="" text="" />
+                                        <core:Item key="Monthly" text="Monthly" />
+                                        <core:Item key="Quarterly" text="Quarterly" />
+                                        <core:Item key="Annually" text="Annually" />									
+                                    </m:items>
+                                </m:Select>
+                            </m:HBox>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="{i18n>PaymentBackDate}" width="10em" class="sapUiTinyMarginEnd"/>
+                                <m:DatePicker
+                                        value="{fastAppData>RefundDate}" 
+                                        valueFormat="yyyy-MM-dd" 
+                                        displayFormat="long"
+                                        placeholder="Enter Date"
+                                        change="handleChange"
+                                        enabled="false"
+                                        class="sapUiSmallMarginBottom"/>
+                            </m:HBox>
+                        </m:VBox>
+                        <m:Table id="idRappedlTable" mode="SingleSelectMaster" items="{pa>/priceAgreement/rappel}">
+                            <m:columns>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Volume Treshold" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Discount" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Net Price w/o Tax" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Tax" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Net Price with Tax" wrapping="true"/>
+                                </m:Column>
+                            </m:columns>
+                            <m:items>
+                                <m:ColumnListItem>
+                                    <m:cells>
+                                        <m:Text text="{pa>dummy}"/>
+                                        <m:Text text="{pa>dummy}"/>
+                                        <m:Text text="{pa>dummy}"/>
+                                        <m:Text text="{pa>dummy}"/>
+                                        <m:Text text="{pa>dummy}"/>
+                                    </m:cells>
+                                </m:ColumnListItem>
+                            </m:items>
+                        </m:Table>
+                    </m:IconTabFilter>
+                </m:items>
+            </m:IconTabBar>
+        </ObjectPageSubSection>
+    </ObjectPageSection>
+
+</core:FragmentDefinition>

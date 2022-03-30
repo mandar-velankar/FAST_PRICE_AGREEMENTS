@@ -57,6 +57,9 @@ sap.ui.define([
                 this.tender = new Tender(tender);
             }
         },
+        getTender: function (){
+            return this.tender;
+        },
         setCandidates: function (candidates){
             this.candidates = (candidates && candidates.map(candidate => new Candidate(candidate)) ) || [];
         },
