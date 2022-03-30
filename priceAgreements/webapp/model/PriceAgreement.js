@@ -85,7 +85,7 @@ sap.ui.define([
             return this.priceConditions || [];
         },
         getMainPriceCondition: function(){
-            return this.priceConditions.find(priceCondition => priceCondition.getClassification().isMain);
+            return this.priceConditions?.find(priceCondition => priceCondition.getClassification().isMain);
         },
         getInstitute: function (){
             return this.institute || undefined;

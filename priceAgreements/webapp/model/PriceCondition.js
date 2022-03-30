@@ -18,8 +18,8 @@ sap.ui.define([
             if (data) {
                 //copy array's manually to objects
                 data.PriceConditionClassification && this.setPriceConditionClassification(data.PriceConditionClassification);
-                data.DiscountCondition && this.setDiscountCondition(data.DiscountCondition);
-                data.FreeGoodsOther && this.setFreeGoodsOther(data.FreeGoodsOther);
+                data.DiscountCondition && this.setDiscountCondition(data.DiscountCondition.results);
+                data.FreeGoodsOther && this.setFreeGoodsOther(data.FreeGoodsOther.results);
             }
         },
 
