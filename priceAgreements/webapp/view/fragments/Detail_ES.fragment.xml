@@ -85,6 +85,7 @@
                             <m:items>
                                 <core:Item key="IncludeInPrecioNeto" text="Yes, (include in precio neto)" />
                                 <core:Item key="ExcludeInPrecioNeto" text="Yes, (exclude in precio neto)" />
+                                <core:Item key="Yes" text="Yes" />									
                                 <core:Item key="No" text="No" />									
                             </m:items>
                         </m:Select>
@@ -98,30 +99,31 @@
                         <!-- Precio Neto only -->
                         <m:Label text="{i18n>StandardDiscount}" design="Bold" required="false" 
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/>
-                        <m:Input value="{= ${fastAppData>StandardDiscount} * 100}" description="%" type="Number" enabled="false" fieldWidth="80%"
+                        <m:Input value="{= ${pa>/priceAgreement/mainPriceCondition/standardDiscount} }" description="%" type="Number" enabled="false" fieldWidth="80%"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/>
                         <m:Label text="{i18n>AdditionalDiscount}" design="Bold" required="false"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/>
-                        <m:Input value="{= ${fastAppData>AdditionalDiscount} * 100}" description="%" type="Number" enabled="false" fieldWidth="80%"
+                        <m:Input value="{= ${pa>/priceAgreement/mainPriceCondition/additionalDiscount} }" description="%" type="Number" enabled="false" fieldWidth="80%"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/>
                         <m:Label text="{i18n>NetPriceBeforeRC}" design="Bold" required="false"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/>
-                        <m:Input value="{fastAppData>NetPriceWithoutTaxBeforeDeductionRD}" type="Number" enabled="false" fieldWidth="80%" liveChange=".calculateDiscountsAndNetPricesPrecioNeto"
+                        <m:Input value="{pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxBeforeDeductionRD}" type="Number" enabled="false" fieldWidth="80%" 
+                            liveChange=".calculateDiscountsAndNetPricesPrecioNeto"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/>
                         <m:Label text="{i18n>NetPriceAfterRC}" design="Bold" required="false"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/>
-                        <m:Input value="{fastAppData>NetPriceWithoutTaxAfterDeductionRD}" type="Number" enabled="false" fieldWidth="80%"
+                        <m:Input value="{pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxAfterDeductionRD}" type="Number" enabled="false" fieldWidth="80%"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/>
                         <m:Label text="{i18n>MaximumPrice}" design="Bold" required="false"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/>
-                        <m:Input value="{fastAppData>MaximumPrice}" type="Number" enabled="false" fieldWidth="80%" liveChange=".validateMaximumPrice"
+                        <m:Input value="{pa>/priceAgreement/mainPriceCondition/maximumPrice}" type="Number" enabled="false" fieldWidth="80%" liveChange=".validateMaximumPrice"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/>
                         
                         
                         <!-- Descuento Especial only -->
                         <m:Label text="{i18n>NetPriceWOtax}" design="Bold" required="false"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento') > -1}"/>
-                        <m:Input value="{= ${fastAppData>NetPriceWithoutTax} ? ${fastAppData>NetPriceWithoutTax} : 0}" type="Number" enabled="false" fieldWidth="80%"
+                        <m:Input value="{= ${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTax} ? ${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTax} : 0}" type="Number" enabled="false" fieldWidth="80%"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento') > -1}"/>
                         <m:Label text="{i18n>Tax}" design="Bold" required="false"
                             visible="{= 
@@ -129,7 +131,7 @@
                                         ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1
                             }"
                         />
-                        <m:Input value="{fastAppData>Tax}" type="Number" description="%" enabled="false" fieldWidth="80%"
+                        <m:Input value="{pa>/priceAgreement/mainPriceCondition/tax}" type="Number" description="%" enabled="false" fieldWidth="80%"
                             visible="{= 
                                         ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento Comercial') > -1 || 
                                         ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1
@@ -142,9 +144,9 @@
                             }"
                         />
                         <m:VBox>
-                            <m:Input value="{fastAppData>NetPriceWithTax}" type="Number" enabled="false"
+                            <m:Input value="{pa>/priceAgreement/mainPriceCondition/netPriceWithTax}" type="Number" enabled="false"
                                 visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento Comercial') > -1}"/> <!-- Used for Descuento Comercial -->
-                            <m:Input value="{fastAppData>NetPriceWithTaxAfterDeductionRD}" type="Number" enabled="false" 
+                            <m:Input value="{pa>/priceAgreement/mainPriceCondition/netPriceWithTaxAfterDeductionRD}" type="Number" enabled="false" 
                                 visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/> <!-- Used for Precio Neto -->
                         </m:VBox>
 
