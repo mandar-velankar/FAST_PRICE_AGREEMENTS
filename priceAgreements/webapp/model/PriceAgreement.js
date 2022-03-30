@@ -23,6 +23,7 @@ sap.ui.define([
             this.customerPrices = [];
             this.candidatePrices = [];
             this.priceConditions = [];
+            this.mainPriceCondition = {};
             this.expiryDateValueState="None";
             if (data) {
                 //copy array's manually to objects
@@ -46,7 +47,8 @@ sap.ui.define([
             this.candidatePrices = (candidatePrices && candidatePrices.map(candidatePrice => new CandidatePrice(candidatePrice)) ) || [];
         },
         setPriceConditions:function(priceConditions){
-            this.priceConditions = priceConditions.map(priceCondition => new PriceCondition(priceCondition));
+            this.priceConditions = priceConditions && priceConditions.map(priceCondition => new PriceCondition(priceCondition));
+            this.mainPriceCondition = this.getMainPriceCondition();
         },
         setInstitute: function (institute){
             if(institute){

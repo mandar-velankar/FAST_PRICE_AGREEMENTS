@@ -1,7 +1,9 @@
 sap.ui.define([
     "com/bayer/tender/uilib/objects/BaseObject",
-    "./PriceConditionClassification"
-], function (BaseObject,PriceConditionClassification) {
+    "./PriceConditionClassification",
+    "./DiscountCondition",
+    "./FreeGoodsOther"
+], function (BaseObject,PriceConditionClassification,DiscountCondition,FreeGoodsOther) {
     "use strict";
 
     return BaseObject.extend("com.bayer.tender.priceagreements.model.PriceCondition", {
@@ -10,15 +12,25 @@ sap.ui.define([
             BaseObject.call(this, data);
 
             this.priceConditionClassification = undefined;
-
+            this.discountConditions = [];
+            this.freeGoodsOther = [];
+            
             if (data) {
                 //copy array's manually to objects
                 data.PriceConditionClassification && this.setPriceConditionClassification(data.PriceConditionClassification);
+                data.DiscountCondition && this.setDiscountCondition(data.DiscountCondition);
+                data.FreeGoodsOther && this.setFreeGoodsOther(data.FreeGoodsOther);
             }
         },
 
         setPriceConditionClassification: function(classification){
             this.priceConditionClassification = new PriceConditionClassification(classification);
+        },
+        setDiscountCondition: function(discountConditions){
+            this.discountConditions = discountConditions && discountConditions.map(discountCondition => new DiscountCondition(discountCondition))
+        },
+        setFreeGoodsOther: function(freeGoodsOther){
+            this.freeGoodsOther = freeGoodsOther && freeGoodsOther.map(foc => new FreeGoodsOther(foc))
         },
 
         getClassification: function (){

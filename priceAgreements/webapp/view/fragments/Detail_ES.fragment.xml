@@ -48,22 +48,32 @@
 
 
                         <m:Label text="{i18n>PVL}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
-                        <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Pack'}" value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/listPrice} : ${pa>/priceAgreement/listPrice}*${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" description="EUR" enabled="false" />
+                        <m:Input 
+                            visible="{= ${detailView>/selectedProductUoM} === 'Pack'}" 
+                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/mainPriceCondition/pVL} : ${pa>/priceAgreement/mainPriceCondition/pVL}*${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" 
+                            description="EUR" 
+                            enabled="false" 
+                        />
                         <m:Label text="{i18n>PVL}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'}"/>
-                        <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/listPrice} : ${pa>/priceAgreement/listPrice}/${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" description="EUR" enabled="false" />
+                        <m:Input 
+                            visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" 
+                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/mainPriceCondition/pVL} : ${pa>/priceAgreement/mainPriceCondition/pVL}/${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" 
+                            description="EUR" 
+                            enabled="false" 
+                        />
                         
                         <m:Label text="{i18n>Discount}" design="Bold" required="false"/>
-                        <m:Input value="{pa>/priceAgreement/discount}" enabled="false"/>
+                        <m:Input value="{pa>/priceAgreement/mainPriceCondition/discount}" enabled="false"/>
 
                         <m:Label text="{i18n>RoyalDecree}" design="Bold" required="false"/> 
-                        <m:Select selectedKey="{fastAppData>RoyalDecree}" enabled="false"> 
+                        <m:Select selectedKey="{pa>/priceAgreement/mainPriceCondition/royalDecree}" enabled="false" width="15em"> 
                             <m:items>
-                                <core:Item key="" text="" />
-                                <core:Item key="Yes" text="Yes" />
+                                <core:Item key="IncludeInPrecioNeto" text="Yes, (include in precio neto)" />
+                                <core:Item key="ExcludeInPrecioNeto" text="Yes, (exclude in precio neto)" />
                                 <core:Item key="No" text="No" />									
                             </m:items>
                         </m:Select>
-                        <m:Input value="{fastAppData>RoyalDecreePercentage}" type="Number" description="%" enabled="false" fieldWidth="60%"/>
+                        <m:Input value="{pa>/priceAgreement/royalDecreePercentage}" type="Number" description="%" enabled="false" width="6em"/>
 
                         <!-- Precio Neto only -->
                         <m:Label text="{i18n>StandardDiscount}" design="Bold" required="false"/>
