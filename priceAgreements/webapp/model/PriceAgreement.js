@@ -24,6 +24,8 @@ sap.ui.define([
             this.candidatePrices = [];
             this.priceConditions = [];
             this.mainPriceCondition = {};
+            this.focPriceCondition = {};
+            this.rappelPriceCondition = {};
             this.expiryDateValueState="None";
             if (data) {
                 //copy array's manually to objects
@@ -49,6 +51,8 @@ sap.ui.define([
         setPriceConditions:function(priceConditions){
             this.priceConditions = priceConditions && priceConditions.map(priceCondition => new PriceCondition(priceCondition));
             this.mainPriceCondition = this.getMainPriceCondition();
+            this.focPriceCondition = this.getFocPriceCondition();
+            this.rappelPriceCondition = this.getRappelPriceCondition();
         },
         setInstitute: function (institute){
             if(institute){
@@ -86,6 +90,12 @@ sap.ui.define([
         },
         getMainPriceCondition: function(){
             return this.priceConditions?.find(priceCondition => priceCondition.getClassification().isMain);
+        },
+        getFocPriceCondition: function(){
+            return this.priceConditions?.find(priceCondition => priceCondition.getClassification().conditionType.indexOf('FOC') > -1 );
+        },
+        getRappelPriceCondition: function(){
+            return this.priceConditions?.find(priceCondition => priceCondition.getClassification().conditionType.indexOf('Rappel') > -1 );
         },
         getInstitute: function (){
             return this.institute || undefined;

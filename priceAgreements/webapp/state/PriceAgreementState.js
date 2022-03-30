@@ -34,7 +34,7 @@ sap.ui.define([
             .then(priceAgreement => {
                 // fetch the RoyalDecree and add it to PriceAgreement
                 this.getService().getRoyalDecree(priceAgreement.productPackId)
-                    .then(royalDecree => (priceAgreement.royalDecreePercentage = Number(royalDecree.data.results[0].Percentage)) && this.updateModel()); // TODO: check whether we should also take the CustomerGroup into account when fetching the RoyalDecree
+                    .then(royalDecree => (priceAgreement.royalDecreePercentage = Number(royalDecree?.data?.results[0]?.Percentage)) && this.updateModel()); // TODO: check whether we should also take the CustomerGroup into account when fetching the RoyalDecree
                 // we need to return the priceAgreement here because it is being used in the Controller
                 return priceAgreement;
             })

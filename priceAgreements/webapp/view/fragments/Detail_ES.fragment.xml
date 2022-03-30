@@ -275,7 +275,7 @@
                     </m:IconTabFilter>
                     <!-- FOC Tab -->
                     <m:IconTabFilter text="FOC" key="foc">
-                        <m:Table id="idFocTable" mode="SingleSelectMaster" selectionChange=".onFocItemSelect" items="{pa>/priceAgreement/FOC}">
+                        <m:Table id="idFocTable" mode="SingleSelectMaster" selectionChange=".onFocItemSelect" items="{pa>/priceAgreement/focPriceCondition/freeGoodsOther}">
                             <m:columns>
                                 <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
                                     <m:Label text="Product" wrapping="true"/>
@@ -296,11 +296,11 @@
                             <m:items>
                                 <m:ColumnListItem>
                                     <m:cells>
-                                        <m:Text text="{pa>dummy}"/>
-                                        <m:Text text="{pa>dummy}"/>
-                                        <m:Text text="{pa>dummy}"/>
-                                        <m:Text text="{pa>dummy}"/>
-                                        <m:Text text="{pa>dummy}"/>
+                                        <m:Text text="{pa>productPackId}"/>
+                                        <m:Text text="{pa>royalDecree}"/>
+                                        <m:Text text="{pa>fOCMinAmount}"/>
+                                        <m:Text text="{pa>fOCBonus}"/>
+                                        <m:Text text="{pa>potentialGeneratedSavings}"/>
                                     </m:cells>
                                 </m:ColumnListItem>
                             </m:items>
@@ -311,7 +311,7 @@
                         <m:VBox>
                             <m:HBox alignItems="Center">
                                 <m:Label text="{i18n>Liquidation}" width="10em" class="sapUiTinyMarginEnd"/>
-                                <m:Select selectedKey="{fastAppData>Liquidation}" enabled="{fastAppData>/EditMode}"> 
+                                <m:Select selectedKey="{pa>/priceAgreement/rappelPriceCondition/liquidation}" enabled="false"> 
                                     <m:items>
                                         <core:Item key="" text="" />
                                         <core:Item key="Monthly" text="Monthly" />
@@ -323,16 +323,18 @@
                             <m:HBox alignItems="Center">
                                 <m:Label text="{i18n>PaymentBackDate}" width="10em" class="sapUiTinyMarginEnd"/>
                                 <m:DatePicker
-                                        value="{fastAppData>RefundDate}" 
+                                        value="{
+                                                path:'pa>/priceAgreement/rappelPriceCondition/refundDate',
+                                                type:'sap.ui.model.type.Date', 
+                                                formatOptions: { style: 'short', pattern: 'yyyy-MM-dd'}
+                                        }"
                                         valueFormat="yyyy-MM-dd" 
-                                        displayFormat="long"
-                                        placeholder="Enter Date"
-                                        change="handleChange"
+                                        displayFormat="short"
                                         enabled="false"
                                         class="sapUiSmallMarginBottom"/>
                             </m:HBox>
                         </m:VBox>
-                        <m:Table id="idRappedlTable" mode="SingleSelectMaster" items="{pa>/priceAgreement/rappel}">
+                        <m:Table id="idRappedlTable" mode="SingleSelectMaster" items="{pa>/priceAgreement/rappelPriceCondition/discountConditions}">
                             <m:columns>
                                 <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
                                     <m:Label text="Volume Treshold" wrapping="true"/>
@@ -353,11 +355,11 @@
                             <m:items>
                                 <m:ColumnListItem>
                                     <m:cells>
-                                        <m:Text text="{pa>dummy}"/>
-                                        <m:Text text="{pa>dummy}"/>
-                                        <m:Text text="{pa>dummy}"/>
-                                        <m:Text text="{pa>dummy}"/>
-                                        <m:Text text="{pa>dummy}"/>
+                                        <m:Text text="{pa>volume}"/>
+                                        <m:Text text="{pa>discount} %"/>
+                                        <m:Text text="{pa>netPriceWithoutTax}"/>
+                                        <m:Text text="{pa>/priceAgreement/rappelPriceCondition/tax} %"/>
+                                        <m:Text text="{pa>netPriceWithTax}"/>
                                     </m:cells>
                                 </m:ColumnListItem>
                             </m:items>
