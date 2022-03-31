@@ -123,7 +123,7 @@
                         <!-- Descuento Especial only -->
                         <m:Label text="{i18n>NetPriceWOtax}" design="Bold" required="false"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento') > -1}"/>
-                        <m:Input value="{= ${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTax} ? ${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTax} : 0}" type="Number" enabled="false" fieldWidth="80%"
+                        <m:Input value="{= ${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTax} ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTax}).toFixed(2) : 0}" type="Number" enabled="false" fieldWidth="80%"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento') > -1}"/>
                         <m:Label text="{i18n>Tax}" design="Bold" required="false"
                             visible="{= 
@@ -144,9 +144,9 @@
                             }"
                         />
                         <m:VBox>
-                            <m:Input value="{pa>/priceAgreement/mainPriceCondition/netPriceWithTax}" type="Number" enabled="false"
+                            <m:Input value="{= parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTax}).toFixed(2)}" type="Number" enabled="false"
                                 visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento Comercial') > -1}"/> <!-- Used for Descuento Comercial -->
-                            <m:Input value="{pa>/priceAgreement/mainPriceCondition/netPriceWithTaxAfterDeductionRD}" type="Number" enabled="false" 
+                            <m:Input value="{= parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTaxAfterDeductionRD}).toFixed(2)}" type="Number" enabled="false" 
                                 visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/> <!-- Used for Precio Neto -->
                         </m:VBox>
 
