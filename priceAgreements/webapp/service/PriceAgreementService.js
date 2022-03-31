@@ -11,7 +11,7 @@ sap.ui.define([
 		},
 		getPriceAgreement: function (id) {
 			const keyPath = this.model.createKey("/PriceAgreements", { ID: id });
-			return this.odata(keyPath).get({ urlParameters: { $expand: "Materials,Institute,Tender,Product/ProductPack,CustomerPrices,Deliveries,FOC,MaterialsFOC,MaterialsFOC/FreeGoodsOther,MaterialsFOC/FreeGoodsOther/Materials" } });
+			return this.odata(keyPath).get({ urlParameters: { $expand: "Materials,Institute,Tender,PriceConditions/PriceConditionClassification,PriceConditions/DiscountCondition,PriceConditions/FreeGoodsOther,Product/ProductPack,CustomerPrices,Deliveries,FOC,MaterialsFOC,MaterialsFOC/FreeGoodsOther,MaterialsFOC/FreeGoodsOther/Materials" } });
 		},
 		getPriceAgreementsByInstituteProduct: function (instituteId, productPackId,expiryDate) {
 			const filters = [];
@@ -32,6 +32,23 @@ sap.ui.define([
 			}));
 			
 			return this.odata("/PriceAgreements").get({ filters: filters });
+		},
+
+		getRoyalDecree: function (productCode) {
+			const today = new Date();
+			const filters = [];
+			filters.push(new Filter({
+				path: 'ProductPackID',
+				operator: FilterOperator.EQ,
+				value1: productCode
+			}));
+			// get only the valid values from DB. 	
+			filters.push(new Filter({
+				path: 'ValidTo',
+				operator: FilterOperator.GT,
+				value1: today.toJSON().substring(0,10) 
+			}));
+			return this.odata("/RoyalDecree").get({ filters: filters });
 		},
 
 		updatePriceAgreement: function (priceAgreement) {
