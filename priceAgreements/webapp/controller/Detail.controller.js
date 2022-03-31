@@ -109,7 +109,6 @@ sap.ui.define([
 				this.paState.getPriceAgreement(this.sObjectId).then(function (priceAgreement) {
                     this._setSelectedProductUoM(this.paState.getPriceAgreementInstance().uoM);
 					this.addCountryDetailFragments(priceAgreement.countryCode);
-					this.getView().setBusy(false);
                 }.bind(this));
 				// this.paState.getCandidatePrices(this.sObjectId, null);
 			}.bind(this))
@@ -131,6 +130,7 @@ sap.ui.define([
 				.then(function (ObjectPageSection) {
 					if(ObjectPageSection.getMetadata().getName() === "sap.uxap.ObjectPageSection"){                
 						objectPage.addSection(ObjectPageSection);
+						this.getView().setBusy(false);
 					}
 				}.bind(this));
             }
