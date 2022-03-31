@@ -23,13 +23,21 @@ sap.ui.define([
             this.setProperty("priceAgreement", new PriceAgreement());
             return Promise.all([
                 this.getService().getPriceAgreement(id), 
-                this.getCandidatePricesByID(id)])
-                .then(response => {
-                    this.setProperty("priceAgreement", new PriceAgreement(response[0].data));
-                    this.getPriceAgreementInstance().setCandidatePrices(response[1].data.results);
-                    this.updateModel();
-                    return this.getProperty("priceAgreement");
-                })
+                this.getCandidatePricesByID(id)
+            ])
+            .then(response => {
+                this.setProperty("priceAgreement", new PriceAgreement(response[0].data));
+                this.getPriceAgreementInstance().setCandidatePrices(response[1].data.results);
+                this.updateModel();
+                return this.getProperty("priceAgreement");
+            })
+            .then(priceAgreement => {
+                // fetch the RoyalDecree and add it to PriceAgreement
+                this.getService().getRoyalDecree(priceAgreement.productPackId)
+                    .then(royalDecree => (priceAgreement.royalDecreePercentage = Number(royalDecree?.data?.results[0]?.Percentage)) && this.updateModel()); // TODO: check whether we should also take the CustomerGroup into account when fetching the RoyalDecree
+                // we need to return the priceAgreement here because it is being used in the Controller
+                return priceAgreement;
+            })
         },
         getCandidatePricesByID:function(id){
             return this.getService().getCandidatePrices({
