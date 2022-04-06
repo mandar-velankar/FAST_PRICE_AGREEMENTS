@@ -2,13 +2,15 @@ sap.ui.define([
 	"./BaseController",
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
+	"sap/ui/model/FilterType",
 	"sap/ui/model/Sorter",
 	"sap/ui/model/FilterOperator",
 	"sap/m/GroupHeaderListItem",
 	"sap/ui/Device",
 	"sap/ui/core/Fragment",
-	"../model/formatter"
-], function (BaseController, JSONModel, Filter, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, formatter) {
+	"../model/formatter",
+	"sap/m/MessageBox"
+], function (BaseController, JSONModel, Filter,FilterType, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, formatter,MessageBox) {
 	"use strict";
 
 	return BaseController.extend("com.bayer.tender.priceagreements.controller.Master", {
@@ -322,15 +324,15 @@ sap.ui.define([
             const oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "";
 			
 			if (oCountry != ""){
-				andFilters.push(new sap.ui.model.Filter("CountryCode", "EQ", oCountry));
+				andFilters.push(new Filter("CountryCode", "EQ", oCountry));
 			}
 
 			if(updatedRetailPriceFilter){
-				andFilters.push(new sap.ui.model.Filter("hasNewPrice", "EQ", updatedRetailPriceFilter));
+				andFilters.push(new Filter("hasNewPrice", "EQ", updatedRetailPriceFilter));
 			}
 
 			if(hasNewMaterialsFilter){ 
-				andFilters.push(new sap.ui.model.Filter("hasNewMaterials", "EQ", hasNewMaterialsFilter));
+				andFilters.push(new Filter("hasNewMaterials", "EQ", hasNewMaterialsFilter));
 			}
 
 			// enabled/disable the ApplyNewPrice button 
@@ -343,15 +345,15 @@ sap.ui.define([
 			const productPackfilter = this.byId("idProductPackfilter").getSelectedKey();
 
 			if(productPackfilter){
-				andFilters.push(new sap.ui.model.Filter("ProductPackId", "EQ", productPackfilter));
+				andFilters.push(new Filter("ProductPackId", "EQ", productPackfilter));
 			}
 
 			if(expiringSoonFilter){
-				andFilters.push(new sap.ui.model.Filter("ExpiringSoon", "EQ", true));
+				andFilters.push(new Filter("ExpiringSoon", "EQ", true));
 			}
 
 			if(newAgreementFilter){
-				andFilters.push(new sap.ui.model.Filter("isNewPriceAgreement", "EQ", true));
+				andFilters.push(new Filter("isNewPriceAgreement", "EQ", true));
 			}
 
 			let sSearch = this.byId("idSearch").getProperty("value");
@@ -379,15 +381,29 @@ sap.ui.define([
 					caseSensitive: false
 				}));
 
-				andFilters.push(new sap.ui.model.Filter(orFilters, false));
+				orFilters.push(new Filter({
+					path: "Tender/Classification",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
+					path: "Institute/InstituteName",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				andFilters.push(new Filter(orFilters, false));
 			}
 
 
 			if(andFilters.length > 0){
-				var oFilters = new sap.ui.model.Filter(andFilters, true);
+				var oFilters = new Filter(andFilters, true);
 
 				//Binding to table with the filters and the sorters
-				this.getView().byId("list").getBinding("items").filter(oFilters, sap.ui.model.FilterType.Application);
+				this.getView().byId("list").getBinding("items").filter(oFilters, FilterType.Application);
 			}else{
 				this.getView().byId("list").getBinding("items").aApplicationFilters = [];
 				this.getView().byId("list").getBinding("items").filter();
@@ -441,7 +457,7 @@ sap.ui.define([
 			const filterTxt = this.byId("idslctfilter").getSelectedItem().getText();
 
 			if(priceAgreements.length <= 0){
-				sap.m.MessageBox.warning(`There are no Price Agreements with ${filterTxt}.`);
+				MessageBox.warning(`There are no Price Agreements with ${filterTxt}.`);
 				return;
 			}
 
@@ -481,8 +497,8 @@ sap.ui.define([
 
 			};
 
-			sap.m.MessageBox.warning("Are you sure you want to apply the new price to all of the existing customer prices?", {
-				actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+			MessageBox.warning("Are you sure you want to apply the new price to all of the existing customer prices?", {
+				actions: [MessageBox.Action.YES, MessageBox.Action.NO],
 				styleClass: "sapUiSizeCompact",
 				onClose: _fnOnClose
 			});
