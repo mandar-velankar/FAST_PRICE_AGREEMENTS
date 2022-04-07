@@ -22,6 +22,14 @@
 				text="{i18n>masterSort4}"
 				key="EffectiveDate"
 				selected="true"/>
+			<ViewSettingsItem
+				text="{i18n>Classification}"
+				key="Tender/Classification"
+				selected="true"/>
+			<ViewSettingsItem
+				text="{i18n>Institute}"
+				key="Institute/InstituteName"
+				selected="true"/>
 		</sortItems>
 
 	</ViewSettingsDialog>
