@@ -61,6 +61,21 @@
                             description="EUR" 
                             enabled="false" 
                         />
+
+                        <m:Label text="{i18n>ConfidentialPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'  &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null}"/>
+                        <m:Input 
+                            visible="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null }" 
+                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} : ${pa>/priceAgreement/mainPriceCondition/confidentialPrice}*${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" 
+                            description="EUR" 
+                            enabled="false" 
+                        />
+                        <m:Label text="{i18n>ConfidentialPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'  &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null}"/>
+                        <m:Input 
+                            visible="{= ${detailView>/selectedProductUoM} === 'Unit'  &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null}" 
+                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} : ${pa>/priceAgreement/mainPriceCondition/confidentialPrice}/${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" 
+                            description="EUR" 
+                            enabled="false" 
+                        />
                         
                          <!-- Descuento only -->
                         <m:Label 
