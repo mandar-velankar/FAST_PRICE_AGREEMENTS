@@ -21,6 +21,7 @@ sap.ui.define([
                 data.DiscountCondition && this.setDiscountCondition(data.DiscountCondition.results);
                 data.FreeGoodsOther && this.setFreeGoodsOther(data.FreeGoodsOther.results);
             }
+            this.confidentialPrice = data.ConfidentialPrice;
         },
 
         setPriceConditionClassification: function(classification){
@@ -38,11 +39,13 @@ sap.ui.define([
         },
 
         getJSON: function () {
+
             return this.getJSONObject([
                 "CountryCode",  
                 "OfferID",
                 "ProductCode",
                 "PVL",
+                "ConfidentialPrice",
                 "Discount",
                 "RoyalDecree",
                 "StandardDiscount",
