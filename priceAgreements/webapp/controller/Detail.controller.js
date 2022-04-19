@@ -305,60 +305,62 @@ sap.ui.define([
 		 * @param {*} evt On click event
 		 */
 		onSynchronize: function (evt) {
-			this.setBusy(true);
-
-			this.paState.syncFocCustPrices([this.sObjectId])
-				.then(() => {
-					const oMasterTableBinding = this.refreshMaster();
-					oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
-						this.onCloseDetailPress();
-						MessageBox.success("Customer Prices successfully synchronized");
-					});
-
-				})
-				.catch(err => {
-					this.onCloseDetailPress();
-					MessageBox.error("Synchronization of Customer Prices failed. Please try again.");
-				}).finally(() => {
-					this.setBusy(false);
-				});
-
-			this.paState.syncPriceAgreements([this.sObjectId])
-				.then(() => {
-					const oMasterTableBinding = this.refreshMaster();
-					oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
-						this.onCloseDetailPress();
-						MessageBox.success("Price Agreement successfully synchronized");
-					});
-
-				})
-				.catch(err => {
-					this.onCloseDetailPress();
-					MessageBox.error("Synchronization of Price Agreement failed. Please try again.");
-				}).finally(() => {
-					this.setBusy(false);
-				});;
-
-			/*this.paState.syncFOCcustPrices([this.sObjectId])
-				.then(() => 
-				{
-					const oMasterTableBinding = this.getOwnerComponent().oListSelector._oList.getBinding("items");
-					oMasterTableBinding.refresh();
-					oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
-						this.onCloseDetailPress();
-						oViewModel.setProperty("/busy", false);
-						oDetailView.setBusy(false);
-						MessageBox.success("FOC prices successfully synchronized");
-					});
-					
-				})
-				.catch(err => {
-					oViewModel.setProperty("/busy", false);
-					oDetailView.setBusy(false);
-					this.onCloseDetailPress();
-					MessageBox.error("Synchronization of Price Agreement failed. Please try again.");
-				});*/
+			const countryCode = this.paState.getPriceAgreementInstance().countryCode;
+			switch(countryCode){
+				case "IT": 
+					this.synchronizeItaly();
+					break;
+				case "ES":
+					this.synchronizeSpain();
+					break;
+			}
 		},
+
+		synchronizeItaly: function(){
+			this.synchronizeItalyFocCustPrices();
+			this.synchronizePriceAgreements();
+		},
+
+		synchronizeSpain: function(){
+			this.synchronizePriceAgreements();
+		},
+
+		synchronizeItalyFocCustPrices: async function(){
+			try {
+				this.setBusy(true);
+				await this.paState.syncFocCustPrices([this.sObjectId]);
+				const oMasterTableBinding = this.refreshMaster();
+				oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
+					this.onCloseDetailPress();
+					this.setBusy(false);
+					MessageBox.success("Customer Prices successfully synchronized");
+				});
+			} catch (error) {
+				this.onCloseDetailPress();
+				this.setBusy(false);
+				const errMsg = JSON.parse(error.responseText)?.error?.message?.value;
+				MessageBox.error(`Synchronization of Customer Prices failed. ${errMsg}`);
+			}
+		},
+
+		synchronizePriceAgreements: async function(){
+			try {
+				this.setBusy(true);
+				await this.paState.syncPriceAgreements([this.sObjectId]);
+				const oMasterTableBinding = this.refreshMaster();
+				oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
+					this.onCloseDetailPress();
+					this.setBusy(false);
+					MessageBox.success("Price Agreement successfully synchronized");
+				});
+			} catch (error) {
+				this.onCloseDetailPress();
+				this.setBusy(false);
+				const errMsg = JSON.parse(error.responseText)?.error?.message?.value;
+				MessageBox.error(`Synchronization of Price Agreement failed. ${errMsg}`);
+			}
+		},
+
 
 		onDeliveryPress: function (oEvent) {
 			const objContext = oEvent.getParameter("listItem").getBindingContext("pa");
