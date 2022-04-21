@@ -227,6 +227,25 @@ sap.ui.define([
                         CustomerPrices.push(focCustomerPrice);
                     });
 
+                    // Rappel condition
+                    rappelPriceCondition.discountConditions.forEach(discountCondition => {
+                        const rappelCustomerPrice = new CustomerPrice({
+                            "CountryCode": candidate.countryCode,
+                            "EffectiveDate": candidate.effectiveDate,
+                            "ExpiryDate": candidate.expiryDate,
+                            "InstituteId": candidate.instituteId,
+                            "MaterialNumber": candidate.materialNumber,
+                            "Price": candidate.price,
+                            "PriceAgreementId": candidate.priceAgreementId,
+                            "ProductPackId": candidate.productPackId,
+                            "Synchronized": candidate.synchronized,
+                            "FOCproductPackID": "",
+                            "FOCmaterialNumber": "",
+                            "PriceCondition": "YAW1",
+                            "Applied": true
+                        });
+                        CustomerPrices.push(rappelCustomerPrice);
+                    });
 
                     
 
