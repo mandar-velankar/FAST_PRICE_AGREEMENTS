@@ -220,7 +220,7 @@ sap.ui.define([
                             "ProductPackId": candidate.productPackId,
                             "Synchronized": candidate.synchronized,
                             "FOCproductPackID": foc.productPackId,
-                            "FOCmaterialNumber": "",
+                            "FOCmaterialNumber": null,
                             "PriceCondition": "YA01",
                             "Applied": true
                         });
@@ -239,8 +239,8 @@ sap.ui.define([
                             "PriceAgreementId": candidate.priceAgreementId,
                             "ProductPackId": candidate.productPackId,
                             "Synchronized": candidate.synchronized,
-                            "FOCproductPackID": "",
-                            "FOCmaterialNumber": "",
+                            "FOCproductPackID": null,
+                            "FOCmaterialNumber": null,
                             "PriceCondition": "YAW1",
                             "Applied": true
                         });
