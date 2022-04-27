@@ -208,7 +208,7 @@ sap.ui.define([
                     CustomerPrices.push(customerPrice);
 
                     // FOC condition
-                    focPriceConditions.freeGoodsOther.forEach(foc => {
+                    focPriceConditions?.freeGoodsOther.forEach(foc => {
                         const focCustomerPrice = new CustomerPrice({
                             "CountryCode": candidate.countryCode,
                             "EffectiveDate": candidate.effectiveDate,
@@ -228,7 +228,7 @@ sap.ui.define([
                     });
 
                     // Rappel condition
-                    rappelPriceCondition.discountConditions.forEach(discountCondition => {
+                    rappelPriceCondition?.discountConditions.forEach(discountCondition => {
                         const rappelCustomerPrice = new CustomerPrice({
                             "CountryCode": candidate.countryCode,
                             "EffectiveDate": candidate.effectiveDate,
