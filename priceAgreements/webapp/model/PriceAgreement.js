@@ -40,6 +40,7 @@ sap.ui.define([
                 data.CustomerPrices && this.setCustomerPrices(data.CustomerPrices.results);
                 data.candidatePrices && this.setCandidatePrices(data.candidatePrices);//used for backup restore
                 data.PriceConditions && this.setPriceConditions(data.PriceConditions.results);
+                data.priceConditions && this.setPriceConditions(data.priceConditions);//used for backup restore
                 this.MaterialsFOC = data.MaterialsFOC;
             }
         },
@@ -89,7 +90,7 @@ sap.ui.define([
             return this.priceConditions || [];
         },
         getMainPriceCondition: function(){
-            return this.priceConditions?.find(priceCondition => priceCondition.getClassification().isMain);
+            return this.priceConditions?.find(priceCondition => priceCondition.getClassification()?.isMain);
         },
         getFocPriceCondition: function(){
             return this.priceConditions?.find(priceCondition => priceCondition.getClassification().conditionType.indexOf('FOC') > -1 );
