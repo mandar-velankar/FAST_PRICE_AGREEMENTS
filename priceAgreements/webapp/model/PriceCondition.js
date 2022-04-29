@@ -17,11 +17,11 @@ sap.ui.define([
             
             if (data) {
                 //copy array's manually to objects
-                data.PriceConditionClassification && this.setPriceConditionClassification(data.PriceConditionClassification);
+                this.setPriceConditionClassification(data.PriceConditionClassification||data.priceConditionClassification||{});
                 data.DiscountCondition && this.setDiscountCondition(data.DiscountCondition.results);
                 data.FreeGoodsOther && this.setFreeGoodsOther(data.FreeGoodsOther.results);
             }
-            this.confidentialPrice = data.ConfidentialPrice;
+            this.confidentialPrice = data.ConfidentialPrice || data.confidentialPrice || null;
         },
 
         setPriceConditionClassification: function(classification){
@@ -65,9 +65,11 @@ sap.ui.define([
         },
 
         getAll: function () {
-            return {
-                ...this
-            };
+            let all = {...this};
+
+            all.priceConditionClassification = this.priceConditionClassification.getAll();
+            
+            return all;
         }
     });
 });
