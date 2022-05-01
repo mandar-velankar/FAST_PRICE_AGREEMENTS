@@ -105,9 +105,9 @@ sap.ui.define([
         },
         saveCandidatePrice:function(priceAgreement,candidatePrices){
 
-            // const candidatePrices = this.getProperty("candidatePrices").filter(cap => cap.applied); // get only the applied candidatePrices
+            // cponst candidatePrices = this.getProperty("candidatePrices").filter(cap => cap.applied); // get only the applied candidatePrices
             // const candidatePrices = this.getPriceAgreementInstance().getCandidatePrices().filter(cap => cap.applied); // get only the applied candidatePrices
-            // const priceAgreement = this.getProperty("priceAgreement");
+            // const priceAgreement = this.getProerty("priceAgreement");
             var custPriceFOC = {};
             var CustomerPrices = [];
             var currentProductId;
@@ -125,43 +125,19 @@ sap.ui.define([
                 if (candidate.customerPriceId) {
                     customerPrice['iD'] = candidate.customerPriceId;
                 }
-                customerPrice.priceCondition = "YLTP";
-                customerPrice.applied = true;
-                CustomerPrices.push(customerPrice);
 
-                // 1) loopen over priceAgreement.FOC
-               priceAgreement.FOC.forEach((focProduct) => {
-                   currentProductId = focProduct.ProductPackId;
+                // This logic is only run for Italy
+                if(candidate.countryCode === "IT"){
+                    customerPrice.priceCondition = "YLTP";
+                    customerPrice.applied = true;
+                    CustomerPrices.push(customerPrice);
+
+                    // 1) loopen over priceAgreement.FOC
+                    priceAgreement.FOC.forEach((focProduct) => {
+                        currentProductId = focProduct.ProductPackId;
                     
-                // 2) indien  FOC.productcode === candidate.productcode( dus main product), 1 extra entry saven voor de main product FOC
-                if(focProduct.ProductPackId === candidate.productPackId){
-                    custPriceFOC = {
-                        "CountryCode": candidate.countryCode,
-                        "EffectiveDate": candidate.effectiveDate,
-                        "ExpiryDate": candidate.expiryDate,
-                        "InstituteId": candidate.instituteId,
-                        "MaterialNumber": candidate.materialNumber,
-                        "Price": candidate.price,
-                        "PriceAgreementId": candidate.priceAgreementId,
-                        "ProductPackId": candidate.productPackId,
-                        "Synchronized": candidate.synchronized,
-                        "FOCproductPackID": candidate.productPackId ,
-                        "FOCmaterialNumber": candidate.materialNumber,
-                        "PriceCondition": "YA03",
-                        "Applied": true
-                    }
-                    
-                    CustomerPrices.push(new CustomerPrice(custPriceFOC));
-                    
-                } else {
-                    // 3) Voor de andere FOC's, alle materialen ophalen via priceAgreement.MaterialsFOC. 
-                    priceAgreement.MaterialsFOC.FreeGoodsOther.results.forEach((FOC) => {
-
-                        // loopen over elk materiaal en 1 entry per materiaal naar customerprices wegschrijven
-
-                        if(FOC.ProductPackId === currentProductId){
-                        FOC.Materials.results.forEach((Material) => {
-
+                        // 2) indien  FOC.productcode === candidate.productcode( dus main product), 1 extra entry saven voor de main product FOC
+                        if(focProduct.ProductPackId === candidate.productPackId){
                             custPriceFOC = {
                                 "CountryCode": candidate.countryCode,
                                 "EffectiveDate": candidate.effectiveDate,
@@ -172,28 +148,113 @@ sap.ui.define([
                                 "PriceAgreementId": candidate.priceAgreementId,
                                 "ProductPackId": candidate.productPackId,
                                 "Synchronized": candidate.synchronized,
-                                "FOCproductPackID": Material.ProductPackID,
-                                "FOCmaterialNumber": Material.SKUCode,
+                                "FOCproductPackID": candidate.productPackId ,
+                                "FOCmaterialNumber": candidate.materialNumber,
                                 "PriceCondition": "YA03",
                                 "Applied": true
                             }
+                        
                             CustomerPrices.push(new CustomerPrice(custPriceFOC));
+                    
+                        } else {
+                            // 3) Voor de andere FOC's, alle materialen ophalen via priceAgreement.MaterialsFOC. 
+                            priceAgreement.MaterialsFOC.FreeGoodsOther.results.forEach((FOC) => {
+
+                                // loopen over elk materiaal en 1 entry per materiaal naar customerprices wegschrijven
+
+                                if(FOC.ProductPackId === currentProductId){
+                                    FOC.Materials.results.forEach((Material) => {
+
+                                        custPriceFOC = {
+                                            "CountryCode": candidate.countryCode,
+                                            "EffectiveDate": candidate.effectiveDate,
+                                            "ExpiryDate": candidate.expiryDate,
+                                            "InstituteId": candidate.instituteId,
+                                            "MaterialNumber": candidate.materialNumber,
+                                            "Price": candidate.price,
+                                            "PriceAgreementId": candidate.priceAgreementId,
+                                            "ProductPackId": candidate.productPackId,
+                                            "Synchronized": candidate.synchronized,
+                                            "FOCproductPackID": Material.ProductPackID,
+                                            "FOCmaterialNumber": Material.SKUCode,
+                                            "PriceCondition": "YA03",
+                                            "Applied": true
+                                        }
+                                        CustomerPrices.push(new CustomerPrice(custPriceFOC));
 
 
 
-                        });
-                    }
+                                    })
+                                }
 
-                });
+                            });
+                        }
+                    })
                 }
-            });
+
+                // This logic is only run for Spain
+                // The reason for this is because we have different entities (PriceConditions) for Spain 
+                if(candidate.countryCode === "ES"){ 
+                    const mainPriceCondition = priceAgreement.priceConditions.find(condition => condition.priceConditionClassification.isMain);
+                    const focPriceConditions = priceAgreement.focPriceCondition;
+                    const rappelPriceCondition = priceAgreement.rappelPriceCondition;
+
+                    // Main condition
+                    if(mainPriceCondition.priceConditionCode === "YLTF" || mainPriceCondition.priceConditionCode === "YLTP"){
+                        customerPrice.price = mainPriceCondition.netPriceWithTaxAfterDeductionRD
+                    }
+                    customerPrice.priceCondition = mainPriceCondition.priceConditionCode;
+                    customerPrice.applied = true;
+                    CustomerPrices.push(customerPrice);
+
+                    // FOC condition
+                    focPriceConditions?.freeGoodsOther.forEach(foc => {
+                        const focCustomerPrice = new CustomerPrice({
+                            "CountryCode": candidate.countryCode,
+                            "EffectiveDate": candidate.effectiveDate,
+                            "ExpiryDate": candidate.expiryDate,
+                            "InstituteId": candidate.instituteId,
+                            "MaterialNumber": candidate.materialNumber,
+                            "Price": candidate.price,
+                            "PriceAgreementId": candidate.priceAgreementId,
+                            "ProductPackId": candidate.productPackId,
+                            "Synchronized": candidate.synchronized,
+                            "FOCproductPackID": foc.productPackId,
+                            "FOCmaterialNumber": null,
+                            "PriceCondition": "YA01",
+                            "Applied": true
+                        });
+                        CustomerPrices.push(focCustomerPrice);
+                    });
+
+                    // Rappel condition
+                    rappelPriceCondition?.discountConditions.forEach(discountCondition => {
+                        const rappelCustomerPrice = new CustomerPrice({
+                            "CountryCode": candidate.countryCode,
+                            "EffectiveDate": candidate.effectiveDate,
+                            "ExpiryDate": candidate.expiryDate,
+                            "InstituteId": candidate.instituteId,
+                            "MaterialNumber": candidate.materialNumber,
+                            "Price": candidate.price,
+                            "PriceAgreementId": candidate.priceAgreementId,
+                            "ProductPackId": candidate.productPackId,
+                            "Synchronized": candidate.synchronized,
+                            "FOCproductPackID": null,
+                            "FOCmaterialNumber": null,
+                            "PriceCondition": "YAW1",
+                            "Applied": true
+                        });
+                        CustomerPrices.push(rappelCustomerPrice);
+                    });
+
+                    
+
+                }
             });
 
                 
 
             const promises = CustomerPrices.map(cp => this.getService().saveCustomerPrice(cp));
-
-
             return Promise.all(promises);
 
         },
