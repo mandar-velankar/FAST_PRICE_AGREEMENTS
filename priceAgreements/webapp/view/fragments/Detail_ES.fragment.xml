@@ -354,7 +354,7 @@
                             <m:items>
                                 <m:ColumnListItem>
                                     <m:cells>
-                                        <m:Text text="{pa>productPackId}"/>
+                                        <m:Text text="{pa>ProductPack/0/PRODUCTPACKNAME}"/>
                                         <m:Text text="{pa>royalDecree}"/>
                                         <m:Text text="{pa>fOCMinAmount}"/>
                                         <m:Text text="{pa>fOCBonus}"/>
