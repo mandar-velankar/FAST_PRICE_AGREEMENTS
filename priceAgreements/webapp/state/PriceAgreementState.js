@@ -57,6 +57,12 @@ sap.ui.define([
                 this.getService().getPriceAgreement(priceAgreement.ID),
                 this.getCandidatePricesByID(priceAgreement.ID)
             ]);
+
+            // update the price agreement price
+            if(responsePA.data.ID === priceAgreement.ID){
+                responsePA.data.Price = priceAgreement.Price;
+            }
+
             const pa = new PriceAgreement(responsePA.data);
             pa.setCandidatePrices(responseCandidate.data.results);
             return this.saveCandidatePrice(pa,pa.getCandidatePrices());
