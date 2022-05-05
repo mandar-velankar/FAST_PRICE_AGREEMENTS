@@ -211,10 +211,10 @@
 
                         <core:Title text=""/>
                         <m:Label text="{i18n>awardedVol}" design="Bold" required="false"/>
-                        <m:Input value="{pa>/priceAgreement/awardedVolume}" description="Units" enabled="false"/>
+                        <m:Input value="{pa>/priceAgreement/awardedVolume}" description="{pa>/priceAgreement/uoM}" enabled="false"/>
 
                         <m:Label text="{i18n>deliveredVol}" design="Bold" required="false"/>
-                        <m:Input value="{pa>/priceAgreement/deliveredVolume}" description="Units" enabled="false"/>
+                        <m:Input value="{pa>/priceAgreement/deliveredVolume}" description="{pa>/priceAgreement/uoM}" enabled="false"/>
 
                         <m:Label text="{i18n>Residue}" design="Bold" required="false"/>
                         <m:Input value="{= Math.round(100 * (1 - (${pa>/priceAgreement/deliveredVolume}/${pa>/priceAgreement/awardedVolume}))) }" enabled="false" description="%"/>
@@ -354,7 +354,7 @@
                             <m:items>
                                 <m:ColumnListItem>
                                     <m:cells>
-                                        <m:Text text="{pa>productPackId}"/>
+                                        <m:Text text="{pa>ProductPack/0/PRODUCTPACKNAME}"/>
                                         <m:Text text="{pa>royalDecree}"/>
                                         <m:Text text="{pa>fOCMinAmount}"/>
                                         <m:Text text="{pa>fOCBonus}"/>
