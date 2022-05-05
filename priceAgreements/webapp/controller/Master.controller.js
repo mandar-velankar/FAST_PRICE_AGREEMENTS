@@ -321,6 +321,7 @@ sap.ui.define([
 			const updatedRetailPriceFilter = this.byId("idslctfilter").getSelectedItem() ? this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'updatedretailpricekey' : null;
 			const expiringSoonFilter = this.byId("idslctfilter").getSelectedItem() ? this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'expiringsoonkey' : null;
 			const newAgreementFilter = this.byId("idslctfilter").getSelectedItem() ? this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newagreementskey' : null;
+            const expiredFilter = this.byId("idslctfilter").getSelectedItem() ? this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'expiredkey' : null;
             const oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "";
 			
 			if (oCountry != ""){
@@ -350,6 +351,10 @@ sap.ui.define([
 
 			if(expiringSoonFilter){
 				andFilters.push(new Filter("ExpiringSoon", "EQ", true));
+			}
+
+            if(expiredFilter){
+				andFilters.push(new Filter("Expired", "EQ", true));
 			}
 
 			if(newAgreementFilter){
