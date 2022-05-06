@@ -317,10 +317,11 @@ sap.ui.define([
 			var andFilters = [];
 
 			//get filters
-			var hasNewMaterialsFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newmaterialnumberskey';
-			const updatedRetailPriceFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'updatedretailpricekey';
-			const expiringSoonFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'expiringsoonkey';
-			const newAgreementFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newagreementskey';
+			var hasNewMaterialsFilter = this.byId("idslctfilter").getSelectedItem() ? this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newmaterialnumberskey' : null;
+			const updatedRetailPriceFilter = this.byId("idslctfilter").getSelectedItem() ? this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'updatedretailpricekey' : null;
+			const expiringSoonFilter = this.byId("idslctfilter").getSelectedItem() ? this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'expiringsoonkey' : null;
+			const newAgreementFilter = this.byId("idslctfilter").getSelectedItem() ? this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newagreementskey' : null;
+            const expiredFilter = this.byId("idslctfilter").getSelectedItem() ? this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'expiredkey' : null;
             const oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "";
 			
 			if (oCountry != ""){
@@ -350,6 +351,10 @@ sap.ui.define([
 
 			if(expiringSoonFilter){
 				andFilters.push(new Filter("ExpiringSoon", "EQ", true));
+			}
+
+            if(expiredFilter){
+				andFilters.push(new Filter("Expired", "EQ", true));
 			}
 
 			if(newAgreementFilter){
@@ -439,7 +444,13 @@ sap.ui.define([
 
         onUserCountriesReceived: function(evt){
 			// add empty item
-			this.byId("idSlctCountry").insertItem(new sap.ui.core.Item());
+            let oCountryFilter = this.byId("idSlctCountry");
+            if(oCountryFilter.getItems().length > 1){
+                oCountryFilter.insertItem(new sap.ui.core.Item());
+            } else if(oCountryFilter.getItems().length === 1){
+                oCountryFilter.setSelectedKey(oCountryFilter.getItems()[0].getKey());
+            }
+            this.setFilter();
 		},
 
 		/**
