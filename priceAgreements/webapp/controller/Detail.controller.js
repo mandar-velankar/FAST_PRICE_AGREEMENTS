@@ -361,6 +361,14 @@ sap.ui.define([
 			this.getView().getModel("detailView").setProperty("/selectedProductUoM", uom);
 		},
 
+		isSyncButtonEnabled: function(isPriceAgreementSynchronized, customerPrices){
+			if(!Array.isArray(customerPrices)) customerPrices = [];
+			if(isPriceAgreementSynchronized) return false;
+			if(customerPrices.length <= 0) return false; // when no customer prices are created yet, disable button
+			if(!customerPrices.some(item => item.applied)) return false; // when customer prices do exist but, non are applied
+			return true;
+		},
+
 	});
 
 });
