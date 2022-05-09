@@ -65,6 +65,12 @@ sap.ui.define([
                 this.getService().getPriceAgreement(priceAgreement.ID),
                 this.getCandidatePricesByID(priceAgreement.ID)
             ]);
+
+            // update the price agreement price
+            if(responsePA.data.ID === priceAgreement.ID){
+                responsePA.data.Price = priceAgreement.Price;
+            }
+
             const pa = new PriceAgreement(responsePA.data);
             pa.setCandidatePrices(responseCandidate.data.results);
             return this.saveCandidatePrice(pa,pa.getCandidatePrices());
@@ -99,7 +105,7 @@ sap.ui.define([
             return this.getService().getPriceAgreementsByInstituteProduct(instituteId,productPackId,new Date());
         },
         saveCandidatePrices: function () {
-            const candidatePrices = this.getPriceAgreementInstance().getCandidatePrices().filter(cap => cap.applied); // get only the applied candidatePrices
+            const candidatePrices = this.getPriceAgreementInstance().getCandidatePrices();
             const priceAgreement = this.getProperty("priceAgreement");
             return this.saveCandidatePrice(priceAgreement,candidatePrices);
         },
@@ -129,7 +135,7 @@ sap.ui.define([
                 // This logic is only run for Italy
                 if(candidate.countryCode === "IT"){
                     customerPrice.priceCondition = "YLTP";
-                    customerPrice.applied = true;
+                    customerPrice.applied = candidate.applied;
                     CustomerPrices.push(customerPrice);
 
                     // 1) loopen over priceAgreement.FOC
@@ -151,7 +157,7 @@ sap.ui.define([
                                 "FOCproductPackID": candidate.productPackId ,
                                 "FOCmaterialNumber": candidate.materialNumber,
                                 "PriceCondition": "YA03",
-                                "Applied": true
+                                "Applied": candidate.applied
                             }
                         
                             CustomerPrices.push(new CustomerPrice(custPriceFOC));
@@ -178,7 +184,7 @@ sap.ui.define([
                                             "FOCproductPackID": Material.ProductPackID,
                                             "FOCmaterialNumber": Material.SKUCode,
                                             "PriceCondition": "YA03",
-                                            "Applied": true
+                                            "Applied": candidate.applied
                                         }
                                         CustomerPrices.push(new CustomerPrice(custPriceFOC));
 
@@ -204,7 +210,7 @@ sap.ui.define([
                         customerPrice.price = mainPriceCondition.netPriceWithTaxAfterDeductionRD
                     }
                     customerPrice.priceCondition = mainPriceCondition.priceConditionCode;
-                    customerPrice.applied = true;
+                    customerPrice.applied = candidate.applied;
                     CustomerPrices.push(customerPrice);
 
                     // FOC condition
@@ -222,7 +228,7 @@ sap.ui.define([
                             "FOCproductPackID": foc.productPackId,
                             "FOCmaterialNumber": null,
                             "PriceCondition": "YA01",
-                            "Applied": true
+                            "Applied": candidate.applied
                         });
                         CustomerPrices.push(focCustomerPrice);
                     });
@@ -242,7 +248,7 @@ sap.ui.define([
                             "FOCproductPackID": null,
                             "FOCmaterialNumber": null,
                             "PriceCondition": "YAW1",
-                            "Applied": true
+                            "Applied": candidate.applied
                         });
                         CustomerPrices.push(rappelCustomerPrice);
                     });
