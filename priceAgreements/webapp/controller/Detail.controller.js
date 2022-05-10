@@ -212,6 +212,8 @@ sap.ui.define([
 				if (action === MessageBox.Action.YES) {
 					this.paState.setEditMode(false);
 					this.paState.restorePriceAgreement();
+                    let candidatePrices = this.paState.getPriceAgreementInstance().getCandidatePrices();
+                    this.paState.setAllApplied(candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true));
 				}
 			};
 			MessageBox.warning(this.getText("confirmCancel"), {
@@ -369,8 +371,9 @@ sap.ui.define([
 		},
 
         isAllApplied: function(customerPrices, editMode){
-            let allApplied = customerPrices.length > 0 && customerPrices.every(customerPrice => customerPrice.applied === true);
-            let allSynchronized = customerPrices.length > 0 && customerPrices.every(customerPrice => customerPrice.synchronized === true);
+            let candidatePrices = customerPrices.length > 0 ? customerPrices : this.paState.getPriceAgreementInstance().getCandidatePrices();
+            let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
+            let allSynchronized = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.synchronized === true);
             this.paState.setAllApplied(allApplied);
             return editMode && !allSynchronized;
 		},
