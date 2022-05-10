@@ -357,8 +357,22 @@ sap.ui.define([
 			this._setSelectedProductUoM(uom);
 		},
 
+        onApplyAll: function(evt){
+            let applied = evt.getParameters().state;
+            let candidatePrices = this.paState.getPriceAgreementInstance().getCandidatePrices();
+
+            candidatePrices.filter(candidatePrice => candidatePrice.applied != applied && candidatePrice.synchronized === false)?.map(candidatePrice => { candidatePrice.applied = applied; });
+        },
+
 		_setSelectedProductUoM(uom){
 			this.getView().getModel("detailView").setProperty("/selectedProductUoM", uom);
+		},
+
+        isAllApplied: function(customerPrices, editMode){
+            let allApplied = customerPrices.length > 0 && customerPrices.every(customerPrice => customerPrice.applied === true);
+            let allSynchronized = customerPrices.length > 0 && customerPrices.every(customerPrice => customerPrice.synchronized === true);
+            this.paState.setAllApplied(allApplied);
+            return editMode && !allSynchronized;
 		},
 
 		isSyncButtonEnabled: function(isPriceAgreementSynchronized, customerPrices){

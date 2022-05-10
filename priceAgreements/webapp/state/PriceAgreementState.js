@@ -11,7 +11,8 @@ sap.ui.define([
             //Parent will use this for creating a JSONModel
             this.data = {
                 priceAgreement: new PriceAgreement(),
-                editMode: false
+                editMode: false,
+                allApplied: false
             };
             BaseState.call(this);
             this.paService = service;
@@ -280,6 +281,9 @@ sap.ui.define([
                 this.backupPriceAgreement();
             }
             this.setProperty("editMode", sEditMode);
+        },
+        setAllApplied: function(sAllApplied){
+            this.setProperty("allApplied", sAllApplied);
         },
         hasPAExpiryDateChanged:function(){
             var originalPriceAgreement;
