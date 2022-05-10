@@ -239,6 +239,16 @@
 														}">
                                             <core:Item key="{pa>sKUCode}" text="{pa>sKUCode}" />
                                         </m:Select>
+                                        
+                                        <m:Label text="{i18n>applyAll}" />
+                                        <m:Switch state="{pa>/allApplied}" customTextOn="Yes" customTextOff="No" change="onApplyAll" 
+                                                  enabled="{ parts: [ 'pa>/priceAgreement/customerPrices',
+                                                                      'pa>/editMode' ], 
+								                             formatter: '.isAllApplied' }">
+                                            <m:layoutData>
+                                                <m:FlexItemData growFactor="1" />
+                                            </m:layoutData>
+                                        </m:Switch>
                                     </m:content>
                                 </m:OverflowToolbar>
                             </m:headerToolbar>
