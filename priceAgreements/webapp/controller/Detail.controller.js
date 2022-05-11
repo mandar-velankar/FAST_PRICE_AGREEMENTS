@@ -6,8 +6,9 @@ sap.ui.define([
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"sap/m/MessageBox",
-	"sap/ui/core/Fragment"
-], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterOperator, MessageBox, Fragment) {
+	"sap/ui/core/Fragment",
+	"com/bayer/tender/uilib/datatypes/PercentageType",
+], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterOperator, MessageBox, Fragment, PercentageType) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
@@ -16,6 +17,9 @@ sap.ui.define([
 	return BaseController.extend("com.bayer.tender.priceagreements.controller.Detail", {
 
 		formatter: formatter,
+		types: {
+			percent: PercentageType
+		},
 
 		/* =========================================================== */
 		/* lifecycle methods                                           */
@@ -207,11 +211,22 @@ sap.ui.define([
 			const isValid = this.paState.getPriceAgreementInstance().setExpiryDateValueState(valid ? "None" : "Error");
 			this.paState.updateModel();
 		},
+
+        handleEffectiveDateChange: function (oEvent) {
+			var valid = oEvent.getParameter("valid");
+
+			const isValid = this.paState.getPriceAgreementInstance().setEffectiveDateValueState(valid ? "None" : "Error");
+			this.paState.updateModel();
+		},
+
+
 		onFooterCancelPress: function (oEvent) {
 			const onClose = (action) => {
 				if (action === MessageBox.Action.YES) {
 					this.paState.setEditMode(false);
 					this.paState.restorePriceAgreement();
+                    let candidatePrices = this.paState.getPriceAgreementInstance().getCandidatePrices();
+                    this.paState.setAllApplied(candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true));
 				}
 			};
 			MessageBox.warning(this.getText("confirmCancel"), {
@@ -237,12 +252,12 @@ sap.ui.define([
 		onFooterSavePress: async function (oEvent) {
 			const isValid = this.paState.getPriceAgreementInstance().isValid();
 			this.paState.updateModel();
-			if (!isValid || !this.byId("expiryDateID").isValidValue()) {
+			if (!isValid || !this.byId("expiryDateID").isValidValue() || !this.byId("effectiveDateId").isValidValue()) {
 				MessageBox.error(this.getText("requiredFields"));
 				return false;
 			}
 			//expiry date changed + already synchronized ==> price agreement in SAP should be cancelled first
-			Promise.resolve((this.paState.hasPAExpiryDateChanged() && this.paState.getPriceAgreementInstance().synchronized)).then((confirm) => {
+			Promise.resolve(((this.paState.hasPAExpiryDateChanged() || this.paState.hasPAEffectiveDateChanged()) && this.paState.getPriceAgreementInstance().synchronized)).then((confirm) => {
 				if(confirm){
 					return this.confirmCancelMessage("Existing");
 				}
@@ -357,8 +372,23 @@ sap.ui.define([
 			this._setSelectedProductUoM(uom);
 		},
 
+        onApplyAll: function(evt){
+            let applied = evt.getParameters().state;
+            let candidatePrices = this.paState.getPriceAgreementInstance().getCandidatePrices();
+
+            candidatePrices.filter(candidatePrice => candidatePrice.applied != applied && candidatePrice.synchronized === false)?.map(candidatePrice => { candidatePrice.applied = applied; });
+        },
+
 		_setSelectedProductUoM(uom){
 			this.getView().getModel("detailView").setProperty("/selectedProductUoM", uom);
+		},
+
+        isAllApplied: function(customerPrices, editMode){
+            let candidatePrices = customerPrices.length > 0 ? customerPrices : this.paState.getPriceAgreementInstance().getCandidatePrices();
+            let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
+            let allSynchronized = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.synchronized === true);
+            this.paState.setAllApplied(allApplied);
+            return editMode && !allSynchronized;
 		},
 
 		isSyncButtonEnabled: function(isPriceAgreementSynchronized, customerPrices){

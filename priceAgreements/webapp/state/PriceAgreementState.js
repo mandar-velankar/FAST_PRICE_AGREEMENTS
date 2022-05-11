@@ -11,7 +11,8 @@ sap.ui.define([
             //Parent will use this for creating a JSONModel
             this.data = {
                 priceAgreement: new PriceAgreement(),
-                editMode: false
+                editMode: false,
+                allApplied: false
             };
             BaseState.call(this);
             this.paService = service;
@@ -65,6 +66,12 @@ sap.ui.define([
                 this.getService().getPriceAgreement(priceAgreement.ID),
                 this.getCandidatePricesByID(priceAgreement.ID)
             ]);
+
+            // update the price agreement price
+            if(responsePA.data.ID === priceAgreement.ID){
+                responsePA.data.Price = priceAgreement.Price;
+            }
+
             const pa = new PriceAgreement(responsePA.data);
             pa.setCandidatePrices(responseCandidate.data.results);
             return this.saveCandidatePrice(pa,pa.getCandidatePrices());
@@ -275,12 +282,22 @@ sap.ui.define([
             }
             this.setProperty("editMode", sEditMode);
         },
+        setAllApplied: function(sAllApplied){
+            this.setProperty("allApplied", sAllApplied);
+        },
         hasPAExpiryDateChanged:function(){
             var originalPriceAgreement;
             if(this.priceAgreementData){
                 originalPriceAgreement = new PriceAgreement(this.priceAgreementData);
             }
             return ( originalPriceAgreement && originalPriceAgreement.expiryDate !== this.getPriceAgreementInstance().expiryDate ) || false;
+        },
+        hasPAEffectiveDateChanged:function(){
+            var originalPriceAgreement;
+            if(this.priceAgreementData){
+                originalPriceAgreement = new PriceAgreement(this.priceAgreementData);
+            }
+            return ( originalPriceAgreement && originalPriceAgreement.effectiveDate !== this.getPriceAgreementInstance().effectiveDate ) || false;
         },
         backupPriceAgreement: function () {
             this.priceAgreementData = this.getPriceAgreementInstance().getAll();

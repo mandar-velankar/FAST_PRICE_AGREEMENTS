@@ -539,12 +539,12 @@ sap.ui.define([
 			// calulate the new NetOfferPrice
 			let newNetOfferPrice = "";
 			if(uom === "Pack"){
-				newNetOfferPrice = consumerPrice.MaxPriceNhsPP * (1 - priceAgreement.Discount);
+				newNetOfferPrice = consumerPrice.MaxPriceNhsPP * (1 - priceAgreement.Discount / 100);
 				// update the PriceAgreement prices
 				priceAgreement.ListPrice = consumerPrice.ConsumerPriceExclPP;
 				priceAgreement.RetailPrice = consumerPrice.MaxPriceNhsPP;
 			}else{
-				newNetOfferPrice = consumerPrice.MaxPriceNhsPU * (1 - priceAgreement.Discount);
+				newNetOfferPrice = consumerPrice.MaxPriceNhsPU * (1 - priceAgreement.Discount / 100);
 				// update the PriceAgreement prices
 				priceAgreement.ListPrice = consumerPrice.ConsumerPriceExclPU;
 				priceAgreement.RetailPrice = consumerPrice.MaxPriceNhsPU;
