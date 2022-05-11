@@ -207,6 +207,15 @@ sap.ui.define([
 			const isValid = this.paState.getPriceAgreementInstance().setExpiryDateValueState(valid ? "None" : "Error");
 			this.paState.updateModel();
 		},
+
+        handleEffectiveDateChange: function (oEvent) {
+			var valid = oEvent.getParameter("valid");
+
+			const isValid = this.paState.getPriceAgreementInstance().setEffectiveDateValueState(valid ? "None" : "Error");
+			this.paState.updateModel();
+		},
+
+
 		onFooterCancelPress: function (oEvent) {
 			const onClose = (action) => {
 				if (action === MessageBox.Action.YES) {
@@ -239,12 +248,12 @@ sap.ui.define([
 		onFooterSavePress: async function (oEvent) {
 			const isValid = this.paState.getPriceAgreementInstance().isValid();
 			this.paState.updateModel();
-			if (!isValid || !this.byId("expiryDateID").isValidValue()) {
+			if (!isValid || !this.byId("expiryDateID").isValidValue() || !this.byId("effectiveDateId").isValidValue()) {
 				MessageBox.error(this.getText("requiredFields"));
 				return false;
 			}
 			//expiry date changed + already synchronized ==> price agreement in SAP should be cancelled first
-			Promise.resolve((this.paState.hasPAExpiryDateChanged() && this.paState.getPriceAgreementInstance().synchronized)).then((confirm) => {
+			Promise.resolve(((this.paState.hasPAExpiryDateChanged() || this.paState.hasPAEffectiveDateChanged()) && this.paState.getPriceAgreementInstance().synchronized)).then((confirm) => {
 				if(confirm){
 					return this.confirmCancelMessage("Existing");
 				}

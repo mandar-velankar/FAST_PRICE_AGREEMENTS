@@ -30,13 +30,13 @@
                     id="opportunityDetailsFormId">
                     <form:content>
                         <core:Title text=""/>
-                        <m:Label text="{i18n>effectiveDate}" design="Bold" required="false"/>
-                        <m:Input value="{path: 'pa>/priceAgreement/effectiveDate',
+                        <m:Label text="{i18n>effectiveDate}" design="Bold" required="true"/>
+                        <m:DatePicker id="effectiveDateId" value="{path: 'pa>/priceAgreement/effectiveDate',
 										type: 'sap.ui.model.type.Date',
 										formatOptions: {
 											pattern: 'yyyy-MM-dd',
 											UTC:true
-										}}" enabled="false"/>
+										}}" valueFormat="yyyy-MM-dd" change=".handleEffectiveDateChange" valueState="{pa>/priceAgreement/effectiveDateValueState}" enabled="{pa>/editMode}"/>
 
                         <m:Label text="{i18n>expiryDate}" design="Bold" required="true"/>
                         <m:DatePicker id="expiryDateID" value="{path: 'pa>/priceAgreement/expiryDate',
