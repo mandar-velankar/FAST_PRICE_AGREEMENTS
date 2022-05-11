@@ -6,8 +6,9 @@ sap.ui.define([
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
 	"sap/m/MessageBox",
-	"sap/ui/core/Fragment"
-], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterOperator, MessageBox, Fragment) {
+	"sap/ui/core/Fragment",
+	"com/bayer/tender/uilib/datatypes/PercentageType",
+], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterOperator, MessageBox, Fragment, PercentageType) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
@@ -16,6 +17,9 @@ sap.ui.define([
 	return BaseController.extend("com.bayer.tender.priceagreements.controller.Detail", {
 
 		formatter: formatter,
+		types: {
+			percent: PercentageType
+		},
 
 		/* =========================================================== */
 		/* lifecycle methods                                           */

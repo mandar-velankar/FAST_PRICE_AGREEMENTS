@@ -50,14 +50,20 @@
                         <m:Label text="{i18n>PVL}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Pack'}" 
-                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/mainPriceCondition/pVL} : ${pa>/priceAgreement/mainPriceCondition/pVL}*${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" 
+                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                ? ${path:'pa>/priceAgreement/mainPriceCondition/pVL', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}} 
+                                : parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/pVL'}*${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(2)  
+                            }" 
                             description="EUR" 
                             enabled="false" 
                         />
                         <m:Label text="{i18n>PVL}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'}"/>
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" 
-                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/mainPriceCondition/pVL} : ${pa>/priceAgreement/mainPriceCondition/pVL}/${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" 
+                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                ? ${path:'pa>/priceAgreement/mainPriceCondition/pVL', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}} 
+                                : parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/pVL'}/${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(2)  
+                            }" 
                             description="EUR" 
                             enabled="false" 
                         />
@@ -65,14 +71,20 @@
                         <m:Label text="{i18n>ConfidentialPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'  &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null}"/>
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null }" 
-                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} : ${pa>/priceAgreement/mainPriceCondition/confidentialPrice}*${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" 
+                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                ? ${path:'pa>/priceAgreement/mainPriceCondition/confidentialPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}} 
+                                : parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/confidentialPrice'}*${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(2)  
+                            }" 
                             description="EUR" 
                             enabled="false" 
                         />
                         <m:Label text="{i18n>ConfidentialPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'  &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null}"/>
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Unit'  &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null}" 
-                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} : ${pa>/priceAgreement/mainPriceCondition/confidentialPrice}/${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" 
+                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                ? ${path:'pa>/priceAgreement/mainPriceCondition/confidentialPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}} 
+                                : parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/confidentialPrice'}/${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(2)  
+                            }" 
                             description="EUR" 
                             enabled="false" 
                         />
@@ -82,7 +94,7 @@
                             text="{i18n>Discount}" design="Bold" required="false" 
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento') > -1}"/>
                         <m:Input 
-                            value="{pa>/priceAgreement/mainPriceCondition/discount}" enabled="false"
+                            value="{path:'pa>/priceAgreement/mainPriceCondition/discount', type:'.types.percent'}" enabled="false"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento') > -1}"/>
 
                         <m:Label text="{i18n>RoyalDecree}" design="Bold" required="false"
@@ -104,7 +116,7 @@
                                 <core:Item key="No" text="No" />									
                             </m:items>
                         </m:Select>
-                        <m:Input value="{pa>/priceAgreement/royalDecreePercentage}" type="Number" description="%" enabled="false" width="6em"
+                        <m:Input value="{path:'pa>/priceAgreement/royalDecreePercentage', type:'.types.percent'}" type="Number" description="%" enabled="false" width="7em"
                             visible="{= 
                                         ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento Comercial') > -1 || 
                                         ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1
@@ -114,55 +126,76 @@
                         <!-- Precio Neto only -->
                         <m:Label text="{i18n>StandardDiscount}" design="Bold" required="false" 
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/>
-                        <m:Input value="{= ${pa>/priceAgreement/mainPriceCondition/standardDiscount} }" description="%" type="Number" enabled="false" fieldWidth="80%"
+                        <m:Input value="{= ${path:'pa>/priceAgreement/mainPriceCondition/standardDiscount', type:'.types.percent'} }" description="%" type="Number" enabled="false" fieldWidth="80%"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/>
                         <m:Label text="{i18n>AdditionalDiscount}" design="Bold" required="false"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/>
-                        <m:Input value="{= ${pa>/priceAgreement/mainPriceCondition/additionalDiscount} }" description="%" type="Number" enabled="false" fieldWidth="80%"
+                        <m:Input value="{= ${path:'pa>/priceAgreement/mainPriceCondition/additionalDiscount', type:'.types.percent'} }" description="%" type="Number" enabled="false" fieldWidth="80%"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/>
                         <m:Label text="{i18n>NetPriceBeforeRC}" design="Bold" required="false"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}"/>
                         <m:Input 
-                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxBeforeDeductionRD} : ${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxBeforeDeductionRD}*${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" 
+                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxBeforeDeductionRD}).toFixed(2) 
+                                : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxBeforeDeductionRD}*${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(2)  
+                            }" 
                             type="Number" enabled="false" fieldWidth="80%" description="EUR"
                             liveChange=".calculateDiscountsAndNetPricesPrecioNeto"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}"/>
                         <m:Label text="{i18n>NetPriceBeforeRC}" design="Bold" required="false"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}"/>
-                            <m:Input 
-                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxBeforeDeductionRD} : ${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxBeforeDeductionRD}/${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" 
+                        <m:Input 
+                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxBeforeDeductionRD}).toFixed(2) 
+                                : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxBeforeDeductionRD}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(2)  
+                            }" 
                             type="Number" enabled="false" fieldWidth="80%" description="EUR"
                             liveChange=".calculateDiscountsAndNetPricesPrecioNeto"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}"/>              
                         <m:Label text="{i18n>NetPriceAfterRC}" design="Bold" required="false"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}"/>
                         <m:Input 
-                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxAfterDeductionRD} : ${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxAfterDeductionRD}*${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" 
+                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxAfterDeductionRD}).toFixed(2) 
+                                : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxAfterDeductionRD}*${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(2)  
+                            }" 
                             type="Number" enabled="false" fieldWidth="80%" description="EUR"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}"/>
                         <m:Label text="{i18n>NetPriceAfterRC}" design="Bold" required="false"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}"/>
                         <m:Input 
-                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxAfterDeductionRD} : ${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxAfterDeductionRD}/${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" 
+                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxAfterDeductionRD}).toFixed(2) 
+                                : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxAfterDeductionRD}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(2)  
+                            }" 
                             type="Number" enabled="false" fieldWidth="80%" description="EUR"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}"/>
 
                         <m:Label text="{i18n>MaximumPrice}" design="Bold" required="false"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}"/>
-                        <m:Input value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/mainPriceCondition/maximumPrice} : ${pa>/priceAgreement/mainPriceCondition/maximumPrice}*${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" 
+                        <m:Input value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                            ? parseFloat(${pa>/priceAgreement/mainPriceCondition/maximumPrice}).toFixed(2) 
+                            : parseFloat(${pa>/priceAgreement/mainPriceCondition/maximumPrice}*${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(2)  
+                        }" 
                             type="Number" enabled="false" fieldWidth="80%" liveChange=".validateMaximumPrice" description="EUR"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}"/>
 
                         <m:Label text="{i18n>MaximumPrice}" design="Bold" required="false"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}"/>
-                        <m:Input value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? ${pa>/priceAgreement/mainPriceCondition/maximumPrice} : ${pa>/priceAgreement/mainPriceCondition/maximumPrice}/${pa>/priceAgreement/product/productPack/pACKFACTOR}  }" 
+                        <m:Input value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM}
+                            ? parseFloat(${pa>/priceAgreement/mainPriceCondition/maximumPrice}).toFixed(2) 
+                            : parseFloat(${pa>/priceAgreement/mainPriceCondition/maximumPrice}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(2)  
+                        }" 
                             type="Number" enabled="false" fieldWidth="80%" liveChange=".validateMaximumPrice" description="EUR"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}"/>
                                               
                          <!-- Descuento Especial only -->
                         <m:Label text="{i18n>NetPriceWOtax}" design="Bold" required="false"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento') > -1}"/>
-                        <m:Input value="{= ${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTax} ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTax}).toFixed(2) : 0}" type="Number" enabled="false" fieldWidth="80%"
+                        <m:Input value="{= ${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTax} 
+                            ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTax}).toFixed(2) 
+                            : parseFloat(0).toFixed(2)
+                        }" type="Number" enabled="false" fieldWidth="80%"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento') > -1}"/>
                         <m:Label text="{i18n>Tax}" design="Bold" required="false"
                             visible="{= 
@@ -170,7 +203,7 @@
                                         ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1
                             }"
                         />
-                        <m:Input value="{pa>/priceAgreement/mainPriceCondition/tax}" type="Number" description="%" enabled="false" fieldWidth="80%"
+                        <m:Input value="{path:'pa>/priceAgreement/mainPriceCondition/tax', type:'.types.percent'}" type="Number" description="%" enabled="false" fieldWidth="80%"
                             visible="{= 
                                         ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento Comercial') > -1 || 
                                         ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1
@@ -184,26 +217,32 @@
                         />
                         <m:VBox>
                             <m:Input
-                             value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? 
-                             parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTax}).toFixed(2) : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTax}*${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(2)  }"
-                            
+                                value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                    ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTax}).toFixed(2) 
+                                    : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTax}*${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(2)  
+                                }"
                                 type="Number" enabled="false"  description="EUR"
                                 visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento Comercial') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}"/> <!-- Used for Descuento Comercial -->
 
                             <m:Input 
-                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? 
-                            parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTax}).toFixed(2) : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTax}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(2)  }" 
+                                value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                    ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTax}).toFixed(2) 
+                                    : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTax}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(2)  
+                                }" 
                                 type="Number" enabled="false"  description="EUR"
                                 visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento Comercial') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}"/> <!-- Used for Descuento Comercial -->    
-
                             <m:Input
-                             value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? 
-                             parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTaxAfterDeductionRD}).toFixed(2) : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTaxAfterDeductionRD}*${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(2)  }" 
+                                value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                    ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTaxAfterDeductionRD}).toFixed(2) 
+                                    : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTaxAfterDeductionRD}*${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(2)  
+                                }" 
                                 type="Number" enabled="false"   description="EUR"
                                 visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}"/> <!-- Used for Precio Neto -->
                             <m:Input
-                             value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? 
-                             parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTaxAfterDeductionRD}).toFixed(2) : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTaxAfterDeductionRD}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(2)  }" 
+                                value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                    ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTaxAfterDeductionRD}).toFixed(2) 
+                                    : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTaxAfterDeductionRD}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(2)  
+                                }" 
                                 type="Number" enabled="false"   description="EUR"
                                 visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}"/> <!-- Used for Precio Neto -->     
                         </m:VBox>
@@ -368,7 +407,7 @@
                                         <m:Text text="{pa>royalDecree}"/>
                                         <m:Text text="{pa>fOCMinAmount}"/>
                                         <m:Text text="{pa>fOCBonus}"/>
-                                        <m:Text text="{pa>potentialGeneratedSavings}"/>
+                                        <m:Text text="{path:'pa>potentialGeneratedSavings', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}"/>
                                     </m:cells>
                                 </m:ColumnListItem>
                             </m:items>
@@ -424,10 +463,10 @@
                                 <m:ColumnListItem>
                                     <m:cells>
                                         <m:Text text="{pa>volume}"/>
-                                        <m:Text text="{pa>discount} %"/>
-                                        <m:Text text="{pa>netPriceWithoutTax}"/>
-                                        <m:Text text="{pa>/priceAgreement/rappelPriceCondition/tax} %"/>
-                                        <m:Text text="{pa>netPriceWithTax}"/>
+                                        <m:Text text="{path:'pa>discount', type:'.types.percent'} %"/>
+                                        <m:Text text="{= parseFloat(${pa>netPriceWithoutTax}).toFixed(2) }"/>
+                                        <m:Text text="{path:'pa>/priceAgreement/rappelPriceCondition/tax', type:'.types.percent'} %"/>
+                                        <m:Text text="{= parseFloat(${pa>netPriceWithTax}).toFixed(2)}"/>
                                     </m:cells>
                                 </m:ColumnListItem>
                             </m:items>
