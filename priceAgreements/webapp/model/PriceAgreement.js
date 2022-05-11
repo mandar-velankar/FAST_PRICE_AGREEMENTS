@@ -27,6 +27,7 @@ sap.ui.define([
             this.focPriceCondition = {};
             this.rappelPriceCondition = {};
             this.expiryDateValueState="None";
+            this.effectiveDateValueState="None";
             if (data) {
                 //copy array's manually to objects
                 this.setInstitute(data.Institute||data.institute);//or for backup restore
@@ -104,11 +105,23 @@ sap.ui.define([
         setExpiryDateValueState:function(state){
             this.expiryDateValueState=state;
         },
+        setEffectiveDateValueState:function(state){
+            this.effectiveDateValueState=state;
+        },
         isValid:function(){
             let isValid = false;
             this.expiryDateValueState="Error";
             if(this.expiryDate && this.expiryDate !== ""){
                 this.expiryDateValueState="None";
+                isValid = true;
+            }
+            return isValid;
+        },
+        isEffectiveDateValid:function(){
+            let isValid = false;
+            this.effectiveDateValueState="Error";
+            if(this.effectiveDate && this.effectiveDate !== ""){
+                this.effectiveDateValueState="None";
                 isValid = true;
             }
             return isValid;

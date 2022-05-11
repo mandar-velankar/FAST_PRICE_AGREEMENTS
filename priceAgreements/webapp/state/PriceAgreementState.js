@@ -292,6 +292,13 @@ sap.ui.define([
             }
             return ( originalPriceAgreement && originalPriceAgreement.expiryDate !== this.getPriceAgreementInstance().expiryDate ) || false;
         },
+        hasPAEffectiveDateChanged:function(){
+            var originalPriceAgreement;
+            if(this.priceAgreementData){
+                originalPriceAgreement = new PriceAgreement(this.priceAgreementData);
+            }
+            return ( originalPriceAgreement && originalPriceAgreement.effectiveDate !== this.getPriceAgreementInstance().effectiveDate ) || false;
+        },
         backupPriceAgreement: function () {
             this.priceAgreementData = this.getPriceAgreementInstance().getAll();
         },
