@@ -464,9 +464,9 @@
                                     <m:cells>
                                         <m:Text text="{pa>volume}"/>
                                         <m:Text text="{path:'pa>discount', type:'.types.percent'} %"/>
-                                        <m:Text text="{path:'pa>netPriceWithoutTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}"/>
+                                        <m:Text text="{= parseFloat(${pa>netPriceWithoutTax}).toFixed(2) }"/>
                                         <m:Text text="{path:'pa>/priceAgreement/rappelPriceCondition/tax', type:'.types.percent'} %"/>
-                                        <m:Text text="{path:'pa>netPriceWithTax', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}"/>
+                                        <m:Text text="{= parseFloat(${pa>netPriceWithTax}).toFixed(2)}"/>
                                     </m:cells>
                                 </m:ColumnListItem>
                             </m:items>
