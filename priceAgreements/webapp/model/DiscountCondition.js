@@ -8,6 +8,9 @@ sap.ui.define([
             //will copy all properties and make them camelcase starting with lowercase ;)
             BaseObject.call(this, data);
 
+            this.discount = Number(this.discount);
+            if(this.discount && this.discount > 1) {this.discount /= 100;} // this is needed because the binding type:'.types.percent' used in the view is doing discount * 100
+
             if (data) {
                 //copy array's manually to objects
             }
