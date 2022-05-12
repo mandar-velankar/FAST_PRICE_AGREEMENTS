@@ -124,6 +124,7 @@ sap.ui.define([
                 
                 candidate.price = priceAgreement.price;
                 candidate.expiryDate = priceAgreement.expiryDate;
+                candidate.effectiveDate = priceAgreement.effectiveDate;
 
                 const customerPrice = new CustomerPrice(candidate.getJSON());
 
