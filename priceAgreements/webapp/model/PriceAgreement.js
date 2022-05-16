@@ -142,7 +142,9 @@ sap.ui.define([
                 "instituteId",
                 "tenderId",
                 "productPackId",
-                "synchronized"
+                "synchronized",
+                "extendPriceAgreement",
+                "expiryExtensionPeriod"
             ]);
 
             return data;

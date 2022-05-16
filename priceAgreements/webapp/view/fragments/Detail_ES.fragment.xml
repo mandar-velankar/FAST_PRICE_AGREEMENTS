@@ -45,7 +45,18 @@
 											pattern: 'yyyy-MM-dd',
 											UTC:true
 										}}" valueFormat="yyyy-MM-dd" change=".handleDateChange" valueState="{pa>/priceAgreement/expiryDateValueState}" enabled="{pa>/editMode}"/>
-
+                        
+						<m:CheckBox text="{i18n>extendExpiry}" select=".extendExpiry" enabled="{pa>/editMode}" selected="{path:'pa>/priceAgreement/extendPriceAgreement'}"/>
+                        <m:Label text="{i18n>expiryExtensionPeriod}" design="Bold" required="false"/>
+                        <m:StepInput
+                            id="idExtendExpiryDateID"
+						value="{path: 'pa>/priceAgreement/expiryExtensionPeriod'}"
+						min="0"
+						max="12"
+						valueState="{valueState}"
+						enabled="{= ${pa>/editMode} &amp;&amp; ${pa>/priceAgreement/extendPriceAgreement} }"
+                        description="Months" 
+						change="onChange"/>
 
                         <m:Label text="{i18n>PVL}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
                         <m:Input 
