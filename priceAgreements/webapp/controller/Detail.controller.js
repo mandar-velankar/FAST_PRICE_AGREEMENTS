@@ -399,6 +399,10 @@ sap.ui.define([
 			return true;
 		},
 
+        extendExpiry: function(evt){
+            if(!evt.getParameter('selected')) this.byId("idExtendExpiryDateID").setValue(0);
+        }
+
 	});
 
 });

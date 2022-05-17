@@ -124,7 +124,11 @@
 					<items>
 						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="{= ${Synchronized} === true ? 'None' : 'Warning'}" id="items">
 							<cells>
-								<Text text="{Tender/TenderID}"/>
+								<VBox>
+									<Text text="{Tender/TenderID}"/>
+									<Text text="{Tender/ExternalID}"/>
+									<Text text="{Tender/SAPID}"/>
+								</VBox>
 								<Text text="{Tender/Classification}"/>
 								<Text text="{Tender/TenderName}"/>
 								<Text text="{Institute/InstituteName}"/>
