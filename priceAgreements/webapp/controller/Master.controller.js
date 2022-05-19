@@ -373,6 +373,20 @@ sap.ui.define([
 				}));
 
 				orFilters.push(new Filter({
+					path: "Tender/ExternalID",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
+					path: "Tender/SAPID",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
 					path: "Tender/TenderName",
 					operator: FilterOperator.Contains,
 					value1: sSearch,
@@ -395,6 +409,13 @@ sap.ui.define([
 
 				orFilters.push(new Filter({
 					path: "Institute/InstituteName",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
+					path: "Tender/User/UserName",
 					operator: FilterOperator.Contains,
 					value1: sSearch,
 					caseSensitive: false

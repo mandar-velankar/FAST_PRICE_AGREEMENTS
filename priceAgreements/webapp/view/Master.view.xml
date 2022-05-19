@@ -71,7 +71,7 @@
 								descending: false
 							},
 							parameters: {
-								expand: 'Product/ProductPack,Tender,Institute,CustomerPrices,ConsumerPrice,FOC'
+								expand: 'Product/ProductPack,Tender,Tender/User,Institute,CustomerPrices,ConsumerPrice,FOC'
 							}
 						}"
 						class="sapFDynamicPageAlignContent"
@@ -83,6 +83,11 @@
 						<Column>
 							<header>
 								<ObjectIdentifier title="{i18n>TenderId}" />
+							</header>
+						</Column>
+						<Column>
+							<header>
+								<ObjectIdentifier title="{i18n>UserName}" />
 							</header>
 						</Column>
 						<Column>
@@ -124,7 +129,12 @@
 					<items>
 						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="{= ${Synchronized} === true ? 'None' : 'Warning'}" id="items">
 							<cells>
-								<Text text="{Tender/TenderID}"/>
+								<VBox>
+									<Text text="{Tender/TenderID}"/>
+									<Text text="{Tender/ExternalID}"/>
+									<Text text="{Tender/SAPID}"/>
+								</VBox>
+								<Text text="{Tender/User/UserName}"/>
 								<Text text="{Tender/Classification}"/>
 								<Text text="{Tender/TenderName}"/>
 								<Text text="{Institute/InstituteName}"/>
