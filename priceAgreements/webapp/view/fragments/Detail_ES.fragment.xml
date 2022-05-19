@@ -56,7 +56,8 @@
 						valueState="{valueState}"
 						enabled="{= ${pa>/editMode} &amp;&amp; ${pa>/priceAgreement/extendPriceAgreement} }"
                         description="Months" 
-						change="onChange"/>
+						change="onChange"
+                        validationMode="LiveChange"/>
 
                         <m:Label text="{i18n>PVL}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
                         <m:Input 
