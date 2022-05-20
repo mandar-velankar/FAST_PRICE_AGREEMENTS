@@ -252,6 +252,10 @@ sap.ui.define([
 				MessageBox.error(this.getText("requiredFields"));
 				return false;
 			}
+            if(this.byId("idExtendExpiry").getSelected() === true && this.byId("idExtendExpiryDateID").getValue() > 12 || this.byId("idExtendExpiryDateID").getValue() === 0 ){
+                MessageBox.error(this.getText("errorExpiry"));
+                return false;
+            }
 			//expiry date changed + already synchronized ==> price agreement in SAP should be cancelled first
 			Promise.resolve(((this.paState.hasPAExpiryDateChanged() || this.paState.hasPAEffectiveDateChanged()) && this.paState.getPriceAgreementInstance().synchronized)).then((confirm) => {
 				if(confirm){
