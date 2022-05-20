@@ -46,7 +46,7 @@
 											UTC:true
 										}}" valueFormat="yyyy-MM-dd" change=".handleDateChange" valueState="{pa>/priceAgreement/expiryDateValueState}" enabled="{pa>/editMode}"/>
                         
-						<m:CheckBox text="{i18n>extendExpiry}" select=".extendExpiry" enabled="{pa>/editMode}" selected="{path:'pa>/priceAgreement/extendPriceAgreement'}"/>
+						<m:CheckBox id="idExtendExpiry" text="{i18n>extendExpiry}" select=".extendExpiry" enabled="{pa>/editMode}" selected="{path:'pa>/priceAgreement/extendPriceAgreement'}"/>
                         <m:Label text="{i18n>expiryExtensionPeriod}" design="Bold" required="false"/>
                         <m:StepInput
                             id="idExtendExpiryDateID"
