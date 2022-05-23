@@ -256,7 +256,7 @@ sap.ui.define([
 				MessageBox.error(this.getText("requiredFields"));
 				return false;
 			}
-            if(this.byId("idExtendExpiry").getSelected() === true && this.byId("idExtendExpiryDateID").getValue() > 12 || this.byId("idExtendExpiryDateID").getValue() === 0 ){
+            if(this.byId("idExtendExpiry").getSelected() === true && (this.byId("idExtendExpiryDateID").getValue() > 12 || this.byId("idExtendExpiryDateID").getValue() === 0 )){
                 MessageBox.error(this.getText("errorExpiry"));
                 return false;
             }

@@ -54,7 +54,7 @@
 						min="0"
 						max="12"
 						valueState="{valueState}"
-						enabled="{= ${pa>/editMode} &amp;&amp; ${pa>/priceAgreement/extendPriceAgreement} }"
+						enabled="{= ${pa>/editMode} &amp;&amp; ${pa>/priceAgreement/extendPriceAgreement} === true }"
                         description="Months" 
 						change="onChange"
                         validationMode="LiveChange"/>
