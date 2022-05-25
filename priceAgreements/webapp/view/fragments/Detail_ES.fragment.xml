@@ -435,7 +435,8 @@
                                         <core:Item key="" text="" />
                                         <core:Item key="Monthly" text="Monthly" />
                                         <core:Item key="Quarterly" text="Quarterly" />
-                                        <core:Item key="Annually" text="Annually" />									
+                                        <core:Item key="HalfYearly" text="Half Yearly" />
+                                        <core:Item key="Annually" text="Yearly" />									
                                     </m:items>
                                 </m:Select>
                             </m:HBox>
