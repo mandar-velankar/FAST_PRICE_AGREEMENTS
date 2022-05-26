@@ -453,6 +453,10 @@
                                         enabled="false"
                                         class="sapUiSmallMarginBottom"/>
                             </m:HBox>
+                            <m:HBox>
+                                <m:Label text="{i18n>Settlement}" width="10em" class="sapUiTinyMarginTop sapUiTinyMarginEnd"/>
+                                <m:Text text="{pa>/priceAgreement/rappelPriceCondition/settlement/description}" class="sapUiTinyMarginTop sapUiSmallMarginBottom"/>
+                            </m:HBox>
                         </m:VBox>
                         <m:Table id="idRappedlTable" mode="SingleSelectMaster" items="{pa>/priceAgreement/rappelPriceCondition/discountConditions}">
                             <m:columns>
