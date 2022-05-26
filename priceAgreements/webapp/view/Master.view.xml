@@ -26,18 +26,14 @@
 								        dataReceived: '.onUserCountriesReceived'
 							         }
                                     }"
-							change=".setFilter"
+							change=".onChangeCountryFilter"
 							visible="{= ${appView>/layout} === 'OneColumn' }"
-                            forceSelection="true">
+                            forceSelection="true"
+							selectedKey="{pa>/selectedCountryFilter}">
 							<core:Item key="{CountryCode}" text="{Country/CountryName}"/>
 					</Select>
-					<Select	id="idslctfilter" change=".setFilter">
-						<core:Item key="" text=""/>
-						<core:Item key="newAgreementsKey" text="New Agreements"/>
-						<core:Item key="newMaterialNumbersKey" text="New Material Numbers"/>
-						<core:Item key="updatedRetailPriceKey" text="Updated Retail Price"/>
-						<core:Item key="expiringSoonKey" text="Expiring Soon"/>
-						<core:Item key="expiredKey" text="Expired"/>
+					<Select	id="idslctfilter" change=".setFilter" items="{pa>/countryFilters}">
+						<core:Item key="{pa>key}" text="{pa>value}"/>
 					</Select>
 					<Label text="{i18n>Product}" visible="{= ${appView>/layout} === 'OneColumn' }"/>
 					<Select  
@@ -72,7 +68,8 @@
 							},
 							parameters: {
 								expand: 'Product/ProductPack,Tender,Tender/User,Institute,CustomerPrices,ConsumerPrice,FOC'
-							}
+							}, 
+							suspended : true
 						}"
 						class="sapFDynamicPageAlignContent"
 						width="auto"
