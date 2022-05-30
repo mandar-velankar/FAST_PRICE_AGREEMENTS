@@ -405,7 +405,16 @@ sap.ui.define([
 
         extendExpiry: function(evt){
             if(!evt.getParameter('selected')) this.byId("idExtendExpiryDateID").setValue(0);
-        }
+        },
+		onOpenSettlementCalendar:function(event){
+			// sName, model, updateModelAlways, callback, data, popoverSource, autoOpen)
+			this.openFragment("com.bayer.tender.priceagreements.view.dialog.SettlementCalendar", null, true,
+				()=>{
+					
+				}, {
+					title: "Fragment Demo"
+				});
+		}
 
 	});
 
