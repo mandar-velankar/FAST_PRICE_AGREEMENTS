@@ -46,7 +46,7 @@
 											UTC:true
 										}}" valueFormat="yyyy-MM-dd" change=".handleDateChange" valueState="{pa>/priceAgreement/expiryDateValueState}" enabled="{pa>/editMode}"/>
                         
-						<m:CheckBox text="{i18n>extendExpiry}" select=".extendExpiry" enabled="{pa>/editMode}" selected="{path:'pa>/priceAgreement/extendPriceAgreement'}"/>
+						<m:CheckBox id="idExtendExpiry" text="{i18n>extendExpiry}" select=".extendExpiry" enabled="{pa>/editMode}" selected="{path:'pa>/priceAgreement/extendPriceAgreement'}"/>
                         <m:Label text="{i18n>expiryExtensionPeriod}" design="Bold" required="false"/>
                         <m:StepInput
                             id="idExtendExpiryDateID"
@@ -54,7 +54,7 @@
 						min="0"
 						max="12"
 						valueState="{valueState}"
-						enabled="{= ${pa>/editMode} &amp;&amp; ${pa>/priceAgreement/extendPriceAgreement} }"
+						enabled="{= ${pa>/editMode} &amp;&amp; ${pa>/priceAgreement/extendPriceAgreement} === true }"
                         description="Months" 
 						change="onChange"
                         validationMode="LiveChange"/>
@@ -435,7 +435,8 @@
                                         <core:Item key="" text="" />
                                         <core:Item key="Monthly" text="Monthly" />
                                         <core:Item key="Quarterly" text="Quarterly" />
-                                        <core:Item key="Annually" text="Annually" />									
+                                        <core:Item key="HalfYearly" text="Half Yearly" />
+                                        <core:Item key="Annually" text="Yearly" />									
                                     </m:items>
                                 </m:Select>
                             </m:HBox>
@@ -451,6 +452,10 @@
                                         displayFormat="short"
                                         enabled="false"
                                         class="sapUiSmallMarginBottom"/>
+                            </m:HBox>
+                            <m:HBox>
+                                <m:Label text="{i18n>Settlement}" width="10em" class="sapUiTinyMarginTop sapUiTinyMarginEnd"/>
+                                <m:Text text="{pa>/priceAgreement/rappelPriceCondition/settlement/description}" class="sapUiTinyMarginTop sapUiSmallMarginBottom"/>
                             </m:HBox>
                         </m:VBox>
                         <m:Table id="idRappedlTable" mode="SingleSelectMaster" items="{pa>/priceAgreement/rappelPriceCondition/discountConditions}">
