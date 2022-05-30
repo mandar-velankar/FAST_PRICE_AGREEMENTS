@@ -6,13 +6,25 @@ sap.ui.define([
 ], function (BaseState, PriceAgreement, CandidatePrice, CustomerPrice) {
     "use strict";
     var PriceAgreementState = BaseState.extend("com.bayer.tender.priceagreements.state.PriceAgreementState", {
+        allFilters:[{key:"",country:"ALL",value:""},
+                    {key:"newAgreementsKey",country:"ALL",value:"New Agreements"},
+                    {key:"newMaterialNumbersKey",country:"ALL",value:"New Material Numbers"},
+                    {key:"updatedRetailPriceKey",country:"IT",value:"Updated Retail Price"},
+                    {key:"updatedPVLKey",country:"ES",value:"Updated PVL"},
+                    {key:"updatedConfidentialPriceKey",country:"ES",value:"Updated Confidential Price"},
+                    {key:"netPriceAbovePVLKey",country:"ES",value:"Net Price Above PVL"},
+                    {key:"netPriceBelowFloorPriceKey",country:"ES",value:"Net Price Below Floor Price"},
+                    {key:"expiringSoonKey",country:"ALL",value:"Expiring Soon"},
+                    {key:"expiredKey",country:"ALL",value:"Expired"}],
         constructor: function (service) {
             //data needs to be defined before calling parent. 
             //Parent will use this for creating a JSONModel
             this.data = {
                 priceAgreement: new PriceAgreement(),
                 editMode: false,
-                allApplied: false
+                allApplied: false,
+                selectedCountryFilter:"",
+                countryFilters:[]
             };
             BaseState.call(this);
             this.paService = service;
@@ -299,6 +311,11 @@ sap.ui.define([
                 originalPriceAgreement = new PriceAgreement(this.priceAgreementData);
             }
             return ( originalPriceAgreement && originalPriceAgreement.effectiveDate !== this.getPriceAgreementInstance().effectiveDate ) || false;
+        },
+        setFiltersByCountry:function(){
+            const selectedCountry = this.getProperty("selectedCountryFilter");
+            const countryFilterItems = ( selectedCountry && this.allFilters.filter(item => item.country === selectedCountry || item.country === "ALL") ) || [];
+            this.setProperty("countryFilters",countryFilterItems);
         },
         backupPriceAgreement: function () {
             this.priceAgreementData = this.getPriceAgreementInstance().getAll();
