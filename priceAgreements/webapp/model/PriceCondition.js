@@ -26,7 +26,15 @@ sap.ui.define([
             }
             this.confidentialPrice = data.ConfidentialPrice || data.confidentialPrice || null;
         },
-
+        getLiquidationInMonths:function(){
+            switch (this.liquidation) {
+                case 'Monthly': return 1;
+                case 'Quarterly': return 3;
+                case 'HalfYearly': return 6;
+                case 'Annually': return 12;
+                default:return 0;;
+            }
+        },
         setPriceConditionClassification: function(classification){
             this.priceConditionClassification = new PriceConditionClassification(classification);
         },

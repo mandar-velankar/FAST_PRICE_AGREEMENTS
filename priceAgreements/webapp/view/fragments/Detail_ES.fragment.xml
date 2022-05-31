@@ -457,6 +457,13 @@
                                 <m:Label text="{i18n>Settlement}" width="10em" class="sapUiTinyMarginTop sapUiTinyMarginEnd"/>
                                 <m:Text text="{pa>/priceAgreement/rappelPriceCondition/settlement/description}" class="sapUiTinyMarginTop sapUiSmallMarginBottom"/>
                             </m:HBox>
+                            <m:HBox>
+                                <m:Label text="{i18n>SettlementCalendar}" width="10em" class="sapUiSmallMarginTop sapUiTinyMarginEnd"/>
+                                <m:Button icon="sap-icon://calendar" 
+                                            press=".onOpenSettlementCalendar" 
+                                            class="sapUiNoMarginTop sapUiSmallMarginBottom"
+                                            enabled="{= !!(${pa>/priceAgreement/effectiveDate} &amp;&amp; ${pa>/priceAgreement/expiryDate})}"/>
+                            </m:HBox>
                         </m:VBox>
                         <m:Table id="idRappedlTable" mode="SingleSelectMaster" items="{pa>/priceAgreement/rappelPriceCondition/discountConditions}">
                             <m:columns>
