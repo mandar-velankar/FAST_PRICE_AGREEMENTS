@@ -1,5 +1,5 @@
 sap.ui.define([
-	"sap/ui/core/mvc/Controller",
+	"com/bayer/tender/uilib/controllers/BaseController",
 	"sap/ui/core/routing/History"
 ], function (Controller, History) {
 	"use strict";
