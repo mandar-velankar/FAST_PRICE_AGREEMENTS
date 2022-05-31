@@ -58,6 +58,7 @@ sap.ui.define([
 			});
 
 			this.paState = this.getOwnerComponent().getState(this.getOwnerComponent().PA);
+			this.setModel(this.paState.getModel(), "pa");
 
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
@@ -310,7 +311,10 @@ sap.ui.define([
 			oViewModel.setProperty("/isFilterBarVisible", (this._oListFilterState.aFilter.length > 0));
 			oViewModel.setProperty("/filterBarLabel", this.getResourceBundle().getText("masterFilterBarText", [sFilterBarText]));
 		},
-
+		onChangeCountryFilter:function(event){
+			this.paState.setFiltersByCountry();
+			this.setFilter(event);
+		},
 		setFilter: function (oSelection) {
 
 			var orFilters = [];
@@ -434,6 +438,10 @@ sap.ui.define([
 				this.getView().byId("list").getBinding("items").aApplicationFilters = [];
 				this.getView().byId("list").getBinding("items").filter();
 			}
+			
+			if (this.getView().byId("list").getBinding("items").isSuspended()) {
+				this.getView().byId("list").getBinding("items").resume();
+			}
 
 		},
 
@@ -466,12 +474,13 @@ sap.ui.define([
         onUserCountriesReceived: function(evt){
 			// add empty item
             let oCountryFilter = this.byId("idSlctCountry");
-            if(oCountryFilter.getItems().length > 1){
-                oCountryFilter.insertItem(new sap.ui.core.Item());
-            } else if(oCountryFilter.getItems().length === 1){
+            // if(oCountryFilter.getItems().length > 1){
+            //     oCountryFilter.insertItem(new sap.ui.core.Item());
+            // } else if(oCountryFilter.getItems().length === 1){
                 oCountryFilter.setSelectedKey(oCountryFilter.getItems()[0].getKey());
-            }
-            this.setFilter();
+            // }
+            // this.setFilter();
+			this.onChangeCountryFilter(evt);
 		},
 
 		/**
