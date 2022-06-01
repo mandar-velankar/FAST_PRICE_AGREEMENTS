@@ -57,6 +57,9 @@ sap.ui.define([
         calculateSettlementCalendarProposal:function(){
             const settlementId = this.rappelPriceCondition?.settlement?.iD;
             const months = this.rappelPriceCondition?.getLiquidationInMonths();
+            if(!this.effectiveDate || !this.expiryDate){
+                return;
+            }
             switch (settlementId) {
                 case 'VALIDITY':
                     this.settlementDates.push(new SettlementDate({
