@@ -6,7 +6,7 @@
 					<OverflowToolbar id="otbSubheader">
 						<Title text="Settlement calendar" level="H2" />
 						<ToolbarSpacer />
-						<!-- <Button icon="sap-icon://add" type="Transparent" press=".onAdd" visible="{= ${pa>/editMode} &amp;&amp; !${pa>/priceAgreement/synchronized} }"/> -->
+						<Button icon="sap-icon://add" type="Transparent" press=".onAdd" visible="{= ${pa>/editMode} &amp;&amp; !${pa>/priceAgreement/synchronized} }"/>
 					</OverflowToolbar>
 				</headerToolbar>
 				<columns>
@@ -25,26 +25,30 @@
                                                 type:'sap.ui.model.type.Date', 
                                                 formatOptions: { style: 'short', pattern: 'yyyy-MM-dd'}
                                         }"
+										minDate="{sc>minDate}"
+										maxDate="{sc>maxDate}"
                                         valueFormat="yyyy-MM-dd" 
                                         displayFormat="short"
-                                        enabled="false"/>
-                                        <!-- enabled="{= ${pa>/editMode} &amp;&amp; !${pa>/priceAgreement/synchronized} }"/> -->
+										change=".onChangeSettlementDate"
+                                        enabled="{= ${pa>/editMode} &amp;&amp; !${pa>/priceAgreement/synchronized} }"/>
                             <DatePicker value="{
                                                 path:'sc>toDate',
                                                 type:'sap.ui.model.type.Date', 
                                                 formatOptions: { style: 'short', pattern: 'yyyy-MM-dd'}
                                         }"
+										minDate="{sc>minDate}"
+										maxDate="{sc>maxDate}"
                                         valueFormat="yyyy-MM-dd" 
                                         displayFormat="short"
-                                        enabled="false"/>
-                                        <!-- enabled="{= ${pa>/editMode} &amp;&amp; !${pa>/priceAgreement/synchronized} }"/> -->
+										change=".onChangeSettlementDate"
+                                        enabled="{= ${pa>/editMode} &amp;&amp; !${pa>/priceAgreement/synchronized} }"/>
                         </cells>
 					</ColumnListItem>
 				</items>
 			</Table>
 		</content>
 		<buttons>
-			<!-- <Button text="Apply" press=".onApply" visible="{= ${pa>/editMode} &amp;&amp; !${pa>/priceAgreement/synchronized} }"></Button> -->
+			<Button text="Apply" press=".onApply" visible="{= ${pa>/editMode} &amp;&amp; !${pa>/priceAgreement/synchronized} }"></Button>
 			<Button icon="sap-icon://decline" text="Cancel" press=".onClose"></Button>
 		</buttons>
 	</Dialog>

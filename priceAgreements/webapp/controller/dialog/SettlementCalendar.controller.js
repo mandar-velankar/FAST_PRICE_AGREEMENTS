@@ -16,6 +16,11 @@ sap.ui.define([
             this.settlementCalendarModel = new JSONModel({settlementDates});
 			this.dialog.fragment.setModel(this.settlementCalendarModel, "sc");
 		},
+		onChangeSettlementDate:function(event){
+            let settlementDates = this.settlementCalendarModel.getProperty("/settlementDates");
+			settlementDates = this.paState.getPriceAgreementInstance().calculateSettlementCalendarMinMaxDate(settlementDates)
+			this.settlementCalendarModel.setProperty("/settlementDates",settlementDates);
+		},
 		onApply: function() {
             const settlementDates = this.settlementCalendarModel.getProperty("/settlementDates");
             this.paState.getPriceAgreementInstance().applySettlementDates(settlementDates);
