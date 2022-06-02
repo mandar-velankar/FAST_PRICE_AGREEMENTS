@@ -408,12 +408,7 @@ sap.ui.define([
         },
 		onOpenSettlementCalendar:function(event){
 			// sName, model, updateModelAlways, callback, data, popoverSource, autoOpen)
-			this.openFragment("com.bayer.tender.priceagreements.view.dialog.SettlementCalendar", null, true,
-				()=>{
-					
-				}, {
-					title: "Fragment Demo"
-				});
+			this.openFragment("com.bayer.tender.priceagreements.view.dialog.SettlementCalendar", null, true);
 		}
 
 	});

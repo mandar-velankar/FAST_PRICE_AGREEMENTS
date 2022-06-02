@@ -57,39 +57,69 @@ sap.ui.define([
         calculateSettlementCalendarProposal:function(){
             const settlementId = this.rappelPriceCondition?.settlement?.iD;
             const months = this.rappelPriceCondition?.getLiquidationInMonths();
-            if(!this.effectiveDate || !this.expiryDate){
-                return;
-            }
+            let settlementDates = [];
             switch (settlementId) {
                 case 'VALIDITY':
-                    this.settlementDates.push(new SettlementDate({
+                    settlementDates.push(new SettlementDate({
                         priceAgreementId:this.priceAgreementId,
                         fromDate:new Date(this.effectiveDate.getTime()),
-                        toDate: new Date(this.expiryDate.getTime())
+                        toDate: new Date(this.expiryDate.getTime()),
+                        minDate: new Date(this.effectiveDate.getTime()),
+                        maxDate: new Date(this.expiryDate.getTime())
                     }));
                     break;
                 case 'FREQUENCY':
                     let dateFrom = new Date(this.effectiveDate.getTime());
-                    
+                    let idx = 0;
                     do {
                         let dateTo = new Date(dateFrom.getTime());
                         dateTo.setMonth(dateTo.getMonth() + months);
                         dateTo.setDate(dateTo.getDate() - 1 );
-                        this.settlementDates.push(new SettlementDate({
+                        settlementDates.push(new SettlementDate({
                             priceAgreementId:this.priceAgreementId,
                             fromDate:new Date(dateFrom.getTime()),
-                            toDate:new Date(dateTo.getTime())
+                            toDate:new Date(dateTo.getTime())//,
+                            // minDate: this.getPreviousSettlementDate(idx,settlementDates),
+                            // maxDate: this.getNextSettlementDate(idx,settlementDates)
                         }));
                         dateFrom.setMonth(dateFrom.getMonth() + months);
+                        idx++;
                     } while (dateFrom < this.expiryDate);
                     //set last record todate with expirydate value
-                    if(this.settlementDates.length > 0){
-                        this.settlementDates[this.settlementDates.length-1].toDate = new Date(this.expiryDate.getTime());
+                    if(settlementDates.length > 0){
+                        settlementDates[settlementDates.length-1].toDate = new Date(this.expiryDate.getTime());
                     }
+                    settlementDates = this.calculateSettlementCalendarMinMaxDate(settlementDates);
                     break;
                 default:
                     break;
             }
+            return settlementDates;
+        },
+        calculateSettlementCalendarMinMaxDate:function(settlementDates){
+            for(const [idx,settlementDate] of settlementDates.entries()){
+                settlementDate.minDate = this.getPreviousSettlementDate(idx,settlementDates);
+                settlementDate.maxDate = this.getNextSettlementDate(idx,settlementDates);
+            }
+            return settlementDates;
+        },
+        getPreviousSettlementDate:function(idx,settlementDates){
+            const prevSettlementDate = settlementDates[idx-1];
+            let prevDate = new Date(this.effectiveDate.getTime());
+            if(prevSettlementDate?.toDate){
+                prevDate = new Date(prevSettlementDate.toDate.getTime());
+                prevDate.setDate(prevDate.getDate()+1);
+            }
+            return prevDate;
+        },
+        getNextSettlementDate:function(idx,settlementDates){
+            const nextSettlementDate = settlementDates[idx+1];
+            let nextDate = new Date(this.expiryDate.getTime());
+            if(nextSettlementDate?.fromDate){
+                nextDate = new Date(nextSettlementDate.fromDate.getTime());
+                nextDate.setDate(nextDate.getDate()-1);
+            }
+            return nextDate;
         },
         cloneSettlementDates:function(){
             return this.settlementDates.map( settlementDate => new SettlementDate(settlementDate.getAll()));
@@ -99,14 +129,19 @@ sap.ui.define([
         },
         setSettlementDates:function(settlementDates){
             this.settlementDates = settlementDates && settlementDates.map(settlementDate => new SettlementDate(settlementDate));
-            if(!this.settlementDates || this.settlementDates.length === 0){
-                this.calculateSettlementCalendarProposal();
+            
+            // if(!this.effectiveDate || !this.expiryDate){
+            //     return;
+            // }
+            
+            if(this.settlementDates && this.settlementDates.length > 0){
+                this.settlementDates.sort( ( settlementDateA,settlementDateB ) => {
+                    if(settlementDateA.fromDate < settlementDateB.fromDate) return -1;
+                    if(settlementDateA.fromDate > settlementDateB.fromDate) return 1;
+                    return 0;
+                });
+                this.settlementDates = this.calculateSettlementCalendarMinMaxDate(this.settlementDates);
             }
-            this.settlementDates.sort( ( settlementDateA,settlementDateB ) => {
-                if(settlementDateA.fromDate < settlementDateB.fromDate) return -1;
-                if(settlementDateA.fromDate > settlementDateB.fromDate) return 1;
-                return 0;
-            });
         },
         setPriceConditions:function(priceConditions){
             this.priceConditions = priceConditions && priceConditions.map(priceCondition => new PriceCondition(priceCondition));
