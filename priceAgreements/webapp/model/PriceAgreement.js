@@ -57,9 +57,10 @@ sap.ui.define([
         calculateSettlementCalendarProposal:function(){
             const settlementId = this.rappelPriceCondition?.settlement?.iD;
             const months = this.rappelPriceCondition?.getLiquidationInMonths();
+            let settlementDates = [];
             switch (settlementId) {
                 case 'VALIDITY':
-                    this.settlementDates.push(new SettlementDate({
+                    settlementDates.push(new SettlementDate({
                         priceAgreementId:this.priceAgreementId,
                         fromDate:new Date(this.effectiveDate.getTime()),
                         toDate: new Date(this.expiryDate.getTime()),
@@ -74,24 +75,26 @@ sap.ui.define([
                         let dateTo = new Date(dateFrom.getTime());
                         dateTo.setMonth(dateTo.getMonth() + months);
                         dateTo.setDate(dateTo.getDate() - 1 );
-                        this.settlementDates.push(new SettlementDate({
+                        settlementDates.push(new SettlementDate({
                             priceAgreementId:this.priceAgreementId,
                             fromDate:new Date(dateFrom.getTime()),
-                            toDate:new Date(dateTo.getTime()),
-                            minDate: this.getPreviousSettlementDate(idx,this.settlementDates),
-                            maxDate: this.getNextSettlementDate(idx,this.settlementDates)
+                            toDate:new Date(dateTo.getTime())//,
+                            // minDate: this.getPreviousSettlementDate(idx,settlementDates),
+                            // maxDate: this.getNextSettlementDate(idx,settlementDates)
                         }));
                         dateFrom.setMonth(dateFrom.getMonth() + months);
                         idx++;
                     } while (dateFrom < this.expiryDate);
                     //set last record todate with expirydate value
-                    if(this.settlementDates.length > 0){
-                        this.settlementDates[this.settlementDates.length-1].toDate = new Date(this.expiryDate.getTime());
+                    if(settlementDates.length > 0){
+                        settlementDates[settlementDates.length-1].toDate = new Date(this.expiryDate.getTime());
                     }
+                    settlementDates = this.calculateSettlementCalendarMinMaxDate(settlementDates);
                     break;
                 default:
                     break;
             }
+            return settlementDates;
         },
         calculateSettlementCalendarMinMaxDate:function(settlementDates){
             for(const [idx,settlementDate] of settlementDates.entries()){
@@ -127,20 +130,16 @@ sap.ui.define([
         setSettlementDates:function(settlementDates){
             this.settlementDates = settlementDates && settlementDates.map(settlementDate => new SettlementDate(settlementDate));
             
-            if(!this.effectiveDate || !this.expiryDate){
-                return;
-            }
+            // if(!this.effectiveDate || !this.expiryDate){
+            //     return;
+            // }
             
-            this.settlementDates.sort( ( settlementDateA,settlementDateB ) => {
-                if(settlementDateA.fromDate < settlementDateB.fromDate) return -1;
-                if(settlementDateA.fromDate > settlementDateB.fromDate) return 1;
-                return 0;
-            });
-            if(!this.settlementDates || this.settlementDates.length === 0){
-                this.calculateSettlementCalendarProposal();
-            }else{
-                //only in case when calendar was already saved.
-                //otherwise this is already part of the proposal calculation
+            if(this.settlementDates && this.settlementDates.length > 0){
+                this.settlementDates.sort( ( settlementDateA,settlementDateB ) => {
+                    if(settlementDateA.fromDate < settlementDateB.fromDate) return -1;
+                    if(settlementDateA.fromDate > settlementDateB.fromDate) return 1;
+                    return 0;
+                });
                 this.settlementDates = this.calculateSettlementCalendarMinMaxDate(this.settlementDates);
             }
         },

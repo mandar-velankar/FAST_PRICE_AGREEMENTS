@@ -1,7 +1,7 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
 	<Dialog showHeader="false">
 		<content>			
-			<Table items="{sc>/settlementDates}">
+			<Table items="{sc>/settlementDates}" sticky="ColumnHeaders,HeaderToolbar">
 				<headerToolbar>
 					<OverflowToolbar id="otbSubheader">
 						<Title text="Settlement calendar" level="H2" />
@@ -23,24 +23,26 @@
                             <DatePicker value="{
                                                 path:'sc>fromDate',
                                                 type:'sap.ui.model.type.Date', 
-                                                formatOptions: { style: 'short', pattern: 'yyyy-MM-dd'}
+                                                formatOptions: { style: 'short', pattern: 'yyyy-MM-dd',UTC: true}
                                         }"
 										minDate="{sc>minDate}"
-										maxDate="{sc>maxDate}"
+										maxDate="{= ${sc>toDate} || ${sc>maxDate} }"
+										valueState="{sc>fromValueState}"
                                         valueFormat="yyyy-MM-dd" 
                                         displayFormat="short"
-										change=".onChangeSettlementDate"
+										change=".onChangeSettlementDate($event,'from')"
                                         enabled="{= ${pa>/editMode} &amp;&amp; !${pa>/priceAgreement/synchronized} }"/>
                             <DatePicker value="{
                                                 path:'sc>toDate',
                                                 type:'sap.ui.model.type.Date', 
-                                                formatOptions: { style: 'short', pattern: 'yyyy-MM-dd'}
+                                                formatOptions: { style: 'short', pattern: 'yyyy-MM-dd',UTC: true}
                                         }"
-										minDate="{sc>minDate}"
+										minDate="{= ${sc>fromDate} || ${sc>minDate}}"
 										maxDate="{sc>maxDate}"
+										valueState="{sc>toValueState}"
                                         valueFormat="yyyy-MM-dd" 
                                         displayFormat="short"
-										change=".onChangeSettlementDate"
+										change=".onChangeSettlementDate($event,'to')"
                                         enabled="{= ${pa>/editMode} &amp;&amp; !${pa>/priceAgreement/synchronized} }"/>
                         </cells>
 					</ColumnListItem>
@@ -48,7 +50,10 @@
 			</Table>
 		</content>
 		<buttons>
-			<Button text="Apply" press=".onApply" visible="{= ${pa>/editMode} &amp;&amp; !${pa>/priceAgreement/synchronized} }"></Button>
+			<Button text="Apply" 
+				press=".onApply" 
+				enabled="{sc>/valid}"
+				visible="{= ${pa>/editMode} &amp;&amp; !${pa>/priceAgreement/synchronized} }"></Button>
 			<Button icon="sap-icon://decline" text="Cancel" press=".onClose"></Button>
 		</buttons>
 	</Dialog>

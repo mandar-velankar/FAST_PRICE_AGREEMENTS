@@ -7,6 +7,9 @@ sap.ui.define([
         constructor: function (data) {
             //will copy all properties and make them camelcase starting with lowercase ;)
             BaseObject.call(this, data);
+            
+            this.toValueState = "None";
+            this.fromValueState = "None";
 
             if (data) {
                 //copy array's manually to objects
