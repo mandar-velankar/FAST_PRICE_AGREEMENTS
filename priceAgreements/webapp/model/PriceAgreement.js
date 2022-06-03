@@ -110,6 +110,9 @@ sap.ui.define([
                 prevDate = new Date(prevSettlementDate.toDate.getTime());
                 prevDate.setDate(prevDate.getDate()+1);
             }
+            if(prevDate.getTime()>this.expiryDate.getTime()){
+                prevDate = new Date(this.expiryDate.getTime());
+            }
             return prevDate;
         },
         getNextSettlementDate:function(idx,settlementDates){
@@ -118,6 +121,9 @@ sap.ui.define([
             if(nextSettlementDate?.fromDate){
                 nextDate = new Date(nextSettlementDate.fromDate.getTime());
                 nextDate.setDate(nextDate.getDate()-1);
+            }
+            if(nextDate.getTime()<this.effectiveDate.getTime()){
+                nextDate = new Date(this.effectiveDate.getTime());
             }
             return nextDate;
         },

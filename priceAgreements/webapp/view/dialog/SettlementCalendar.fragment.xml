@@ -11,10 +11,13 @@
 				</headerToolbar>
 				<columns>
 					<Column>
-						<Text text="From" />
+						<Text text="{i18n>from}" />
 					</Column>
 					<Column>
-						<Text text="To" />
+						<Text text="{i18n>to}" />
+					</Column>
+					<Column>
+						<Text text="{i18n>delete}" />
 					</Column>
 				</columns>
 				<items>
@@ -44,6 +47,7 @@
                                         displayFormat="short"
 										change=".onChangeSettlementDate($event,'to')"
                                         enabled="{= ${pa>/editMode} &amp;&amp; !${pa>/priceAgreement/synchronized} }"/>
+							<Button icon="sap-icon://delete" press=".onDeleteRange"/>
                         </cells>
 					</ColumnListItem>
 				</items>
