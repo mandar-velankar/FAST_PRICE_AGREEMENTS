@@ -71,6 +71,14 @@ sap.ui.define([
 		getDateWithoutTime:function(date){
 			return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
 		},
+		onDeleteRange:function(event){
+			const path = event.getSource().getBindingContext("sc").getPath();
+			const idx = path.split("/").pop();
+            let settlementDates = this.settlementCalendarModel.getProperty("/settlementDates");
+			settlementDates.splice(idx,1);
+			settlementDates = this.paState.getPriceAgreementInstance().calculateSettlementCalendarMinMaxDate(settlementDates);
+			this.settlementCalendarModel.setProperty("/settlementDates",settlementDates);
+		},
 		onClose: function() {
 			this.dialog.fragment.close();
 			// this.callback.call(this.parent);
