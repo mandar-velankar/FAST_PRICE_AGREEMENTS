@@ -217,15 +217,15 @@ sap.ui.define([
                 // The reason for this is because we have different entities (PriceConditions) for Spain 
                 if(candidate.countryCode === "ES"){ 
                     const existingPriceConditions = priceAgreement.CustomerPrices;
-                    const existingRappelCondition = existingPriceConditions.find(rappel => rappel.PriceCondition === 'YAW1' && !rappel.SettlementFrom && !rappel.SettlementTo);
-                    const aExistingSettlementConditions = existingPriceConditions.filter(rappel => rappel.PriceCondition === 'YAW1' && rappel.SettlementFrom && rappel.SettlementTo);
+                    const existingRappelCondition = existingPriceConditions.find(rappel => rappel.PriceCondition === 'YAW1' && !rappel.EffectiveDate && !rappel.ExpiryDate);
+                    const aExistingSettlementConditions = existingPriceConditions.filter(rappel => rappel.PriceCondition === 'YAW1' && rappel.EffectiveDate && rappel.ExpiryDate);
                     const mainPriceCondition = priceAgreement.priceConditions.find(condition => condition.priceConditionClassification.isMain);
                     const focPriceConditions = priceAgreement.focPriceCondition;
                     const rappelPriceCondition = priceAgreement.rappelPriceCondition;
                     const settlementDates = priceAgreement.settlementDates;
 
                     //filter existing settlement conditions compared to settlementDates
-                    deletedSettlementPriceConditions = aExistingSettlementConditions.filter(settlementCondition => !settlementDates.find(date => date.fromDate.toISOString() === settlementCondition.SettlementFrom.toISOString() && date.toDate.toISOString() === settlementCondition.SettlementTo.toISOString()));                                        
+                    deletedSettlementPriceConditions = aExistingSettlementConditions.filter(settlementCondition => !settlementDates.find(date => date.fromDate.toISOString() === settlementCondition.EffectiveDate.toISOString() && date.toDate.toISOString() === settlementCondition.ExpiryDate.toISOString()));                                        
                     deletedSettlementPriceConditions = deletedSettlementPriceConditions.map(cp => new CustomerPrice(cp));
                     // Main condition
                     if(mainPriceCondition.priceConditionCode === "YLTF" || mainPriceCondition.priceConditionCode === "YLTP"){
@@ -280,8 +280,8 @@ sap.ui.define([
                     settlementDates?.forEach(settlementDate => {
                         const settlementDateCustomerPrice = new CustomerPrice({
                             "CountryCode": candidate.countryCode,
-                            "EffectiveDate": candidate.effectiveDate,
-                            "ExpiryDate": candidate.expiryDate,
+                            "EffectiveDate": settlementDate.fromDate,
+                            "ExpiryDate": settlementDate.toDate,
                             "InstituteId": candidate.instituteId,
                             "MaterialNumber": candidate.materialNumber,
                             "Price": candidate.price,
@@ -291,11 +291,9 @@ sap.ui.define([
                             "FOCproductPackID": null,
                             "FOCmaterialNumber": null,
                             "PriceCondition": "YAW1",
-                            "Applied": candidate.applied,
-                            "SettlementFrom": settlementDate.fromDate,
-                            "SettlementTo": settlementDate.toDate
+                            "Applied": candidate.applied
                         });
-                        const existingSettlementCondition = aExistingSettlementConditions.find(condition => condition.SettlementFrom.toISOString() === settlementDateCustomerPrice.settlementFrom.toISOString() && condition.SettlementTo.toISOString() === settlementDateCustomerPrice.settlementTo.toISOString());
+                        const existingSettlementCondition = aExistingSettlementConditions.find(condition => condition.EffectiveDate.toISOString() === settlementDateCustomerPrice.effectiveDate.toISOString() && condition.ExpiryDate.toISOString() === settlementDateCustomerPrice.expiryDate.toISOString());
                         if(existingSettlementCondition) {
                             settlementDateCustomerPrice.iD = existingSettlementCondition.ID;
                         }
