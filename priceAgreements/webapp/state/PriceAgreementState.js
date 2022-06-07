@@ -130,6 +130,7 @@ sap.ui.define([
             var custPriceFOC = {};
             var CustomerPrices = [];
             var currentProductId;
+            let deletedSettlementPriceConditions;
 
             // create customerPrices object based on candidatePrices
             candidatePrices.forEach((candidate) => {
@@ -215,10 +216,17 @@ sap.ui.define([
                 // This logic is only run for Spain
                 // The reason for this is because we have different entities (PriceConditions) for Spain 
                 if(candidate.countryCode === "ES"){ 
+                    const existingPriceConditions = priceAgreement.CustomerPrices;
+                    const existingRappelCondition = existingPriceConditions.find(rappel => rappel.PriceCondition === 'YAW1' && !rappel.EffectiveDate && !rappel.ExpiryDate);
+                    const aExistingSettlementConditions = existingPriceConditions.filter(rappel => rappel.PriceCondition === 'YAW1' && rappel.EffectiveDate && rappel.ExpiryDate);
                     const mainPriceCondition = priceAgreement.priceConditions.find(condition => condition.priceConditionClassification.isMain);
                     const focPriceConditions = priceAgreement.focPriceCondition;
                     const rappelPriceCondition = priceAgreement.rappelPriceCondition;
+                    const settlementDates = priceAgreement.settlementDates;
 
+                    //filter existing settlement conditions compared to settlementDates
+                    deletedSettlementPriceConditions = aExistingSettlementConditions.filter(settlementCondition => !settlementDates.find(date => date.fromDate.toISOString() === settlementCondition.EffectiveDate.toISOString() && date.toDate.toISOString() === settlementCondition.ExpiryDate.toISOString()));                                        
+                    deletedSettlementPriceConditions = deletedSettlementPriceConditions.map(cp => new CustomerPrice(cp));
                     // Main condition
                     if(mainPriceCondition.priceConditionCode === "YLTF" || mainPriceCondition.priceConditionCode === "YLTP"){
                         customerPrice.price = mainPriceCondition.netPriceWithTaxAfterDeductionRD
@@ -264,18 +272,41 @@ sap.ui.define([
                             "PriceCondition": "YAW1",
                             "Applied": candidate.applied
                         });
+                        if(existingRappelCondition?.ID) rappelCustomerPrice.iD = existingRappelCondition.ID;
                         CustomerPrices.push(rappelCustomerPrice);
                     });
 
-                    
+                    // Rappel condition Settlement Dates
+                    settlementDates?.forEach(settlementDate => {
+                        const settlementDateCustomerPrice = new CustomerPrice({
+                            "CountryCode": candidate.countryCode,
+                            "EffectiveDate": settlementDate.fromDate,
+                            "ExpiryDate": settlementDate.toDate,
+                            "InstituteId": candidate.instituteId,
+                            "MaterialNumber": candidate.materialNumber,
+                            "Price": candidate.price,
+                            "PriceAgreementId": candidate.priceAgreementId,
+                            "ProductPackId": candidate.productPackId,
+                            "Synchronized": candidate.synchronized,
+                            "FOCproductPackID": null,
+                            "FOCmaterialNumber": null,
+                            "PriceCondition": "YAW1",
+                            "Applied": candidate.applied
+                        });
+                        const existingSettlementCondition = aExistingSettlementConditions.find(condition => condition.EffectiveDate.toISOString() === settlementDateCustomerPrice.effectiveDate.toISOString() && condition.ExpiryDate.toISOString() === settlementDateCustomerPrice.expiryDate.toISOString());
+                        if(existingSettlementCondition) {
+                            settlementDateCustomerPrice.iD = existingSettlementCondition.ID;
+                        }
+                        CustomerPrices.push(settlementDateCustomerPrice);
+                    });
 
                 }
             });
 
-                
-
+            //those not existing anymore upon comparison -- delete
+            const promiseDeleteSettlementConditions = deletedSettlementPriceConditions?.map(cp => this.getService().deleteCustomerPrice(cp));
             const promises = CustomerPrices.map(cp => this.getService().saveCustomerPrice(cp));
-            return Promise.all(promises);
+            return Promise.all([promises,promiseDeleteSettlementConditions]);
 
         },
 
