@@ -46,7 +46,7 @@
 											UTC:true
 										}}" valueFormat="yyyy-MM-dd" change=".handleDateChange" valueState="{pa>/priceAgreement/expiryDateValueState}" enabled="{pa>/editMode}"/>
                         
-						<m:CheckBox id="idExtendExpiry" text="{i18n>extendExpiry}" select=".extendExpiry" enabled="{pa>/editMode}" selected="{path:'pa>/priceAgreement/extendPriceAgreement'}"/>
+						<m:CheckBox id="idExtendExpiry" text="{i18n>extendExpiry}" select=".extendExpiry" enabled="{pa>/editMode}" selected="{path:'pa>/priceAgreement/extendPriceAgreement'}" visible="{= ${pa>/priceAgreement/tender/classification} === 'Commercial Agreement' }"/>
                         <m:Label text="{i18n>expiryExtensionPeriod}" design="Bold" required="false"/>
                         <m:StepInput
                             id="idExtendExpiryDateID"
@@ -57,7 +57,8 @@
 						enabled="{= ${pa>/editMode} &amp;&amp; ${pa>/priceAgreement/extendPriceAgreement} === true }"
                         description="Months" 
 						change="onChange"
-                        validationMode="LiveChange"/>
+                        validationMode="LiveChange"
+                        visible="{= ${pa>/priceAgreement/tender/classification} === 'Commercial Agreement' }"/>
 
                         <m:Label text="{i18n>PVL}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
                         <m:Input 
