@@ -217,12 +217,12 @@ sap.ui.define([
                 // The reason for this is because we have different entities (PriceConditions) for Spain 
                 if(candidate.countryCode === "ES"){ 
                     const existingPriceConditions = priceAgreement.CustomerPrices;
-                    const existingRappelCondition = existingPriceConditions.find(rappel => rappel.PriceCondition === 'YAW1' && !rappel.EffectiveDate && !rappel.ExpiryDate);
+                    //const existingRappelCondition = existingPriceConditions.find(rappel => rappel.PriceCondition === 'YAW1' && !rappel.EffectiveDate && !rappel.ExpiryDate);
                     const aExistingFOCConditions = existingPriceConditions.filter(foc => foc.PriceCondition === 'YA01');
                     const aExistingSettlementConditions = existingPriceConditions.filter(rappel => rappel.PriceCondition === 'YAW1' && rappel.EffectiveDate && rappel.ExpiryDate);
                     const mainPriceCondition = priceAgreement.priceConditions.find(condition => condition.priceConditionClassification.isMain);
                     const focPriceConditions = priceAgreement.focPriceCondition;
-                    const rappelPriceCondition = priceAgreement.rappelPriceCondition;
+                    //const rappelPriceCondition = priceAgreement.rappelPriceCondition;
                     const settlementDates = priceAgreement.settlementDates;
 
                     //filter existing settlement conditions compared to settlementDates
@@ -261,7 +261,7 @@ sap.ui.define([
                     });
 
                     // Rappel condition
-                    rappelPriceCondition?.discountConditions.forEach(discountCondition => {
+                    /*rappelPriceCondition?.discountConditions.forEach(discountCondition => {
                         const rappelCustomerPrice = new CustomerPrice({
                             "CountryCode": candidate.countryCode,
                             "EffectiveDate": candidate.effectiveDate,
@@ -279,7 +279,7 @@ sap.ui.define([
                         });
                         if(existingRappelCondition?.ID) rappelCustomerPrice.iD = existingRappelCondition.ID;
                         CustomerPrices.push(rappelCustomerPrice);
-                    });
+                    });*/
 
                     // Rappel condition Settlement Dates
                     settlementDates?.forEach(settlementDate => {
