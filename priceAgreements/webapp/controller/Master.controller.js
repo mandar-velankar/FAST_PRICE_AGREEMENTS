@@ -319,13 +319,16 @@ sap.ui.define([
 
 			var orFilters = [];
 			var andFilters = [];
-
+			const slctfilterSelectedItem = this.byId("idslctfilter").getSelectedItem();
+			const slctfilterSelectedItemKey = slctfilterSelectedItem && slctfilterSelectedItem.getKey().toLowerCase();
 			//get filters
-			var hasNewMaterialsFilter = this.byId("idslctfilter").getSelectedItem() ? this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newmaterialnumberskey' : null;
-			const updatedRetailPriceFilter = this.byId("idslctfilter").getSelectedItem() ? this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'updatedretailpricekey' : null;
-			const expiringSoonFilter = this.byId("idslctfilter").getSelectedItem() ? this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'expiringsoonkey' : null;
-			const newAgreementFilter = this.byId("idslctfilter").getSelectedItem() ? this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newagreementskey' : null;
-            const expiredFilter = this.byId("idslctfilter").getSelectedItem() ? this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'expiredkey' : null;
+			var hasNewMaterialsFilter = slctfilterSelectedItemKey === 'newmaterialnumberskey';
+			const updatedRetailPriceFilter = slctfilterSelectedItemKey === 'updatedretailpricekey';
+			const expiringSoonFilter = slctfilterSelectedItemKey === 'expiringsoonkey';
+			const newAgreementFilter = slctfilterSelectedItemKey === 'newagreementskey';
+            const expiredFilter = slctfilterSelectedItemKey === 'expiredkey';
+            const activeAgreementsFilter = slctfilterSelectedItemKey === 'activeagreements';
+            const toBeSyncedFilter = slctfilterSelectedItemKey === 'tobesynced';
             const oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "";
 			
 			if (oCountry != ""){
@@ -363,6 +366,18 @@ sap.ui.define([
 
 			if(newAgreementFilter){
 				andFilters.push(new Filter("isNewPriceAgreement", "EQ", true));
+			}
+
+			if(activeAgreementsFilter){
+				// active agreement = expiry date in future + synchronized
+				andFilters.push(new Filter("Expired", FilterOperator.EQ, false));
+				andFilters.push(new Filter("Synchronized", FilterOperator.EQ, true));
+			}
+
+			if(toBeSyncedFilter){
+				// to be synchronized = expiry date in future + not synchronized
+				andFilters.push(new Filter("Expired", FilterOperator.EQ, false));
+				andFilters.push(new Filter("Synchronized", FilterOperator.EQ, false));
 			}
 
 			let sSearch = this.byId("idSearch").getProperty("value");

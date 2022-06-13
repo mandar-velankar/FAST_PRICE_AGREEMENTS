@@ -6,7 +6,7 @@ sap.ui.define([
 ], function (BaseState, PriceAgreement, CandidatePrice, CustomerPrice) {
     "use strict";
     var PriceAgreementState = BaseState.extend("com.bayer.tender.priceagreements.state.PriceAgreementState", {
-        allFilters:[{key:"",country:"ALL",value:""},
+        allFilters:[{key:"",country:"ALL",value:"All"},
                     {key:"newAgreementsKey",country:"ALL",value:"New Agreements"},
                     {key:"newMaterialNumbersKey",country:"ALL",value:"New Material Numbers"},
                     {key:"updatedRetailPriceKey",country:"IT",value:"Updated Retail Price"},
@@ -15,7 +15,9 @@ sap.ui.define([
                     {key:"netPriceAbovePVLKey",country:"ES",value:"Net Price Above PVL"},
                     {key:"netPriceBelowFloorPriceKey",country:"ES",value:"Net Price Below Floor Price"},
                     {key:"expiringSoonKey",country:"ALL",value:"Expiring Soon"},
-                    {key:"expiredKey",country:"ALL",value:"Expired"}],
+                    {key:"expiredKey",country:"ALL",value:"Expired"},
+                    {key:"activeAgreements",country:"ES",value:"Active Agreements"},
+                    {key:"toBeSynced",country:"ES",value:"To be Synchronized"}],
         constructor: function (service) {
             //data needs to be defined before calling parent. 
             //Parent will use this for creating a JSONModel
