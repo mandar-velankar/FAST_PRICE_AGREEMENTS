@@ -335,51 +335,6 @@ sap.ui.define([
 				andFilters.push(new Filter("CountryCode", "EQ", oCountry));
 			}
 
-			if(updatedRetailPriceFilter){
-				andFilters.push(new Filter("hasNewPrice", "EQ", updatedRetailPriceFilter));
-			}
-
-			if(hasNewMaterialsFilter){ 
-				andFilters.push(new Filter("hasNewMaterials", "EQ", hasNewMaterialsFilter));
-			}
-
-			// enabled/disable the ApplyNewPrice button 
-			if(hasNewMaterialsFilter || updatedRetailPriceFilter){ 
-				this.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", true); 
-			}else{
-				this.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", false);
-			}
-
-			const productPackfilter = this.byId("idProductPackfilter").getSelectedKey();
-
-			if(productPackfilter){
-				andFilters.push(new Filter("ProductPackId", "EQ", productPackfilter));
-			}
-
-			if(expiringSoonFilter){
-				andFilters.push(new Filter("ExpiringSoon", "EQ", true));
-			}
-
-            if(expiredFilter){
-				andFilters.push(new Filter("Expired", "EQ", true));
-			}
-
-			if(newAgreementFilter){
-				andFilters.push(new Filter("isNewPriceAgreement", "EQ", true));
-			}
-
-			if(activeAgreementsFilter){
-				// active agreement = expiry date in future + synchronized
-				andFilters.push(new Filter("Expired", FilterOperator.EQ, false));
-				andFilters.push(new Filter("Synchronized", FilterOperator.EQ, true));
-			}
-
-			if(toBeSyncedFilter){
-				// to be synchronized = expiry date in future + not synchronized
-				andFilters.push(new Filter("Expired", FilterOperator.EQ, false));
-				andFilters.push(new Filter("Synchronized", FilterOperator.EQ, false));
-			}
-
 			let sSearch = this.byId("idSearch").getProperty("value");
 
 			if (sSearch.length > 0) {
@@ -442,6 +397,52 @@ sap.ui.define([
 
 				andFilters.push(new Filter(orFilters, false));
 			}
+
+			if(updatedRetailPriceFilter){
+				andFilters.push(new Filter("hasNewPrice", "EQ", updatedRetailPriceFilter));
+			}
+
+			if(hasNewMaterialsFilter){ 
+				andFilters.push(new Filter("hasNewMaterials", "EQ", hasNewMaterialsFilter));
+			}
+
+			// enabled/disable the ApplyNewPrice button 
+			if(hasNewMaterialsFilter || updatedRetailPriceFilter){ 
+				this.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", true); 
+			}else{
+				this.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", false);
+			}
+
+			const productPackfilter = this.byId("idProductPackfilter").getSelectedKey();
+
+			if(productPackfilter){
+				andFilters.push(new Filter("ProductPackId", "EQ", productPackfilter));
+			}
+
+			if(expiringSoonFilter){
+				andFilters.push(new Filter("ExpiringSoon", "EQ", true));
+			}
+
+            if(expiredFilter){
+				andFilters.push(new Filter("Expired", "EQ", true));
+			}
+
+			if(newAgreementFilter){
+				andFilters.push(new Filter("isNewPriceAgreement", "EQ", true));
+			}
+
+			if(activeAgreementsFilter){
+				// active agreement = expiry date in future + synchronized
+				andFilters.push(new Filter("Expired", FilterOperator.EQ, false));
+				andFilters.push(new Filter("Synchronized", FilterOperator.EQ, true));
+			}
+
+			if(toBeSyncedFilter){
+				// to be synchronized = expiry date in future + not synchronized
+				andFilters.push(new Filter("Expired", FilterOperator.EQ, false));
+				andFilters.push(new Filter("Synchronized", FilterOperator.EQ, false));
+			}
+
 
 
 			if(andFilters.length > 0){
