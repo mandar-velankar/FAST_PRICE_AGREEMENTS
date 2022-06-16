@@ -107,7 +107,7 @@
                             text="{i18n>Discount}" design="Bold" required="false" 
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento') > -1}"/>
                         <m:Input 
-                            value="{path:'pa>/priceAgreement/mainPriceCondition/discount', type:'.types.percent'}" enabled="false"
+                            value="{path:'pa>/priceAgreement/mainPriceCondition/discount', type:'.types.percent'}" enabled="false" description="%"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento') > -1}"/>
 
                         <m:Label text="{i18n>RoyalDecree}" design="Bold" required="false"

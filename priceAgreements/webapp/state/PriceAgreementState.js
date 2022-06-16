@@ -153,6 +153,7 @@ sap.ui.define([
                 if(candidate.countryCode === "IT"){
                     customerPrice.priceCondition = "YLTP";
                     customerPrice.applied = candidate.applied;
+                    customerPrice.synchronized = false;
                     CustomerPrices.push(customerPrice);
 
                     // 1) loopen over priceAgreement.FOC
@@ -170,7 +171,7 @@ sap.ui.define([
                                 "Price": candidate.price,
                                 "PriceAgreementId": candidate.priceAgreementId,
                                 "ProductPackId": candidate.productPackId,
-                                "Synchronized": candidate.synchronized,
+                                "Synchronized": false,
                                 "FOCproductPackID": candidate.productPackId ,
                                 "FOCmaterialNumber": candidate.materialNumber,
                                 "PriceCondition": "YA03",
@@ -197,7 +198,7 @@ sap.ui.define([
                                             "Price": candidate.price,
                                             "PriceAgreementId": candidate.priceAgreementId,
                                             "ProductPackId": candidate.productPackId,
-                                            "Synchronized": candidate.synchronized,
+                                            "Synchronized": false,
                                             "FOCproductPackID": Material.ProductPackID,
                                             "FOCmaterialNumber": Material.SKUCode,
                                             "PriceCondition": "YA03",
@@ -249,7 +250,7 @@ sap.ui.define([
                             "Price": candidate.price,
                             "PriceAgreementId": candidate.priceAgreementId,
                             "ProductPackId": candidate.productPackId,
-                            "Synchronized": candidate.synchronized,
+                            "Synchronized": false,
                             "FOCproductPackID": foc.productPackId,
                             "FOCmaterialNumber": null,
                             "PriceCondition": "YA01",
@@ -294,7 +295,7 @@ sap.ui.define([
                             "Price": candidate.price,
                             "PriceAgreementId": candidate.priceAgreementId,
                             "ProductPackId": candidate.productPackId,
-                            "Synchronized": candidate.synchronized,
+                            "Synchronized": false,
                             "FOCproductPackID": null,
                             "FOCmaterialNumber": null,
                             "PriceCondition": "YAW1",
