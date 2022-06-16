@@ -441,6 +441,7 @@ sap.ui.define([
 				// to be synchronized = expiry date in future + not synchronized
 				andFilters.push(new Filter("Expired", FilterOperator.EQ, false));
 				andFilters.push(new Filter("Synchronized", FilterOperator.EQ, false));
+				andFilters.push(new Filter("AppliedCount", FilterOperator.GE, 1));
 			}
 
 
