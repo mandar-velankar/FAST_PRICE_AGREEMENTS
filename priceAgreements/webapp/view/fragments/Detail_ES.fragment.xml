@@ -149,8 +149,8 @@
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}"/>
                         <m:Input 
                             value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
-                                ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxBeforeDeductionRD}).toFixed(2) 
-                                : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxBeforeDeductionRD}*${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(2)  
+                                ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxBeforeDeductionRD}).toFixed(6) 
+                                : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxBeforeDeductionRD}*${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(6)  
                             }" 
                             type="Number" enabled="false" fieldWidth="80%" description="EUR"
                             liveChange=".calculateDiscountsAndNetPricesPrecioNeto"
