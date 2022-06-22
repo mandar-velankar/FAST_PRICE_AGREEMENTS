@@ -158,6 +158,7 @@ sap.ui.define([
 
                     // 1) loopen over priceAgreement.FOC
                     priceAgreement.FOC.forEach((focProduct) => {
+                        const existingCustomerPrice = priceAgreement.customerPrices.find(cp => cp.priceCondition === "YA03" && cp.fOCproductPackID === focProduct.ProductPackId);
                         currentProductId = focProduct.ProductPackId;
                     
                         // 2) indien  FOC.productcode === candidate.productcode( dus main product), 1 extra entry saven voor de main product FOC
@@ -177,6 +178,9 @@ sap.ui.define([
                                 "PriceCondition": "YA03",
                                 "Applied": candidate.applied
                             }
+
+                            // if there is already a customer price saved, get its ID. This is used for updating
+                            if(existingCustomerPrice?.iD) custPriceFOC.ID = existingCustomerPrice.iD;
                         
                             CustomerPrices.push(new CustomerPrice(custPriceFOC));
                     
@@ -204,6 +208,10 @@ sap.ui.define([
                                             "PriceCondition": "YA03",
                                             "Applied": candidate.applied
                                         }
+
+                                        // if there is already a customer price saved, get its ID. This is used for updating
+                                        if(existingCustomerPrice?.iD) custPriceFOC.ID = existingCustomerPrice.iD;
+
                                         CustomerPrices.push(new CustomerPrice(custPriceFOC));
 
 
