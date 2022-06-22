@@ -6,7 +6,7 @@ sap.ui.define([
 ], function (BaseState, PriceAgreement, CandidatePrice, CustomerPrice) {
     "use strict";
     var PriceAgreementState = BaseState.extend("com.bayer.tender.priceagreements.state.PriceAgreementState", {
-        allFilters:[{key:"",country:"ALL",value:""},
+        allFilters:[{key:"",country:"ALL",value:"All"},
                     {key:"newAgreementsKey",country:"ALL",value:"New Agreements"},
                     {key:"newMaterialNumbersKey",country:"ALL",value:"New Material Numbers"},
                     {key:"updatedRetailPriceKey",country:"IT",value:"Updated Retail Price"},
@@ -15,7 +15,9 @@ sap.ui.define([
                     {key:"netPriceAbovePVLKey",country:"ES",value:"Net Price Above PVL"},
                     {key:"netPriceBelowFloorPriceKey",country:"ES",value:"Net Price Below Floor Price"},
                     {key:"expiringSoonKey",country:"ALL",value:"Expiring Soon"},
-                    {key:"expiredKey",country:"ALL",value:"Expired"}],
+                    {key:"expiredKey",country:"ALL",value:"Expired"},
+                    {key:"activeAgreements",country:"ES",value:"Active Agreements"},
+                    {key:"toBeSynced",country:"ES",value:"To be Synchronized"}],
         constructor: function (service) {
             //data needs to be defined before calling parent. 
             //Parent will use this for creating a JSONModel
@@ -151,10 +153,12 @@ sap.ui.define([
                 if(candidate.countryCode === "IT"){
                     customerPrice.priceCondition = "YLTP";
                     customerPrice.applied = candidate.applied;
+                    customerPrice.synchronized = false;
                     CustomerPrices.push(customerPrice);
 
                     // 1) loopen over priceAgreement.FOC
                     priceAgreement.FOC.forEach((focProduct) => {
+                        const existingCustomerPrice = priceAgreement.customerPrices.find(cp => cp.priceCondition === "YA03" && cp.fOCproductPackID === focProduct.ProductPackId);
                         currentProductId = focProduct.ProductPackId;
                     
                         // 2) indien  FOC.productcode === candidate.productcode( dus main product), 1 extra entry saven voor de main product FOC
@@ -168,12 +172,15 @@ sap.ui.define([
                                 "Price": candidate.price,
                                 "PriceAgreementId": candidate.priceAgreementId,
                                 "ProductPackId": candidate.productPackId,
-                                "Synchronized": candidate.synchronized,
+                                "Synchronized": false,
                                 "FOCproductPackID": candidate.productPackId ,
                                 "FOCmaterialNumber": candidate.materialNumber,
                                 "PriceCondition": "YA03",
                                 "Applied": candidate.applied
                             }
+
+                            // if there is already a customer price saved, get its ID. This is used for updating
+                            if(existingCustomerPrice?.iD) custPriceFOC.ID = existingCustomerPrice.iD;
                         
                             CustomerPrices.push(new CustomerPrice(custPriceFOC));
                     
@@ -195,12 +202,16 @@ sap.ui.define([
                                             "Price": candidate.price,
                                             "PriceAgreementId": candidate.priceAgreementId,
                                             "ProductPackId": candidate.productPackId,
-                                            "Synchronized": candidate.synchronized,
+                                            "Synchronized": false,
                                             "FOCproductPackID": Material.ProductPackID,
                                             "FOCmaterialNumber": Material.SKUCode,
                                             "PriceCondition": "YA03",
                                             "Applied": candidate.applied
                                         }
+
+                                        // if there is already a customer price saved, get its ID. This is used for updating
+                                        if(existingCustomerPrice?.iD) custPriceFOC.ID = existingCustomerPrice.iD;
+
                                         CustomerPrices.push(new CustomerPrice(custPriceFOC));
 
 
@@ -247,7 +258,7 @@ sap.ui.define([
                             "Price": candidate.price,
                             "PriceAgreementId": candidate.priceAgreementId,
                             "ProductPackId": candidate.productPackId,
-                            "Synchronized": candidate.synchronized,
+                            "Synchronized": false,
                             "FOCproductPackID": foc.productPackId,
                             "FOCmaterialNumber": null,
                             "PriceCondition": "YA01",
@@ -292,7 +303,7 @@ sap.ui.define([
                             "Price": candidate.price,
                             "PriceAgreementId": candidate.priceAgreementId,
                             "ProductPackId": candidate.productPackId,
-                            "Synchronized": candidate.synchronized,
+                            "Synchronized": false,
                             "FOCproductPackID": null,
                             "FOCmaterialNumber": null,
                             "PriceCondition": "YAW1",
