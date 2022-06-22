@@ -200,7 +200,7 @@
                             : parseFloat(${pa>/priceAgreement/mainPriceCondition/maximumPrice}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(6)  
                         }" 
                             type="Number" enabled="false" fieldWidth="80%" liveChange=".validateMaximumPrice" description="EUR"
-                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}"/>
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${pa>/priceAgreement/tender/classification} === 'Tender' }"/>
                                               
                          <!-- Descuento Especial only -->
                         <m:Label text="{i18n>NetPriceWOtax}" design="Bold" required="false"
