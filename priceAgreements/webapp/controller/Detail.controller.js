@@ -4,11 +4,13 @@ sap.ui.define([
 	"../model/formatter",
 	"sap/m/library",
 	"sap/ui/model/Filter",
+	"sap/ui/model/FilterType",
 	"sap/ui/model/FilterOperator",
 	"sap/m/MessageBox",
 	"sap/ui/core/Fragment",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
-], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterOperator, MessageBox, Fragment, PercentageType) {
+	"sap/ui/core/BusyIndicator"
+], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterType,FilterOperator, MessageBox, Fragment, PercentageType,BusyIndicator) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
@@ -48,6 +50,7 @@ sap.ui.define([
 			this.getRouter().getRoute("objectDetail").attachPatternMatched(this._onObjectMatched, this);
 
 			this.setModel(oViewModel, "detailView");
+			 
 		},
 
 
@@ -111,9 +114,12 @@ sap.ui.define([
 
 			this.getModel().metadataLoaded().then(function () {
 				this.paState.getPriceAgreement(this.sObjectId).then(function (priceAgreement) {
+					this.paState.setSelectedCountry(priceAgreement.countryCode);
                     this._setSelectedProductUoM(this.paState.getPriceAgreementInstance().uoM);
 					this.addCountryDetailFragments(priceAgreement.countryCode);
-                }.bind(this));
+                }.bind(this)).then(function(){
+					this.refreshMaster();
+				}.bind(this));
 				// this.paState.getCandidatePrices(this.sObjectId, null);
 			}.bind(this))
 		},
@@ -245,8 +251,15 @@ sap.ui.define([
 			detailView.setBusy(status);
 		},
 		refreshMaster: function () {
-			const oMasterTableBinding = this.getOwnerComponent().oListSelector._oList.getBinding("items");
-			oMasterTableBinding.refresh();
+			const oMasterTable = this.getOwnerComponent().oListSelector._oList; 
+			const oMasterTableBinding = oMasterTable.getBinding("items");
+			if(oMasterTable.getItems().length === 0){
+				BusyIndicator.show(0);
+				oMasterTableBinding.attachDataReceived(function(){
+					BusyIndicator.hide();
+				});
+				oMasterTableBinding.filter(new Filter("CountryCode", "EQ", this.paState.getSelectedCountry()), FilterType.Application);
+			}
 			return oMasterTableBinding;
 		},
 		onFooterSavePress: async function (oEvent) {

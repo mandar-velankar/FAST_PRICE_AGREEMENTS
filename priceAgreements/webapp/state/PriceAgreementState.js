@@ -364,6 +364,17 @@ sap.ui.define([
             const countryFilterItems = ( selectedCountry && this.allFilters.filter(item => item.country === selectedCountry || item.country === "ALL") ) || [];
             this.setProperty("countryFilters",countryFilterItems);
         },
+        setSelectedCountry:function(sCountry){
+            if(sCountry){
+                this.setProperty("selectedCountryFilter",sCountry);
+                return true;
+            }else{
+                return false;
+            }
+        },
+        getSelectedCountry:function(){
+            return this.getProperty("selectedCountryFilter");
+        },
         backupPriceAgreement: function () {
             this.priceAgreementData = this.getPriceAgreementInstance().getAll();
         },
