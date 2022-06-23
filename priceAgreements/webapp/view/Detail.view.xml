@@ -36,6 +36,15 @@
 				
 				<!-- ACTIONS -->
 				<actions>
+                    <m:Button 
+						id="terminateButtonId" 
+						icon="sap-icon://cancel" 
+						text="Terminate" 
+						type="Emphasized" 
+						press=".onCancelPriceAgreement" 
+						enabled="{= !(${pa>/priceAgreement/status} === 'Cancelled') }"
+                        visible="{= ${pa>/priceAgreement/countryCode} === 'ES' }"
+					/>
 					<m:Button 
 						id="syncrButtonId" 
 						icon="sap-icon://synchronize" 
@@ -45,12 +54,13 @@
 						enabled="{ 
 								parts: [ 
 									'pa>/priceAgreement/synchronized', 
-									'pa>/priceAgreement/customerPrices'
+									'pa>/priceAgreement/customerPrices',
+                                    'pa>/priceAgreement/status'
 								], 
 								formatter: '.isSyncButtonEnabled' 
 						}"
 					/>
-					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${pa>/editMode} === false }"/>
+					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${pa>/editMode} === false &amp;&amp; !(${pa>/priceAgreement/status} === 'Cancelled') }"/>
 				</actions>
 				
 			</ObjectPageDynamicHeaderTitle>
