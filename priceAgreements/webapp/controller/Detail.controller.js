@@ -408,9 +408,9 @@ sap.ui.define([
             return editMode && !allSynchronized;
 		},
 
-		isSyncButtonEnabled: function(isPriceAgreementSynchronized, customerPrices){
+		isSyncButtonEnabled: function(isPriceAgreementSynchronized, customerPrices, isCancelled){
 			if(!Array.isArray(customerPrices)) customerPrices = [];
-			if(isPriceAgreementSynchronized) return false;
+			if(isPriceAgreementSynchronized || (isCancelled === 'Cancelled')) return false;
 			if(customerPrices.length <= 0) return false; // when no customer prices are created yet, disable button
 			if(!customerPrices.some(item => item.applied)) return false; // when customer prices do exist but, non are applied
 			return true;
@@ -422,7 +422,28 @@ sap.ui.define([
 		onOpenSettlementCalendar:function(event){
 			// sName, model, updateModelAlways, callback, data, popoverSource, autoOpen)
 			this.openFragment("com.bayer.tender.priceagreements.view.dialog.SettlementCalendar", null, true);
-		}
+		},
+
+        onCancelPriceAgreement: async function(evt){
+			this.setBusy(true);
+			let that = this;
+
+            sap.m.MessageBox.warning("Are you sure you want to terminate this price agreement?", {
+                actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+                styleClass: "sapUiSizeCompact",
+                onClose: async function (sAction){
+                    if(sAction === 'YES'){
+                        await that.paState.cancelPriceAgreement();
+                        that.paState.getPriceAgreement(that.sObjectId)
+                        .finally(() => {
+                            that.setBusy(false);
+                        });
+                    } else {
+                        that.setBusy(false);
+                    }
+                }
+            });
+        }
 
 	});
 
