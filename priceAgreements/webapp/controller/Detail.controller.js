@@ -336,12 +336,12 @@ sap.ui.define([
 				await this.paState.syncPriceAgreements([priceAgreementID]);
 				const oMasterTableBinding = this.refreshMaster();
 				oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
-					this.onCloseDetailPress();
+					this.paState.getPriceAgreement(this.sObjectId);
 					this.setBusy(false);
 					MessageBox.success("Price Agreement successfully synchronized");
 				});
 			} catch (error) {
-				this.onCloseDetailPress();
+				this.paState.getPriceAgreement(this.sObjectId);
 				this.setBusy(false);
 				const errMsg = JSON.parse(error.responseText)?.error?.message?.value;
 				MessageBox.error(`Synchronization of Price Agreement failed. ${errMsg}`);
