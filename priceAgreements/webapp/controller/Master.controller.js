@@ -327,6 +327,7 @@ sap.ui.define([
 			const expiringSoonFilter = slctfilterSelectedItemKey === 'expiringsoonkey';
 			const newAgreementFilter = slctfilterSelectedItemKey === 'newagreementskey';
             const expiredFilter = slctfilterSelectedItemKey === 'expiredkey';
+            const cancelledFilter = slctfilterSelectedItemKey === 'cancelledkey';
             const activeAgreementsFilter = slctfilterSelectedItemKey === 'activeagreements';
             const toBeSyncedFilter = slctfilterSelectedItemKey === 'tobesynced';
             const oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "";
@@ -426,6 +427,10 @@ sap.ui.define([
             if(expiredFilter){
 				andFilters.push(new Filter("Expired", "EQ", true));
 			}
+
+            if(cancelledFilter){
+                andFilters.push(new Filter("isCancelled", "EQ", true));
+            }
 
 			if(newAgreementFilter){
 				andFilters.push(new Filter("isNewPriceAgreement", "EQ", true));
