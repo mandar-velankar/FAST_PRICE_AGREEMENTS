@@ -21,11 +21,14 @@
 			<VBox fitContainer="true">
 				<OverflowToolbar class="sapFDynamicPageAlignContent">
                     <Select id="idSlctCountry"  
-                            items="{ path: '/UserCountry', sorter: { path: 'Country/CountryName' }, parameters: { expand: 'Country' },
-                                     events: {
-								        dataReceived: '.onUserCountriesReceived'
-							         }
-                                    }"
+                            items="{ 
+								path: '/UserCountry', 
+								sorter: { path: 'Country/CountryName' }, 
+								parameters: { expand: 'Country' },
+								events: {
+									dataReceived: '.onUserCountriesReceived'
+								}
+                            }"
 							change=".onChangeCountryFilter"
 							visible="{= ${appView>/layout} === 'OneColumn' }"
                             forceSelection="true"
