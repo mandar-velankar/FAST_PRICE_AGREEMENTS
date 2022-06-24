@@ -336,6 +336,24 @@ sap.ui.define([
             return this.getService().saveCustomerPrice(customerPrice);
         },
 
+        cancelPriceAgreement: async function (){
+            let priceAgreement = this.getPriceAgreementInstance();
+            if(priceAgreement){
+                priceAgreement.expiryDate = new Date();
+                priceAgreement.extendPriceAgreement = false;
+                priceAgreement.expiryExtensionPeriod = 0;
+                priceAgreement.status = "Cancelled";
+                priceAgreement.candidatePrices = priceAgreement.candidatePrices?.map(candidatePrice => {
+                    candidatePrice.applied = false;
+                    return candidatePrice
+                });
+                this.getPriceAgreementInstance().setCandidatePrices(priceAgreement.candidatePrices);
+                this.saveCandidatePrices(priceAgreement).then(() => {
+                    return this.savePriceAgreement(priceAgreement);
+                });
+            }
+        },
+
         setEditMode: function (sEditMode) {
             if (sEditMode) {
                 this.backupPriceAgreement();
@@ -363,6 +381,17 @@ sap.ui.define([
             const selectedCountry = this.getProperty("selectedCountryFilter");
             const countryFilterItems = ( selectedCountry && this.allFilters.filter(item => item.country === selectedCountry || item.country === "ALL") ) || [];
             this.setProperty("countryFilters",countryFilterItems);
+        },
+        setSelectedCountry:function(sCountry){
+            if(sCountry){
+                this.setProperty("selectedCountryFilter",sCountry);
+                return true;
+            }else{
+                return false;
+            }
+        },
+        getSelectedCountry:function(){
+            return this.getProperty("selectedCountryFilter");
         },
         backupPriceAgreement: function () {
             this.priceAgreementData = this.getPriceAgreementInstance().getAll();

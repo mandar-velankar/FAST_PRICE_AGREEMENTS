@@ -243,7 +243,8 @@ sap.ui.define([
                 "productPackId",
                 "synchronized",
                 "extendPriceAgreement",
-                "expiryExtensionPeriod"
+                "expiryExtensionPeriod",
+                "status"
             ]);
             data.SettlementDates = this.settlementDates.map(settlementDate => settlementDate.getJSON());
 

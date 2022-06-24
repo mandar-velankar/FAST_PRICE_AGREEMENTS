@@ -4,11 +4,13 @@ sap.ui.define([
 	"../model/formatter",
 	"sap/m/library",
 	"sap/ui/model/Filter",
+	"sap/ui/model/FilterType",
 	"sap/ui/model/FilterOperator",
 	"sap/m/MessageBox",
 	"sap/ui/core/Fragment",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
-], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterOperator, MessageBox, Fragment, PercentageType) {
+	"sap/ui/core/BusyIndicator"
+], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterType,FilterOperator, MessageBox, Fragment, PercentageType,BusyIndicator) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
@@ -48,6 +50,7 @@ sap.ui.define([
 			this.getRouter().getRoute("objectDetail").attachPatternMatched(this._onObjectMatched, this);
 
 			this.setModel(oViewModel, "detailView");
+			 
 		},
 
 
@@ -111,9 +114,12 @@ sap.ui.define([
 
 			this.getModel().metadataLoaded().then(function () {
 				this.paState.getPriceAgreement(this.sObjectId).then(function (priceAgreement) {
+					this.paState.setSelectedCountry(priceAgreement.countryCode);
                     this._setSelectedProductUoM(this.paState.getPriceAgreementInstance().uoM);
 					this.addCountryDetailFragments(priceAgreement.countryCode);
-                }.bind(this));
+                }.bind(this)).then(function(){
+					this.refreshMaster();
+				}.bind(this));
 				// this.paState.getCandidatePrices(this.sObjectId, null);
 			}.bind(this))
 		},
@@ -245,8 +251,15 @@ sap.ui.define([
 			detailView.setBusy(status);
 		},
 		refreshMaster: function () {
-			const oMasterTableBinding = this.getOwnerComponent().oListSelector._oList.getBinding("items");
-			oMasterTableBinding.refresh();
+			const oMasterTable = this.getOwnerComponent().oListSelector._oList; 
+			const oMasterTableBinding = oMasterTable.getBinding("items");
+			if(oMasterTable.getItems().length === 0){
+				BusyIndicator.show(0);
+				oMasterTableBinding.attachDataReceived(function(){
+					BusyIndicator.hide();
+				});
+				oMasterTableBinding.filter(new Filter("CountryCode", "EQ", this.paState.getSelectedCountry()), FilterType.Application);
+			}
 			return oMasterTableBinding;
 		},
 		onFooterSavePress: async function (oEvent) {
@@ -336,12 +349,12 @@ sap.ui.define([
 				await this.paState.syncPriceAgreements([priceAgreementID]);
 				const oMasterTableBinding = this.refreshMaster();
 				oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
-					this.onCloseDetailPress();
+					this.paState.getPriceAgreement(this.sObjectId);
 					this.setBusy(false);
 					MessageBox.success("Price Agreement successfully synchronized");
 				});
 			} catch (error) {
-				this.onCloseDetailPress();
+				this.paState.getPriceAgreement(this.sObjectId);
 				this.setBusy(false);
 				const errMsg = JSON.parse(error.responseText)?.error?.message?.value;
 				MessageBox.error(`Synchronization of Price Agreement failed. ${errMsg}`);
@@ -395,9 +408,9 @@ sap.ui.define([
             return editMode && !allSynchronized;
 		},
 
-		isSyncButtonEnabled: function(isPriceAgreementSynchronized, customerPrices){
+		isSyncButtonEnabled: function(isPriceAgreementSynchronized, customerPrices, isCancelled){
 			if(!Array.isArray(customerPrices)) customerPrices = [];
-			if(isPriceAgreementSynchronized) return false;
+			if(isPriceAgreementSynchronized || (isCancelled === 'Cancelled')) return false;
 			if(customerPrices.length <= 0) return false; // when no customer prices are created yet, disable button
 			if(!customerPrices.some(item => item.applied)) return false; // when customer prices do exist but, non are applied
 			return true;
@@ -409,7 +422,28 @@ sap.ui.define([
 		onOpenSettlementCalendar:function(event){
 			// sName, model, updateModelAlways, callback, data, popoverSource, autoOpen)
 			this.openFragment("com.bayer.tender.priceagreements.view.dialog.SettlementCalendar", null, true);
-		}
+		},
+
+        onCancelPriceAgreement: async function(evt){
+			this.setBusy(true);
+			let that = this;
+
+            sap.m.MessageBox.warning("Are you sure you want to terminate this price agreement?", {
+                actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+                styleClass: "sapUiSizeCompact",
+                onClose: async function (sAction){
+                    if(sAction === 'YES'){
+                        await that.paState.cancelPriceAgreement();
+                        that.paState.getPriceAgreement(that.sObjectId)
+                        .finally(() => {
+                            that.setBusy(false);
+                        });
+                    } else {
+                        that.setBusy(false);
+                    }
+                }
+            });
+        }
 
 	});
 
