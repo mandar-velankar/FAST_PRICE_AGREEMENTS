@@ -260,7 +260,7 @@ sap.ui.define([
 				});
 				oMasterTableBinding.filter(new Filter("CountryCode", "EQ", this.paState.getSelectedCountry()), FilterType.Application);
 			}
-			return oMasterTableBinding;
+			return oMasterTable.getBinding("items");
 		},
 		onFooterSavePress: async function (oEvent) {
 			const isValid = this.paState.getPriceAgreementInstance().isValid();
@@ -347,12 +347,15 @@ sap.ui.define([
 			try {
 				this.setBusy(true);
 				await this.paState.syncPriceAgreements([priceAgreementID]);
-				const oMasterTableBinding = this.refreshMaster();
-				oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
-					this.paState.getPriceAgreement(this.sObjectId);
-					this.setBusy(false);
-					MessageBox.success("Price Agreement successfully synchronized");
-				});
+				//const oMasterTableBinding = this.refreshMaster();
+				this.paState.getPriceAgreement(this.sObjectId);
+				this.setBusy(false);
+				MessageBox.success("Price Agreement successfully synchronized");
+				// oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
+				// 	this.paState.getPriceAgreement(this.sObjectId);
+				// 	this.setBusy(false);
+				// 	MessageBox.success("Price Agreement successfully synchronized");
+				// });
 			} catch (error) {
 				this.paState.getPriceAgreement(this.sObjectId);
 				this.setBusy(false);
