@@ -36,7 +36,11 @@
 										formatOptions: {
 											pattern: 'yyyy-MM-dd',
 											UTC:true
-										}}" valueFormat="yyyy-MM-dd" change=".handleEffectiveDateChange" valueState="{pa>/priceAgreement/effectiveDateValueState}" enabled="{pa>/editMode}"/>
+										}}" valueFormat="yyyy-MM-dd" change=".handleEffectiveDateChange" valueState="{pa>/priceAgreement/effectiveDateValueState}" 
+                                            enabled="{= ${pa>/editMode} &amp;&amp; 
+                                                        ${pa>/priceAgreement/tender/classification} === 'Tender' &amp;&amp; 
+                                                        !${pa>/priceAgreement/synchronized}}"/>
+                                                        
 
                         <m:Label text="{i18n>expiryDate}" design="Bold" required="true"/>
                         <m:DatePicker id="expiryDateID" value="{path: 'pa>/priceAgreement/expiryDate',
@@ -44,7 +48,10 @@
 										formatOptions: {
 											pattern: 'yyyy-MM-dd',
 											UTC:true
-										}}" valueFormat="yyyy-MM-dd" change=".handleDateChange" valueState="{pa>/priceAgreement/expiryDateValueState}" enabled="{pa>/editMode}"/>
+										}}" valueFormat="yyyy-MM-dd" change=".handleDateChange" valueState="{pa>/priceAgreement/expiryDateValueState}" 
+                                            enabled="{= ${pa>/editMode} &amp;&amp; 
+                                                        ${pa>/priceAgreement/tender/classification} === 'Tender' &amp;&amp; 
+                                                        !${pa>/priceAgreement/synchronized}}"/>
                         
 						<m:CheckBox id="idExtendExpiry" text="{i18n>extendExpiry}" select=".extendExpiry" enabled="{pa>/editMode}" selected="{path:'pa>/priceAgreement/extendPriceAgreement'}" visible="{= ${pa>/priceAgreement/tender/classification} === 'Commercial Agreement' }"/>
                         <m:Label text="{i18n>expiryExtensionPeriod}" design="Bold" required="false"/>
