@@ -1,0 +1,516 @@
+<core:FragmentDefinition 
+    xmlns:core="sap.ui.core"
+    xmlns="sap.uxap" 
+	xmlns:m="sap.m" 
+	xmlns:f="sap.f"
+	xmlns:form="sap.ui.layout.form" 
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns:t="sap.ui.table" 
+	xmlns:l="sap.ui.layout"
+	xmlns:viz.data="sap.viz.ui5.data" 
+	xmlns:viz="sap.viz.ui5.controls" 
+	xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+	xmlns:tnt="sap.tnt">
+
+    <ObjectPageSection showTitle="false" visible="true">
+        <ObjectPageSubSection mode="Expanded" title="Price Agreement Details">
+            <m:VBox>
+                <m:RadioButtonGroup columns="2" selectedIndex="{= ${detailView>/selectedProductUoM} === 'Pack' ? 0 : 1}" select=".onRbgUoMChange">
+                    <m:RadioButton text="Pack" />
+                    <m:RadioButton text="Unit" />
+                </m:RadioButtonGroup>
+                <form:SimpleForm 
+                    title="{pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}"
+                    editable="true" 
+                    layout="ResponsiveGridLayout" 
+                    labelSpanXL="5" 
+                    labelSpanL="5" labelSpanM="12" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="1" emptySpanL="1" emptySpanM="1" 
+                    emptySpanS="1" columnsXL="2" columnsL="2" columnsM="2" singleContainerFullSize="false" 
+                    backgroundDesign="Solid" 
+                    id="opportunityDetailsFormId">
+                    <form:content>
+                        <core:Title text=""/>
+                        <m:Label text="{i18n>effectiveDate}" design="Bold" required="true"/>
+                        <m:DatePicker id="effectiveDateId" value="{path: 'pa>/priceAgreement/effectiveDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd',
+											UTC:true
+										}}" valueFormat="yyyy-MM-dd" change=".handleEffectiveDateChange" valueState="{pa>/priceAgreement/effectiveDateValueState}" 
+                                            enabled="{= ${pa>/editMode} &amp;&amp; 
+                                                        ${pa>/priceAgreement/tender/classification} === 'Tender' &amp;&amp; 
+                                                        !${pa>/priceAgreement/synchronized}}"/>
+                                                        
+
+                        <m:Label text="{i18n>expiryDate}" design="Bold" required="true"/>
+                        <m:DatePicker id="expiryDateID" value="{path: 'pa>/priceAgreement/expiryDate',
+										type: 'sap.ui.model.type.Date',
+										formatOptions: {
+											pattern: 'yyyy-MM-dd',
+											UTC:true
+										}}" valueFormat="yyyy-MM-dd" change=".handleDateChange" valueState="{pa>/priceAgreement/expiryDateValueState}" 
+                                            enabled="{= ${pa>/editMode} &amp;&amp; 
+                                                        ${pa>/priceAgreement/tender/classification} === 'Tender' &amp;&amp; 
+                                                        !${pa>/priceAgreement/synchronized}}"/>
+                        
+						<m:CheckBox id="idExtendExpiry" text="{i18n>extendExpiry}" select=".extendExpiry" enabled="{pa>/editMode}" selected="{path:'pa>/priceAgreement/extendPriceAgreement'}" visible="{= ${pa>/priceAgreement/tender/classification} === 'Commercial Agreement' }"/>
+                        <m:Label text="{i18n>expiryExtensionPeriod}" design="Bold" required="false"/>
+                        <m:StepInput
+                            id="idExtendExpiryDateID"
+						value="{path: 'pa>/priceAgreement/expiryExtensionPeriod'}"
+						min="0"
+						max="12"
+						valueState="{valueState}"
+						enabled="{= ${pa>/editMode} &amp;&amp; ${pa>/priceAgreement/extendPriceAgreement} === true }"
+                        description="Months" 
+						change="onChange"
+                        validationMode="LiveChange"
+                        visible="{= ${pa>/priceAgreement/tender/classification} === 'Commercial Agreement' }"/>
+
+                        <m:Label text="{i18n>PVL}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
+                        <m:Input 
+                            visible="{= ${detailView>/selectedProductUoM} === 'Pack'}" 
+                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                ? ${path:'pa>/priceAgreement/mainPriceCondition/pVL', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
+                                : parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/pVL'}*${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
+                            }" 
+                            description="EUR" 
+                            enabled="false" 
+                        />
+                        <m:Label text="{i18n>PVL}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'}"/>
+                        <m:Input 
+                            visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" 
+                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                ? ${path:'pa>/priceAgreement/mainPriceCondition/pVL', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
+                                : parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/pVL'}/${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
+                            }" 
+                            description="EUR" 
+                            enabled="false" 
+                        />
+
+                        <m:Label text="{i18n>ConfidentialPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'  &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null}"/>
+                        <m:Input 
+                            visible="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null }" 
+                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                ? ${path:'pa>/priceAgreement/mainPriceCondition/confidentialPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
+                                : parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/confidentialPrice'}*${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
+                            }" 
+                            description="EUR" 
+                            enabled="false" 
+                        />
+                        <m:Label text="{i18n>ConfidentialPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'  &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null}"/>
+                        <m:Input 
+                            visible="{= ${detailView>/selectedProductUoM} === 'Unit'  &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null}" 
+                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                ? ${path:'pa>/priceAgreement/mainPriceCondition/confidentialPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
+                                : parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/confidentialPrice'}/${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
+                            }" 
+                            description="EUR" 
+                            enabled="false" 
+                        />
+                        
+                         <!-- Descuento only -->
+                        <m:Label 
+                            text="{i18n>Discount}" design="Bold" required="false" 
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento') > -1}"/>
+                        <m:Input 
+                            value="{path:'pa>/priceAgreement/mainPriceCondition/discount', type:'.types.percent'}" enabled="false" description="%"
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento') > -1}"/>
+
+                        <m:Label text="{i18n>RoyalDecree}" design="Bold" required="false"
+                            visible="{= 
+                                        ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento Comercial') > -1 || 
+                                        ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1
+                            }"
+                        /> 
+                        <m:Select selectedKey="{pa>/priceAgreement/mainPriceCondition/royalDecree}" enabled="false" width="15em"
+                            visible="{= 
+                                        ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento Comercial') > -1 || 
+                                        ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1
+                            }"
+                        > 
+                            <m:items>
+                                <core:Item key="IncludeInPrecioNeto" text="Yes, (include in precio neto)" />
+                                <core:Item key="ExcludeInPrecioNeto" text="Yes, (exclude in precio neto)" />
+                                <core:Item key="Yes" text="Yes" />									
+                                <core:Item key="No" text="No" />									
+                            </m:items>
+                        </m:Select>
+                        <m:Input value="{path:'pa>/priceAgreement/royalDecreePercentage', type:'.types.percent'}" type="Number" description="%" enabled="false" width="7em"
+                            visible="{= 
+                                        ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento Comercial') > -1 || 
+                                        ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1
+                            }"
+                        />
+
+                        <!-- Precio Neto only -->
+                        <m:Label text="{i18n>StandardDiscount}" design="Bold" required="false" 
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/>
+                        <m:Input value="{= ${path:'pa>/priceAgreement/mainPriceCondition/standardDiscount', type:'.types.percent'} }" description="%" type="Number" enabled="false" fieldWidth="80%"
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/>
+                        <m:Label text="{i18n>AdditionalDiscount}" design="Bold" required="false"
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/>
+                        <m:Input value="{= ${path:'pa>/priceAgreement/mainPriceCondition/additionalDiscount', type:'.types.percent'} }" description="%" type="Number" enabled="false" fieldWidth="80%"
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1}"/>
+                        <m:Label text="{i18n>NetPriceBeforeRC}" design="Bold" required="false"
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}"/>
+                        <m:Input 
+                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxBeforeDeductionRD}).toFixed(6) 
+                                : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxBeforeDeductionRD}*${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(6)  
+                            }" 
+                            type="Number" enabled="false" fieldWidth="80%" description="EUR"
+                            liveChange=".calculateDiscountsAndNetPricesPrecioNeto"
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}"/>
+                        <m:Label text="{i18n>NetPriceBeforeRC}" design="Bold" required="false"
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}"/>
+                        <m:Input 
+                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxBeforeDeductionRD}).toFixed(6) 
+                                : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxBeforeDeductionRD}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(6)  
+                            }" 
+                            type="Number" enabled="false" fieldWidth="80%" description="EUR"
+                            liveChange=".calculateDiscountsAndNetPricesPrecioNeto"
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}"/>              
+                        <m:Label text="{i18n>NetPriceAfterRC}" design="Bold" required="false"
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}"/>
+                        <m:Input 
+                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxAfterDeductionRD}).toFixed(6) 
+                                : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxAfterDeductionRD}*${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(6)  
+                            }" 
+                            type="Number" enabled="false" fieldWidth="80%" description="EUR"
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}"/>
+                        <m:Label text="{i18n>NetPriceAfterRC}" design="Bold" required="false"
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}"/>
+                        <m:Input 
+                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxAfterDeductionRD}).toFixed(6) 
+                                : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxAfterDeductionRD}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(6)  
+                            }" 
+                            type="Number" enabled="false" fieldWidth="80%" description="EUR"
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}"/>
+
+                        <m:Label text="{i18n>MaximumPrice}" design="Bold" required="false"
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}"/>
+                        <m:Input value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                            ? parseFloat(${pa>/priceAgreement/mainPriceCondition/maximumPrice}).toFixed(6) 
+                            : parseFloat(${pa>/priceAgreement/mainPriceCondition/maximumPrice}*${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(6)  
+                        }" 
+                            type="Number" enabled="false" fieldWidth="80%" liveChange=".validateMaximumPrice" description="EUR"
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}"/>
+
+                        <m:Label text="{i18n>MaximumPrice}" design="Bold" required="false"
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}"/>
+                        <m:Input value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM}
+                            ? parseFloat(${pa>/priceAgreement/mainPriceCondition/maximumPrice}).toFixed(6) 
+                            : parseFloat(${pa>/priceAgreement/mainPriceCondition/maximumPrice}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(6)  
+                        }" 
+                            type="Number" enabled="false" fieldWidth="80%" liveChange=".validateMaximumPrice" description="EUR"
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${pa>/priceAgreement/tender/classification} === 'Tender' }"/>
+                                              
+                         <!-- Descuento Especial only -->
+                        <m:Label text="{i18n>NetPriceWOtax}" design="Bold" required="false"
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento') > -1}"/>
+                        <m:Input value="{= ${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTax} 
+                            ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTax}).toFixed(6) 
+                            : parseFloat(0).toFixed(6)
+                        }" type="Number" enabled="false" fieldWidth="80%"
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento') > -1}"/>
+                        <m:Label text="{i18n>Tax}" design="Bold" required="false"
+                            visible="{= 
+                                        ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento Comercial') > -1 || 
+                                        ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1
+                            }"
+                        />
+                        <m:Input value="{path:'pa>/priceAgreement/mainPriceCondition/tax', type:'.types.percent'}" type="Number" description="%" enabled="false" fieldWidth="80%"
+                            visible="{= 
+                                        ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento Comercial') > -1 || 
+                                        ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1
+                            }"
+                        />
+                        <m:Label text="{i18n>NetPriceWtax}" design="Bold" required="false"
+                            visible="{= 
+                                        ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento Comercial') > -1 || 
+                                        ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1
+                            }"
+                        />
+                        <m:VBox>
+                            <m:Input
+                                value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                    ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTax}).toFixed(6) 
+                                    : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTax}*${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(6)  
+                                }"
+                                type="Number" enabled="false"  description="EUR"
+                                visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento Comercial') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}"/> <!-- Used for Descuento Comercial -->
+
+                            <m:Input 
+                                value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                    ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTax}).toFixed(6) 
+                                    : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTax}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(6)  
+                                }" 
+                                type="Number" enabled="false"  description="EUR"
+                                visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento Comercial') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}"/> <!-- Used for Descuento Comercial -->    
+                            <m:Input
+                                value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                    ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTaxAfterDeductionRD}).toFixed(6) 
+                                    : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTaxAfterDeductionRD}*${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(6)  
+                                }" 
+                                type="Number" enabled="false"   description="EUR"
+                                visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}"/> <!-- Used for Precio Neto -->
+                            <m:Input
+                                value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                                    ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTaxAfterDeductionRD}).toFixed(6) 
+                                    : parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithTaxAfterDeductionRD}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(6)  
+                                }" 
+                                type="Number" enabled="false"   description="EUR"
+                                visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}"/> <!-- Used for Precio Neto -->     
+                        </m:VBox>
+
+
+                        <core:Title text=""/>
+                        <m:Label text="{i18n>awardedVol}" design="Bold" required="false"/>
+                        <m:Input value="{pa>/priceAgreement/awardedVolume}" description="{pa>/priceAgreement/uoM}" enabled="false"/>
+
+                        <m:Label text="{i18n>deliveredVol}" design="Bold" required="false"/>
+                        <m:Input value="{pa>/priceAgreement/deliveredVolume}" description="{pa>/priceAgreement/uoM}" enabled="false"/>
+
+                        <m:Label text="{i18n>Residue}" design="Bold" required="false"/>
+                        <m:Input value="{= Math.round(100 * (1 - (${pa>/priceAgreement/deliveredVolume}/${pa>/priceAgreement/awardedVolume}))) }" enabled="false" description="%"/>
+
+                    </form:content>
+                </form:SimpleForm>
+            </m:VBox>
+        </ObjectPageSubSection>
+
+        <ObjectPageSubSection mode="Expanded">
+            <m:IconTabBar>
+                <m:items>
+                    <!-- Customer Prices Tab -->
+                    <m:IconTabFilter text="Customer Prices" key="customerPrices">
+                        <m:Table id="MaterialsTableID" mode="SingleSelectMaster" delete="onDeleteProduct" selectionChange=".onProductItemSelect" items="{pa>/priceAgreement/candidatePrices}">
+                            <m:headerToolbar>
+                                <m:OverflowToolbar>
+                                    <m:content>
+                                        <m:Label text="{i18n>materialNo}" />
+                                        <m:Select id="idMaterialNumberSelect" change=".onMaterialNumberChange" items="{ 
+															path: 'pa>/priceAgreement/materials'
+														}">
+                                            <core:Item key="{pa>sKUCode}" text="{pa>sKUCode}" />
+                                        </m:Select>
+                                        
+                                        <m:Label text="{i18n>applyAll}" />
+                                        <m:Switch state="{pa>/allApplied}" customTextOn="Yes" customTextOff="No" change="onApplyAll" 
+                                                  enabled="{ parts: [ 'pa>/priceAgreement/customerPrices',
+                                                                      'pa>/editMode' ], 
+								                             formatter: '.isAllApplied' }">
+                                            <m:layoutData>
+                                                <m:FlexItemData growFactor="1" />
+                                            </m:layoutData>
+                                        </m:Switch>
+                                    </m:content>
+                                </m:OverflowToolbar>
+                            </m:headerToolbar>
+                            <m:columns>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Institute" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Customer No." wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Material No." wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+                                    <m:Label text="Apply" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+                                    <m:Label text="Price" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+                                    <m:Label text="Effective Date" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" popinDisplay="Inline">
+                                    <m:Label text="Expiry Date" wrapping="true"/>
+                                </m:Column>
+                            </m:columns>
+                            <m:items>
+                                <m:ColumnListItem highlight="Indication04">
+                                    <m:cells>
+                                        <m:Text text="{pa>instituteName}"/>
+                                        <m:Text text="{pa>customerID}"/>
+                                        <m:Text text="{pa>materialNumber}"/>
+                                        <m:Switch state="{pa>applied}" customTextOn="Yes" customTextOff="No" enabled="{= ${pa>/editMode} &amp;&amp; !${pa>/priceAgreement/synchronized} }">
+                                            <m:layoutData>
+                                                <m:FlexItemData growFactor="1" />
+                                            </m:layoutData>
+                                        </m:Switch>
+                                        <m:Text text="{=parseFloat(${pa>price}).toFixed(6)}"/>
+                                        <m:Text text="{
+															path: 'pa>effectiveDate',
+															type: 'sap.ui.model.type.Date',
+															formatOptions: {
+																pattern: 'yyyy-MM-dd',
+																UTC:true
+															}
+														}" />
+                                        <m:Text text="{
+															path: 'pa>expiryDate',
+															type: 'sap.ui.model.type.Date',
+															formatOptions: {
+																pattern: 'yyyy-MM-dd',
+																UTC:true
+															}
+														}" />
+                                    </m:cells>
+                                </m:ColumnListItem>
+                            </m:items>
+                        </m:Table>
+                    </m:IconTabFilter>
+                    <!-- Deliveries Tab -->
+                    <m:IconTabFilter text="Deliveries" key="deliveries">
+                        <m:Table id="DeliveriesTableID" mode="SingleSelectMaster" delete="onDeleteDelivery" selectionChange=".onDeliveryPress" items="{pa>/priceAgreement/Deliveries}">
+                            <m:columns>
+                                <m:Column >
+                                    <m:Label text="Institute Name" wrapping="true"/>
+                                </m:Column>
+                                <m:Column >
+                                    <m:Label text="Date" wrapping="true"/>
+                                </m:Column>
+                                <m:Column >
+                                    <m:Label text="Quantity" wrapping="true"/>
+                                </m:Column>
+                                <m:Column >
+                                    <m:Label text="UoM" wrapping="true"/>
+                                </m:Column>
+                            </m:columns>
+                            <m:items>
+                                <m:ColumnListItem press="onDeliveryPress" detailPress="onDeliveryPress">
+                                    <m:cells>
+                                        <m:Text text="{pa>InstituteName}"/>
+                                        <m:Text text="{
+															path: 'pa>WADAT_IST',
+															type: 'sap.ui.model.type.Date',
+															formatOptions: {
+																pattern: 'yyyy-MM-dd',
+																UTC:true
+															}
+														}" />
+                                        <m:Text text="{pa>ANZPK}"/>
+                                        <m:Text text="{pa>VRKME}"/>
+
+                                    </m:cells>
+                                </m:ColumnListItem>
+                            </m:items>
+                        </m:Table>
+                    </m:IconTabFilter>
+                    <!-- FOC Tab -->
+                    <m:IconTabFilter text="FOC" key="foc">
+                        <m:Table id="idFocTable" mode="SingleSelectMaster" selectionChange=".onFocItemSelect" items="{pa>/priceAgreement/focPriceCondition/freeGoodsOther}">
+                            <m:columns>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Product" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Royal Decree" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Min Amount" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Bonus" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Potential Savings" wrapping="true"/>
+                                </m:Column>
+                            </m:columns>
+                            <m:items>
+                                <m:ColumnListItem>
+                                    <m:cells>
+                                        <m:Text text="{pa>ProductPack/0/PRODUCTPACKNAME}"/>
+                                        <m:Text text="{pa>royalDecree}"/>
+                                        <m:Text text="{pa>fOCMinAmount}"/>
+                                        <m:Text text="{pa>fOCBonus}"/>
+                                        <m:Text text="{path:'pa>potentialGeneratedSavings', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}}"/>
+                                    </m:cells>
+                                </m:ColumnListItem>
+                            </m:items>
+                        </m:Table>
+                    </m:IconTabFilter>
+                    <!-- Rappel Tab -->
+                    <m:IconTabFilter text="Rappel" key="rappel">
+                        <m:VBox>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="{i18n>Liquidation}" width="10em" class="sapUiTinyMarginEnd"/>
+                                <m:Select selectedKey="{pa>/priceAgreement/rappelPriceCondition/liquidation}" enabled="false"> 
+                                    <m:items>
+                                        <core:Item key="" text="" />
+                                        <core:Item key="Monthly" text="Monthly" />
+                                        <core:Item key="Quarterly" text="Quarterly" />
+                                        <core:Item key="HalfYearly" text="Half Yearly" />
+                                        <core:Item key="Annually" text="Yearly" />									
+                                    </m:items>
+                                </m:Select>
+                            </m:HBox>
+                            <m:HBox alignItems="Center">
+                                <m:Label text="{i18n>PaymentBackDate}" width="10em" class="sapUiTinyMarginEnd"/>
+                                <m:DatePicker
+                                        value="{
+                                                path:'pa>/priceAgreement/rappelPriceCondition/refundDate',
+                                                type:'sap.ui.model.type.Date', 
+                                                formatOptions: { style: 'short', pattern: 'yyyy-MM-dd'}
+                                        }"
+                                        valueFormat="yyyy-MM-dd" 
+                                        displayFormat="short"
+                                        enabled="false"
+                                        class="sapUiSmallMarginBottom"/>
+                            </m:HBox>
+                            <m:HBox>
+                                <m:Label text="{i18n>Settlement}" width="10em" class="sapUiTinyMarginTop sapUiTinyMarginEnd"/>
+                                <m:Text text="{pa>/priceAgreement/rappelPriceCondition/settlement/description}" class="sapUiTinyMarginTop sapUiSmallMarginBottom"/>
+                            </m:HBox>
+                            <m:HBox>
+                                <m:Label text="{i18n>SettlementCalendar}" width="10em" class="sapUiSmallMarginTop sapUiTinyMarginEnd"/>
+                                <m:Button icon="sap-icon://calendar" 
+                                            press=".onOpenSettlementCalendar" 
+                                            class="sapUiNoMarginTop sapUiSmallMarginBottom"
+                                            enabled="{= !!(${pa>/priceAgreement/effectiveDate} &amp;&amp; ${pa>/priceAgreement/expiryDate})}"/>
+                            </m:HBox>
+                        </m:VBox>
+                        <m:Table id="idRappedlTable" mode="SingleSelectMaster" items="{pa>/priceAgreement/rappelPriceCondition/discountConditions}">
+                            <m:columns>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Volume Treshold" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Discount" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Net Price w/o Tax" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Tax" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Net Price with Tax" wrapping="true"/>
+                                </m:Column>
+                            </m:columns>
+                            <m:items>
+                                <m:ColumnListItem>
+                                    <m:cells>
+                                        <m:Text text="{pa>volume}"/>
+                                        <m:Text text="{path:'pa>discount', type:'.types.percent'} %"/>
+                                        <m:Text text="{= parseFloat(${pa>netPriceWithoutTax}).toFixed(2) }"/>
+                                        <m:Text text="{path:'pa>/priceAgreement/rappelPriceCondition/tax', type:'.types.percent'} %"/>
+                                        <m:Text text="{= parseFloat(${pa>netPriceWithTax}).toFixed(2)}"/>
+                                    </m:cells>
+                                </m:ColumnListItem>
+                            </m:items>
+                        </m:Table>
+                    </m:IconTabFilter>
+                </m:items>
+            </m:IconTabBar>
+        </ObjectPageSubSection>
+    </ObjectPageSection>
+
+</core:FragmentDefinition>

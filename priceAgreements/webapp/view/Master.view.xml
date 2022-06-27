@@ -20,15 +20,25 @@
 		<f:content>
 			<VBox fitContainer="true">
 				<OverflowToolbar class="sapFDynamicPageAlignContent">
-					<Select	id="idslctfilter" change=".setFilter">
-						<core:Item key="" text=""/>
-						<core:Item key="newAgreementsKey" text="New Agreements"/>
-						<core:Item key="newMaterialNumbersKey" text="New Material Numbers"/>
-						<core:Item key="updatedRetailPriceKey" text="Updated Retail Price"/>
-						<core:Item key="expiringSoonKey" text="Expiring Soon"/>
-						<core:Item key="expiredKey" text="Expired"/>
+                    <Select id="idSlctCountry"  
+                            items="{ 
+								path: '/UserCountry', 
+								sorter: { path: 'Country/CountryName' }, 
+								parameters: { expand: 'Country' },
+								events: {
+									dataReceived: '.onUserCountriesReceived'
+								}
+                            }"
+							change=".onChangeCountryFilter"
+							visible="{= ${appView>/layout} === 'OneColumn' }"
+                            forceSelection="true"
+							selectedKey="{pa>/selectedCountryFilter}">
+							<core:Item key="{CountryCode}" text="{Country/CountryName}"/>
 					</Select>
-					<Label text="{i18n>Product}"/>
+					<Select	id="idslctfilter" change=".setFilter" items="{pa>/countryFilters}">
+						<core:Item key="{pa>key}" text="{pa>value}"/>
+					</Select>
+					<Label text="{i18n>Product}" visible="{= ${appView>/layout} === 'OneColumn' }"/>
 					<Select  
 						id="idProductPackfilter"
 						change=".setFilter" 
@@ -60,8 +70,9 @@
 								descending: false
 							},
 							parameters: {
-								expand: 'Product/ProductPack,Tender,Institute,CustomerPrices,ConsumerPrice,FOC'
-							}
+								expand: 'Product/ProductPack,Tender,Tender/User,Institute,CustomerPrices,ConsumerPrice,FOC'
+							}, 
+							suspended : true
 						}"
 						class="sapFDynamicPageAlignContent"
 						width="auto"
@@ -76,7 +87,22 @@
 						</Column>
 						<Column>
 							<header>
+								<ObjectIdentifier title="{i18n>UserName}" />
+							</header>
+						</Column>
+						<Column>
+							<header>
+								<ObjectIdentifier title="{i18n>Classification}" />
+							</header>
+						</Column>
+						<Column>
+							<header>
 								<ObjectIdentifier title="{i18n>Reference}" />
+							</header>
+						</Column>
+						<Column>
+							<header>
+								<ObjectIdentifier title="{i18n>Institute}" />
 							</header>
 						</Column>
 						<Column visible="true">
@@ -103,8 +129,15 @@
 					<items>
 						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="{= ${Synchronized} === true ? 'None' : 'Warning'}" id="items">
 							<cells>
-								<Text text="{Tender/TenderID}"/>
+								<VBox>
+									<Text text="{Tender/TenderID}"/>
+									<Text text="{Tender/ExternalID}"/>
+									<Text text="{Tender/SAPID}"/>
+								</VBox>
+								<Text text="{Tender/User/UserName}"/>
+								<Text text="{Tender/Classification}"/>
 								<Text text="{Tender/TenderName}"/>
+								<Text text="{Institute/InstituteName}"/>
 								<Text text="{Product/ProductPack/PRODUCTPACKNAME}"/>
 								<Text text="{Price}"/>
 								<Text text="{

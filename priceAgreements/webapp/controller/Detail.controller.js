@@ -4,9 +4,13 @@ sap.ui.define([
 	"../model/formatter",
 	"sap/m/library",
 	"sap/ui/model/Filter",
+	"sap/ui/model/FilterType",
 	"sap/ui/model/FilterOperator",
-	"sap/m/MessageBox"
-], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterOperator, MessageBox) {
+	"sap/m/MessageBox",
+	"sap/ui/core/Fragment",
+	"com/bayer/tender/uilib/datatypes/PercentageType",
+	"sap/ui/core/BusyIndicator"
+], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterType,FilterOperator, MessageBox, Fragment, PercentageType,BusyIndicator) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
@@ -15,6 +19,9 @@ sap.ui.define([
 	return BaseController.extend("com.bayer.tender.priceagreements.controller.Detail", {
 
 		formatter: formatter,
+		types: {
+			percent: PercentageType
+		},
 
 		/* =========================================================== */
 		/* lifecycle methods                                           */
@@ -43,7 +50,9 @@ sap.ui.define([
 			this.getRouter().getRoute("objectDetail").attachPatternMatched(this._onObjectMatched, this);
 
 			this.setModel(oViewModel, "detailView");
+			 
 		},
+
 
 		/* =========================================================== */
 		/* event handlers                                              */
@@ -97,16 +106,44 @@ sap.ui.define([
 		 * @private
 		 */
 		_onObjectMatched: function (oEvent) {
+
+			this.getView().setBusyIndicatorDelay(0);
+			this.getView().setBusy(true);
 			this.sObjectId = oEvent.getParameter("arguments").objectId;
 			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
 
 			this.getModel().metadataLoaded().then(function () {
-				this.paState.getPriceAgreement(this.sObjectId).then(function () {
+				this.paState.getPriceAgreement(this.sObjectId).then(function (priceAgreement) {
+					this.paState.setSelectedCountry(priceAgreement.countryCode);
                     this._setSelectedProductUoM(this.paState.getPriceAgreementInstance().uoM);
-
-                }.bind(this));
+					this.addCountryDetailFragments(priceAgreement.countryCode);
+                }.bind(this)).then(function(){
+					this.refreshMaster();
+				}.bind(this));
 				// this.paState.getCandidatePrices(this.sObjectId, null);
 			}.bind(this))
+		},
+
+		addCountryDetailFragments: function(sCountryCode){
+			// clear the objectPage first
+            const objectPage = this.byId("DetailPage");
+			objectPage.destroySections();
+
+            const sFragmentPath = "com.bayer.tender.priceagreements.view.fragments";
+
+            if(sCountryCode) {
+				Fragment.load({
+					id: this.getView().getId(),
+					name: sFragmentPath.concat(".Detail_",sCountryCode),
+					controller: this
+				})
+				.then(function (ObjectPageSection) {
+					if(ObjectPageSection.getMetadata().getName() === "sap.uxap.ObjectPageSection"){                
+						objectPage.addSection(ObjectPageSection);
+						this.getView().setBusy(false);
+					}
+				}.bind(this));
+            }
 		},
 
 		/**
@@ -152,8 +189,26 @@ sap.ui.define([
 		},
 
 		onEditModePress: function () {
+			const bValid = this._validateEditMode();
+			if(bValid) this.paState.setEditMode(true);
+		},
+		
+		_validateEditMode: function(){
+			const countryCode = this.paState.getProperty("priceAgreement").getTender().getCountryCode();
+			const bValid = this._validateCountryEditMode(countryCode);
+			return bValid;
+		},
 
-			this.paState.setEditMode(true);
+		_validateCountryEditMode: function(countryCode){
+			const tender = this.paState.getProperty("priceAgreement").getTender();
+			const bSynchronised = this.paState.getProperty("priceAgreement").synchronized;
+			if(countryCode === "ES"){
+				if(bSynchronised && tender.getClassification() === "Commercial Agreement"){
+					MessageBox.error("This commercial agreement is already synchronised with SAP. \nCommercial agreements cannot be extended. A new commercial agreement must be created to proceed.");
+					return false;
+				}
+			}
+			return true;
 		},
 
 		handleDateChange: function (oEvent) {
@@ -162,11 +217,22 @@ sap.ui.define([
 			const isValid = this.paState.getPriceAgreementInstance().setExpiryDateValueState(valid ? "None" : "Error");
 			this.paState.updateModel();
 		},
+
+        handleEffectiveDateChange: function (oEvent) {
+			var valid = oEvent.getParameter("valid");
+
+			const isValid = this.paState.getPriceAgreementInstance().setEffectiveDateValueState(valid ? "None" : "Error");
+			this.paState.updateModel();
+		},
+
+
 		onFooterCancelPress: function (oEvent) {
 			const onClose = (action) => {
 				if (action === MessageBox.Action.YES) {
 					this.paState.setEditMode(false);
 					this.paState.restorePriceAgreement();
+                    let candidatePrices = this.paState.getPriceAgreementInstance().getCandidatePrices();
+                    this.paState.setAllApplied(candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true));
 				}
 			};
 			MessageBox.warning(this.getText("confirmCancel"), {
@@ -185,19 +251,30 @@ sap.ui.define([
 			detailView.setBusy(status);
 		},
 		refreshMaster: function () {
-			const oMasterTableBinding = this.getOwnerComponent().oListSelector._oList.getBinding("items");
-			oMasterTableBinding.refresh();
-			return oMasterTableBinding;
+			const oMasterTable = this.getOwnerComponent().oListSelector._oList; 
+			const oMasterTableBinding = oMasterTable.getBinding("items");
+			if(oMasterTable.getItems().length === 0){
+				BusyIndicator.show(0);
+				oMasterTableBinding.attachDataReceived(function(){
+					BusyIndicator.hide();
+				});
+				oMasterTableBinding.filter(new Filter("CountryCode", "EQ", this.paState.getSelectedCountry()), FilterType.Application);
+			}
+			return oMasterTable.getBinding("items");
 		},
 		onFooterSavePress: async function (oEvent) {
 			const isValid = this.paState.getPriceAgreementInstance().isValid();
 			this.paState.updateModel();
-			if (!isValid || !this.byId("expiryDateID").isValidValue()) {
+			if (!isValid || !this.byId("expiryDateID").isValidValue() || !this.byId("effectiveDateId").isValidValue()) {
 				MessageBox.error(this.getText("requiredFields"));
 				return false;
 			}
+            if(this.byId("idExtendExpiry") && this.byId("idExtendExpiry")?.getSelected() === true && (this.byId("idExtendExpiryDateID").getValue() > 12 || this.byId("idExtendExpiryDateID").getValue() === 0 )){
+                MessageBox.error(this.getText("errorExpiry"));
+                return false;
+            }
 			//expiry date changed + already synchronized ==> price agreement in SAP should be cancelled first
-			Promise.resolve((this.paState.hasPAExpiryDateChanged() && this.paState.getPriceAgreementInstance().synchronized)).then((confirm) => {
+			Promise.resolve(((this.paState.hasPAExpiryDateChanged() || this.paState.hasPAEffectiveDateChanged()) && this.paState.getPriceAgreementInstance().synchronized)).then((confirm) => {
 				if(confirm){
 					return this.confirmCancelMessage("Existing");
 				}
@@ -260,60 +337,33 @@ sap.ui.define([
 		 * @param {*} evt On click event
 		 */
 		onSynchronize: function (evt) {
-			this.setBusy(true);
-
-			this.paState.syncFocCustPrices([this.sObjectId])
-				.then(() => {
-					const oMasterTableBinding = this.refreshMaster();
-					oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
-						this.onCloseDetailPress();
-						MessageBox.success("Customer Prices successfully synchronized");
-					});
-
-				})
-				.catch(err => {
-					this.onCloseDetailPress();
-					MessageBox.error("Synchronization of Customer Prices failed. Please try again.");
-				}).finally(() => {
-					this.setBusy(false);
-				});
-
-			this.paState.syncPriceAgreements([this.sObjectId])
-				.then(() => {
-					const oMasterTableBinding = this.refreshMaster();
-					oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
-						this.onCloseDetailPress();
-						MessageBox.success("Price Agreement successfully synchronized");
-					});
-
-				})
-				.catch(err => {
-					this.onCloseDetailPress();
-					MessageBox.error("Synchronization of Price Agreement failed. Please try again.");
-				}).finally(() => {
-					this.setBusy(false);
-				});;
-
-			/*this.paState.syncFOCcustPrices([this.sObjectId])
-				.then(() => 
-				{
-					const oMasterTableBinding = this.getOwnerComponent().oListSelector._oList.getBinding("items");
-					oMasterTableBinding.refresh();
-					oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
-						this.onCloseDetailPress();
-						oViewModel.setProperty("/busy", false);
-						oDetailView.setBusy(false);
-						MessageBox.success("FOC prices successfully synchronized");
-					});
-					
-				})
-				.catch(err => {
-					oViewModel.setProperty("/busy", false);
-					oDetailView.setBusy(false);
-					this.onCloseDetailPress();
-					MessageBox.error("Synchronization of Price Agreement failed. Please try again.");
-				});*/
+			this.synchronizePriceAgreement(this.sObjectId);
 		},
+
+		synchronizePriceAgreement: async function(priceAgreementID){
+			if(!priceAgreementID){
+				throw new Error("PriceAgreementID not specified");
+			}
+			try {
+				this.setBusy(true);
+				await this.paState.syncPriceAgreements([priceAgreementID]);
+				//const oMasterTableBinding = this.refreshMaster();
+				this.paState.getPriceAgreement(this.sObjectId);
+				this.setBusy(false);
+				MessageBox.success("Price Agreement successfully synchronized");
+				// oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
+				// 	this.paState.getPriceAgreement(this.sObjectId);
+				// 	this.setBusy(false);
+				// 	MessageBox.success("Price Agreement successfully synchronized");
+				// });
+			} catch (error) {
+				this.paState.getPriceAgreement(this.sObjectId);
+				this.setBusy(false);
+				const errMsg = JSON.parse(error.responseText)?.error?.message?.value;
+				MessageBox.error(`Synchronization of Price Agreement failed. ${errMsg}`);
+			}
+		},
+
 
 		onDeliveryPress: function (oEvent) {
 			const objContext = oEvent.getParameter("listItem").getBindingContext("pa");
@@ -342,9 +392,61 @@ sap.ui.define([
 			this._setSelectedProductUoM(uom);
 		},
 
+        onApplyAll: function(evt){
+            let applied = evt.getParameters().state;
+            let candidatePrices = this.paState.getPriceAgreementInstance().getCandidatePrices();
+
+            candidatePrices.filter(candidatePrice => candidatePrice.applied != applied && candidatePrice.synchronized === false)?.map(candidatePrice => { candidatePrice.applied = applied; });
+        },
+
 		_setSelectedProductUoM(uom){
 			this.getView().getModel("detailView").setProperty("/selectedProductUoM", uom);
 		},
+
+        isAllApplied: function(customerPrices, editMode){
+            let candidatePrices = customerPrices.length > 0 ? customerPrices : this.paState.getPriceAgreementInstance().getCandidatePrices();
+            let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
+            let allSynchronized = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.synchronized === true);
+            this.paState.setAllApplied(allApplied);
+            return editMode && !allSynchronized;
+		},
+
+		isSyncButtonEnabled: function(isPriceAgreementSynchronized, customerPrices, isCancelled){
+			if(!Array.isArray(customerPrices)) customerPrices = [];
+			if(isPriceAgreementSynchronized || (isCancelled === 'Cancelled')) return false;
+			if(customerPrices.length <= 0) return false; // when no customer prices are created yet, disable button
+			if(!customerPrices.some(item => item.applied)) return false; // when customer prices do exist but, non are applied
+			return true;
+		},
+
+        extendExpiry: function(evt){
+            if(!evt.getParameter('selected')) this.byId("idExtendExpiryDateID").setValue(0);
+        },
+		onOpenSettlementCalendar:function(event){
+			// sName, model, updateModelAlways, callback, data, popoverSource, autoOpen)
+			this.openFragment("com.bayer.tender.priceagreements.view.dialog.SettlementCalendar", null, true);
+		},
+
+        onCancelPriceAgreement: async function(evt){
+			this.setBusy(true);
+			let that = this;
+
+            sap.m.MessageBox.warning("Are you sure you want to terminate this price agreement?", {
+                actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+                styleClass: "sapUiSizeCompact",
+                onClose: async function (sAction){
+                    if(sAction === 'YES'){
+                        await that.paState.cancelPriceAgreement();
+                        that.paState.getPriceAgreement(that.sObjectId)
+                        .finally(() => {
+                            that.setBusy(false);
+                        });
+                    } else {
+                        that.setBusy(false);
+                    }
+                }
+            });
+        }
 
 	});
 

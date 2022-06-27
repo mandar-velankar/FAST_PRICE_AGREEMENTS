@@ -98,7 +98,7 @@ sap.ui.define([
 						fragment: _fragments[id]
 					});
 					return fragment;
-				});
+				}.bind(this));
 			} else {
 				this.showFragment({
 					callback: callback,
