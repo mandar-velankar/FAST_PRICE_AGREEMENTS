@@ -6,8 +6,10 @@ sap.ui.define([
     "./Candidate",
     "./Material",
     "./CustomerPrice",
-    "./CandidatePrice"
-], function (BaseObject,Institute,Product,Tender,Candidate,CustomerPrice, Material,CandidatePrice) {
+    "./CandidatePrice",
+    "./PriceCondition",
+    "./SettlementDate"
+], function (BaseObject,Institute,Product,Tender,Candidate,CustomerPrice,Material,CandidatePrice,PriceCondition,SettlementDate) {
     "use strict";
 
     var PriceAgreement = BaseObject.extend("com.bayer.tender.priceagreements.model.PriceAgreement", {
@@ -21,7 +23,13 @@ sap.ui.define([
             this.materials = [];
             this.customerPrices = [];
             this.candidatePrices = [];
+            this.priceConditions = [];
+            this.settlementDates = [];
+            this.mainPriceCondition = {};
+            this.focPriceCondition = {};
+            this.rappelPriceCondition = {};
             this.expiryDateValueState="None";
+            this.effectiveDateValueState="None";
             if (data) {
                 //copy array's manually to objects
                 this.setInstitute(data.Institute||data.institute);//or for backup restore
@@ -34,6 +42,10 @@ sap.ui.define([
                 data.customerPrices && this.setCustomerPrices(data.customerPrices);//used for backup restore
                 data.CustomerPrices && this.setCustomerPrices(data.CustomerPrices.results);
                 data.candidatePrices && this.setCandidatePrices(data.candidatePrices);//used for backup restore
+                data.PriceConditions && this.setPriceConditions(data.PriceConditions.results);
+                data.priceConditions && this.setPriceConditions(data.priceConditions);//used for backup restore
+                data.SettlementDates && this.setSettlementDates(data.SettlementDates.results || data.SettlementDates);
+                data.settlementDates && this.setSettlementDates(data.settlementDates);//used for backup restore
                 this.MaterialsFOC = data.MaterialsFOC;
             }
         },
@@ -41,6 +53,107 @@ sap.ui.define([
 
         setCandidatePrices:function(candidatePrices){
             this.candidatePrices = (candidatePrices && candidatePrices.map(candidatePrice => new CandidatePrice(candidatePrice)) ) || [];
+        },
+        calculateSettlementCalendarProposal:function(){
+            const settlementId = this.rappelPriceCondition?.settlement?.iD;
+            const months = this.rappelPriceCondition?.getLiquidationInMonths();
+            let settlementDates = [];
+            switch (settlementId) {
+                case 'VALIDITY':
+                    settlementDates.push(new SettlementDate({
+                        priceAgreementId:this.priceAgreementId,
+                        fromDate:new Date(this.effectiveDate.getTime()),
+                        toDate: new Date(this.expiryDate.getTime()),
+                        minDate: new Date(this.effectiveDate.getTime()),
+                        maxDate: new Date(this.expiryDate.getTime())
+                    }));
+                    break;
+                case 'FREQUENCY':
+                    let dateFrom = new Date(this.effectiveDate.getTime());
+                    let idx = 0;
+                    do {
+                        let dateTo = new Date(dateFrom.getTime());
+                        dateTo.setMonth(dateTo.getMonth() + months);
+                        dateTo.setDate(dateTo.getDate() - 1 );
+                        settlementDates.push(new SettlementDate({
+                            priceAgreementId:this.priceAgreementId,
+                            fromDate:new Date(dateFrom.getTime()),
+                            toDate:new Date(dateTo.getTime())//,
+                            // minDate: this.getPreviousSettlementDate(idx,settlementDates),
+                            // maxDate: this.getNextSettlementDate(idx,settlementDates)
+                        }));
+                        dateFrom.setMonth(dateFrom.getMonth() + months);
+                        idx++;
+                    } while (dateFrom < this.expiryDate);
+                    //set last record todate with expirydate value
+                    if(settlementDates.length > 0){
+                        settlementDates[settlementDates.length-1].toDate = new Date(this.expiryDate.getTime());
+                    }
+                    settlementDates = this.calculateSettlementCalendarMinMaxDate(settlementDates);
+                    break;
+                default:
+                    break;
+            }
+            return settlementDates;
+        },
+        calculateSettlementCalendarMinMaxDate:function(settlementDates){
+            for(const [idx,settlementDate] of settlementDates.entries()){
+                settlementDate.minDate = this.getPreviousSettlementDate(idx,settlementDates);
+                settlementDate.maxDate = this.getNextSettlementDate(idx,settlementDates);
+            }
+            return settlementDates;
+        },
+        getPreviousSettlementDate:function(idx,settlementDates){
+            const prevSettlementDate = settlementDates[idx-1];
+            let prevDate = new Date(this.effectiveDate.getTime());
+            if(prevSettlementDate?.toDate){
+                prevDate = new Date(prevSettlementDate.toDate.getTime());
+                prevDate.setDate(prevDate.getDate()+1);
+            }
+            if(prevDate.getTime()>this.expiryDate.getTime()){
+                prevDate = new Date(this.expiryDate.getTime());
+            }
+            return prevDate;
+        },
+        getNextSettlementDate:function(idx,settlementDates){
+            const nextSettlementDate = settlementDates[idx+1];
+            let nextDate = new Date(this.expiryDate.getTime());
+            if(nextSettlementDate?.fromDate){
+                nextDate = new Date(nextSettlementDate.fromDate.getTime());
+                nextDate.setDate(nextDate.getDate()-1);
+            }
+            if(nextDate.getTime()<this.effectiveDate.getTime()){
+                nextDate = new Date(this.effectiveDate.getTime());
+            }
+            return nextDate;
+        },
+        cloneSettlementDates:function(){
+            return this.settlementDates.map( settlementDate => new SettlementDate(settlementDate.getAll()));
+        },
+        applySettlementDates:function(settlementDates){
+            this.settlementDates = settlementDates.map( settlementDate => new SettlementDate(settlementDate.getAll()));
+        },
+        setSettlementDates:function(settlementDates){
+            this.settlementDates = settlementDates && settlementDates.map(settlementDate => new SettlementDate(settlementDate));
+            
+            // if(!this.effectiveDate || !this.expiryDate){
+            //     return;
+            // }
+            
+            if(this.settlementDates && this.settlementDates.length > 0){
+                this.settlementDates.sort( ( settlementDateA,settlementDateB ) => {
+                    if(settlementDateA.fromDate < settlementDateB.fromDate) return -1;
+                    if(settlementDateA.fromDate > settlementDateB.fromDate) return 1;
+                    return 0;
+                });
+                this.settlementDates = this.calculateSettlementCalendarMinMaxDate(this.settlementDates);
+            }
+        },
+        setPriceConditions:function(priceConditions){
+            this.priceConditions = priceConditions && priceConditions.map(priceCondition => new PriceCondition(priceCondition));
+            this.mainPriceCondition = this.getMainPriceCondition();
+            this.focPriceCondition = this.getFocPriceCondition();
+            this.rappelPriceCondition = this.getRappelPriceCondition();
         },
         setInstitute: function (institute){
             if(institute){
@@ -57,6 +170,9 @@ sap.ui.define([
                 this.tender = new Tender(tender);
             }
         },
+        getTender: function (){
+            return this.tender;
+        },
         setCandidates: function (candidates){
             this.candidates = (candidates && candidates.map(candidate => new Candidate(candidate)) ) || [];
         },
@@ -70,17 +186,41 @@ sap.ui.define([
         getCandidatePrices: function(){
             return this.candidatePrices || [];
         },
+        getPriceConditions: function(){
+            return this.priceConditions || [];
+        },
+        getMainPriceCondition: function(){
+            return this.priceConditions?.find(priceCondition => priceCondition.getClassification()?.isMain);
+        },
+        getFocPriceCondition: function(){
+            return this.priceConditions?.find(priceCondition => priceCondition.getClassification().conditionType.indexOf('FOC') > -1 );
+        },
+        getRappelPriceCondition: function(){
+            return this.priceConditions?.find(priceCondition => priceCondition.getClassification().conditionType.indexOf('Rappel') > -1 );
+        },
         getInstitute: function (){
             return this.institute || undefined;
         },
         setExpiryDateValueState:function(state){
             this.expiryDateValueState=state;
         },
+        setEffectiveDateValueState:function(state){
+            this.effectiveDateValueState=state;
+        },
         isValid:function(){
             let isValid = false;
             this.expiryDateValueState="Error";
             if(this.expiryDate && this.expiryDate !== ""){
                 this.expiryDateValueState="None";
+                isValid = true;
+            }
+            return isValid;
+        },
+        isEffectiveDateValid:function(){
+            let isValid = false;
+            this.effectiveDateValueState="Error";
+            if(this.effectiveDate && this.effectiveDate !== ""){
+                this.effectiveDateValueState="None";
                 isValid = true;
             }
             return isValid;
@@ -101,8 +241,12 @@ sap.ui.define([
                 "instituteId",
                 "tenderId",
                 "productPackId",
-                "synchronized"
+                "synchronized",
+                "extendPriceAgreement",
+                "expiryExtensionPeriod",
+                "status"
             ]);
+            data.SettlementDates = this.settlementDates.map(settlementDate => settlementDate.getJSON());
 
             return data;
         },
@@ -126,7 +270,8 @@ sap.ui.define([
             all.materials = this.materials.map(material=>material.getAll());
             all.customerPrices = this.customerPrices.map(customerPrice=>customerPrice.getAll());
             all.candidatePrices = this.candidatePrices.map(candidatePrice=>candidatePrice.getAll());
-            
+            all.priceConditions = this.priceConditions.map(priceCondition => priceCondition.getAll());
+            all.settlementDates = this.settlementDates.map(settlementDate => settlementDate.getAll());
             return all;
         }
     });
