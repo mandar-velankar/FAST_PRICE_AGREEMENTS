@@ -36,7 +36,11 @@
 										formatOptions: {
 											pattern: 'yyyy-MM-dd',
 											UTC:true
-										}}" valueFormat="yyyy-MM-dd" change=".handleEffectiveDateChange" valueState="{pa>/priceAgreement/effectiveDateValueState}" enabled="{pa>/editMode}"/>
+										}}" valueFormat="yyyy-MM-dd" change=".handleEffectiveDateChange" valueState="{pa>/priceAgreement/effectiveDateValueState}" 
+                                            enabled="{= ${pa>/editMode} &amp;&amp; 
+                                                        ${pa>/priceAgreement/tender/classification} === 'Tender' &amp;&amp; 
+                                                        !${pa>/priceAgreement/synchronized}}"/>
+                                                        
 
                         <m:Label text="{i18n>expiryDate}" design="Bold" required="true"/>
                         <m:DatePicker id="expiryDateID" value="{path: 'pa>/priceAgreement/expiryDate',
@@ -44,7 +48,10 @@
 										formatOptions: {
 											pattern: 'yyyy-MM-dd',
 											UTC:true
-										}}" valueFormat="yyyy-MM-dd" change=".handleDateChange" valueState="{pa>/priceAgreement/expiryDateValueState}" enabled="{pa>/editMode}"/>
+										}}" valueFormat="yyyy-MM-dd" change=".handleDateChange" valueState="{pa>/priceAgreement/expiryDateValueState}" 
+                                            enabled="{= ${pa>/editMode} &amp;&amp; 
+                                                        ${pa>/priceAgreement/tender/classification} === 'Tender' &amp;&amp; 
+                                                        !${pa>/priceAgreement/synchronized}}"/>
                         
 						<m:CheckBox id="idExtendExpiry" text="{i18n>extendExpiry}" select=".extendExpiry" enabled="{pa>/editMode}" selected="{path:'pa>/priceAgreement/extendPriceAgreement'}" visible="{= ${pa>/priceAgreement/tender/classification} === 'Commercial Agreement' }"/>
                         <m:Label text="{i18n>expiryExtensionPeriod}" design="Bold" required="false"/>
@@ -200,7 +207,7 @@
                             : parseFloat(${pa>/priceAgreement/mainPriceCondition/maximumPrice}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(6)  
                         }" 
                             type="Number" enabled="false" fieldWidth="80%" liveChange=".validateMaximumPrice" description="EUR"
-                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}"/>
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${pa>/priceAgreement/tender/classification} === 'Tender' }"/>
                                               
                          <!-- Descuento Especial only -->
                         <m:Label text="{i18n>NetPriceWOtax}" design="Bold" required="false"
