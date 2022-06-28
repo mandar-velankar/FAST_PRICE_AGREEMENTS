@@ -2,13 +2,15 @@ sap.ui.define([
 	"./BaseController",
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
+	"sap/ui/model/FilterType",
 	"sap/ui/model/Sorter",
 	"sap/ui/model/FilterOperator",
 	"sap/m/GroupHeaderListItem",
 	"sap/ui/Device",
 	"sap/ui/core/Fragment",
-	"../model/formatter"
-], function (BaseController, JSONModel, Filter, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, formatter) {
+	"../model/formatter",
+	"sap/m/MessageBox"
+], function (BaseController, JSONModel, Filter,FilterType, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, formatter,MessageBox) {
 	"use strict";
 
 	return BaseController.extend("com.bayer.tender.priceagreements.controller.Master", {
@@ -56,6 +58,7 @@ sap.ui.define([
 			});
 
 			this.paState = this.getOwnerComponent().getState(this.getOwnerComponent().PA);
+			this.setModel(this.paState.getModel(), "pa");
 
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
@@ -308,46 +311,28 @@ sap.ui.define([
 			oViewModel.setProperty("/isFilterBarVisible", (this._oListFilterState.aFilter.length > 0));
 			oViewModel.setProperty("/filterBarLabel", this.getResourceBundle().getText("masterFilterBarText", [sFilterBarText]));
 		},
-
+		onChangeCountryFilter:function(event){
+			this.paState.setFiltersByCountry();
+			this.setFilter(event);
+		},
 		setFilter: function (oSelection) {
 
 			var orFilters = [];
 			var andFilters = [];
-
+			const slctfilterSelectedItem = this.byId("idslctfilter").getSelectedItem();
+			const slctfilterSelectedItemKey = slctfilterSelectedItem && slctfilterSelectedItem.getKey().toLowerCase();
 			//get filters
-			var hasNewMaterialsFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newmaterialnumberskey';
-			const updatedRetailPriceFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'updatedretailpricekey';
-			const expiringSoonFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'expiringsoonkey';
-			const newAgreementFilter = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase() === 'newagreementskey';
+			var hasNewMaterialsFilter = slctfilterSelectedItemKey === 'newmaterialnumberskey';
+			const updatedRetailPriceFilter = slctfilterSelectedItemKey === 'updatedretailpricekey';
+			const expiringSoonFilter = slctfilterSelectedItemKey === 'expiringsoonkey';
+			const newAgreementFilter = slctfilterSelectedItemKey === 'newagreementskey';
+            const expiredFilter = slctfilterSelectedItemKey === 'expiredkey';
+            const activeAgreementsFilter = slctfilterSelectedItemKey === 'activeagreements';
+            const toBeSyncedFilter = slctfilterSelectedItemKey === 'tobesynced';
+            const oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "";
 			
-
-			if(updatedRetailPriceFilter){
-				andFilters.push(new sap.ui.model.Filter("hasNewPrice", "EQ", updatedRetailPriceFilter));
-			}
-
-			if(hasNewMaterialsFilter){ 
-				andFilters.push(new sap.ui.model.Filter("hasNewMaterials", "EQ", hasNewMaterialsFilter));
-			}
-
-			// enabled/disable the ApplyNewPrice button 
-			if(hasNewMaterialsFilter || updatedRetailPriceFilter){ 
-				this.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", true); 
-			}else{
-				this.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", false);
-			}
-
-			const productPackfilter = this.byId("idProductPackfilter").getSelectedKey();
-
-			if(productPackfilter){
-				andFilters.push(new sap.ui.model.Filter("ProductPackId", "EQ", productPackfilter));
-			}
-
-			if(expiringSoonFilter){
-				andFilters.push(new sap.ui.model.Filter("ExpiringSoon", "EQ", true));
-			}
-
-			if(newAgreementFilter){
-				andFilters.push(new sap.ui.model.Filter("isNewPriceAgreement", "EQ", true));
+			if (oCountry != ""){
+				andFilters.push(new Filter("CountryCode", "EQ", oCountry));
 			}
 
 			let sSearch = this.byId("idSearch").getProperty("value");
@@ -356,6 +341,20 @@ sap.ui.define([
 
 				orFilters.push(new Filter({
 					path: "TenderId",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
+					path: "Tender/ExternalID",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
+					path: "Tender/SAPID",
 					operator: FilterOperator.Contains,
 					value1: sSearch,
 					caseSensitive: false
@@ -375,25 +374,130 @@ sap.ui.define([
 					caseSensitive: false
 				}));
 
-				andFilters.push(new sap.ui.model.Filter(orFilters, false));
+				orFilters.push(new Filter({
+					path: "Tender/Classification",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
+					path: "Institute/InstituteName",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				orFilters.push(new Filter({
+					path: "Tender/User/UserName",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
+				andFilters.push(new Filter(orFilters, false));
+			}
+
+			if(updatedRetailPriceFilter){
+				andFilters.push(new Filter("hasNewPrice", "EQ", updatedRetailPriceFilter));
+			}
+
+			if(hasNewMaterialsFilter){ 
+				andFilters.push(new Filter("hasNewMaterials", "EQ", hasNewMaterialsFilter));
+			}
+
+			// enabled/disable the ApplyNewPrice button 
+			if(hasNewMaterialsFilter || updatedRetailPriceFilter){ 
+				this.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", true); 
+			}else{
+				this.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", false);
+			}
+
+			const productPackfilter = this.byId("idProductPackfilter").getSelectedKey();
+
+			if(productPackfilter){
+				andFilters.push(new Filter("ProductPackId", "EQ", productPackfilter));
+			}
+
+			if(expiringSoonFilter){
+				andFilters.push(new Filter("ExpiringSoon", "EQ", true));
+			}
+
+            if(expiredFilter){
+				andFilters.push(new Filter("Expired", "EQ", true));
+			}
+
+			if(newAgreementFilter){
+				andFilters.push(new Filter("isNewPriceAgreement", "EQ", true));
+			}
+
+			if(activeAgreementsFilter){
+				// active agreement = expiry date in future + synchronized
+				andFilters.push(new Filter("Expired", FilterOperator.EQ, false));
+				andFilters.push(new Filter("Synchronized", FilterOperator.EQ, true));
+			}
+
+			if(toBeSyncedFilter){
+				// to be synchronized = expiry date in future + not synchronized
+				andFilters.push(new Filter("Expired", FilterOperator.EQ, false));
+				andFilters.push(new Filter("Synchronized", FilterOperator.EQ, false));
+				andFilters.push(new Filter("AppliedCount", FilterOperator.GE, 1));
 			}
 
 
+
 			if(andFilters.length > 0){
-				var oFilters = new sap.ui.model.Filter(andFilters, true);
+				var oFilters = new Filter(andFilters, true);
 
 				//Binding to table with the filters and the sorters
-				this.getView().byId("list").getBinding("items").filter(oFilters, sap.ui.model.FilterType.Application);
+				this.getView().byId("list").getBinding("items").filter(oFilters, FilterType.Application);
 			}else{
 				this.getView().byId("list").getBinding("items").aApplicationFilters = [];
 				this.getView().byId("list").getBinding("items").filter();
 			}
+			
+			if (this.getView().byId("list").getBinding("items").isSuspended()) {
+				this.getView().byId("list").getBinding("items").resume();
+			}
 
 		},
+
+        /**
+		 * Get list of countries 
+		 */
+        getCountries: function(){
+			this.getView().setBusy(true);
+
+			return this.paState.getCountries()
+			.then(() => {
+				this.getView().setBusy(false);
+			})
+			.catch((error) => {
+				console.error(error);
+				this.getView().setBusy(false);
+				this.getRouter().getTargets().display("detailObjectNotFound");
+				this.getOwnerComponent().oListSelector.clearMasterListSelection();
+				this.getView().setBusy(true);
+				this.showNoAccessMessage("User ID doesn't have access");
+				throw(error);
+			});
+		},        
 
 		onProductPackIdsReceived: function(evt){
 			// add empty item
 			this.byId("idProductPackfilter").insertItem(new sap.ui.core.Item());
+		},
+
+        onUserCountriesReceived: function(evt){
+			// add empty item
+            let oCountryFilter = this.byId("idSlctCountry");
+            // if(oCountryFilter.getItems().length > 1){
+            //     oCountryFilter.insertItem(new sap.ui.core.Item());
+            // } else if(oCountryFilter.getItems().length === 1){
+                oCountryFilter.setSelectedKey(oCountryFilter.getItems()[0].getKey());
+            // }
+            // this.setFilter();
+			this.onChangeCountryFilter(evt);
 		},
 
 		/**
@@ -411,7 +515,7 @@ sap.ui.define([
 			const filterTxt = this.byId("idslctfilter").getSelectedItem().getText();
 
 			if(priceAgreements.length <= 0){
-				sap.m.MessageBox.warning(`There are no Price Agreements with ${filterTxt}.`);
+				MessageBox.warning(`There are no Price Agreements with ${filterTxt}.`);
 				return;
 			}
 
@@ -451,8 +555,8 @@ sap.ui.define([
 
 			};
 
-			sap.m.MessageBox.warning("Are you sure you want to apply the new price to all of the existing customer prices?", {
-				actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
+			MessageBox.warning("Are you sure you want to apply the new price to all of the existing customer prices?", {
+				actions: [MessageBox.Action.YES, MessageBox.Action.NO],
 				styleClass: "sapUiSizeCompact",
 				onClose: _fnOnClose
 			});

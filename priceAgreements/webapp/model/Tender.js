@@ -13,6 +13,14 @@ sap.ui.define([
             }
         },
 
+        getClassification: function(){
+            return this.classification;
+        },
+
+        getCountryCode: function(){
+            return this.countryCode;
+        },
+        
         getJSON: function () {
             return this.getJSONObject([
                 "tenderID",
