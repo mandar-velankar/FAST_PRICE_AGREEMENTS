@@ -134,8 +134,11 @@ sap.ui.define([
             var currentProductId;
             let deletedSettlementPriceConditions;
 
+            // we only save the applied candidate prices 
+            const appliedCandidatePrices = candidatePrices.filter(cp => cp.applied && !cp.synchronized);
+
             // create customerPrices object based on candidatePrices
-            candidatePrices.forEach((candidate) => {
+            appliedCandidatePrices.forEach((candidate) => {
                 
                 candidate.price = priceAgreement.price;
                 candidate.expiryDate = priceAgreement.expiryDate;
@@ -153,12 +156,12 @@ sap.ui.define([
                 if(candidate.countryCode === "IT"){
                     customerPrice.priceCondition = "YLTP";
                     customerPrice.applied = candidate.applied;
-                    customerPrice.synchronized = false;
+                    customerPrice.synchronized = candidate.synchronized || false;
                     CustomerPrices.push(customerPrice);
 
                     // 1) loopen over priceAgreement.FOC
                     priceAgreement.FOC.forEach((focProduct) => {
-                        const existingCustomerPrice = priceAgreement.customerPrices.find(cp => cp.priceCondition === "YA03" && cp.fOCproductPackID === focProduct.ProductPackId);
+                        // const existingCustomerPrice = priceAgreement.customerPrices.find(cp => cp.priceCondition === "YA03" && cp.fOCproductPackID === focProduct.ProductPackId);
                         currentProductId = focProduct.ProductPackId;
                     
                         // 2) indien  FOC.productcode === candidate.productcode( dus main product), 1 extra entry saven voor de main product FOC
@@ -172,7 +175,7 @@ sap.ui.define([
                                 "Price": candidate.price,
                                 "PriceAgreementId": candidate.priceAgreementId,
                                 "ProductPackId": candidate.productPackId,
-                                "Synchronized": false,
+                                "Synchronized": candidate.synchronized || false,
                                 "FOCproductPackID": candidate.productPackId ,
                                 "FOCmaterialNumber": candidate.materialNumber,
                                 "PriceCondition": "YA03",
@@ -180,7 +183,7 @@ sap.ui.define([
                             }
 
                             // if there is already a customer price saved, get its ID. This is used for updating
-                            if(existingCustomerPrice?.iD) custPriceFOC.ID = existingCustomerPrice.iD;
+                            // if(existingCustomerPrice?.iD) custPriceFOC.ID = existingCustomerPrice.iD;
                         
                             CustomerPrices.push(new CustomerPrice(custPriceFOC));
                     
@@ -202,7 +205,7 @@ sap.ui.define([
                                             "Price": candidate.price,
                                             "PriceAgreementId": candidate.priceAgreementId,
                                             "ProductPackId": candidate.productPackId,
-                                            "Synchronized": false,
+                                            "Synchronized": candidate.synchronized || false,
                                             "FOCproductPackID": Material.ProductPackID,
                                             "FOCmaterialNumber": Material.SKUCode,
                                             "PriceCondition": "YA03",
@@ -210,7 +213,7 @@ sap.ui.define([
                                         }
 
                                         // if there is already a customer price saved, get its ID. This is used for updating
-                                        if(existingCustomerPrice?.iD) custPriceFOC.ID = existingCustomerPrice.iD;
+                                        // if(existingCustomerPrice?.iD) custPriceFOC.ID = existingCustomerPrice.iD;
 
                                         CustomerPrices.push(new CustomerPrice(custPriceFOC));
 
@@ -258,7 +261,7 @@ sap.ui.define([
                             "Price": candidate.price,
                             "PriceAgreementId": candidate.priceAgreementId,
                             "ProductPackId": candidate.productPackId,
-                            "Synchronized": false,
+                            "Synchronized": candidate.synchronized || false,
                             "FOCproductPackID": foc.productPackId,
                             "FOCmaterialNumber": null,
                             "PriceCondition": "YA01",
@@ -303,7 +306,7 @@ sap.ui.define([
                             "Price": candidate.price,
                             "PriceAgreementId": candidate.priceAgreementId,
                             "ProductPackId": candidate.productPackId,
-                            "Synchronized": false,
+                            "Synchronized": candidate.synchronized || false,
                             "FOCproductPackID": null,
                             "FOCmaterialNumber": null,
                             "PriceCondition": "YAW1",
