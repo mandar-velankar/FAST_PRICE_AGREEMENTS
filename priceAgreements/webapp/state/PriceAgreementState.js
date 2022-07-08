@@ -17,7 +17,8 @@ sap.ui.define([
                     {key:"expiringSoonKey",country:"ALL",value:"Expiring Soon"},
                     {key:"expiredKey",country:"ALL",value:"Expired"},
                     {key:"activeAgreements",country:"ES",value:"Active Agreements"},
-                    {key:"toBeSynced",country:"ES",value:"To be Synchronized"}],
+                    {key:"toBeSynced",country:"ES",value:"To be Synchronized"},
+                    {key:"cancelledKey",country:"ES",value:"Cancelled"}],
         constructor: function (service) {
             //data needs to be defined before calling parent. 
             //Parent will use this for creating a JSONModel
@@ -241,7 +242,7 @@ sap.ui.define([
                     deletedSettlementPriceConditions = deletedSettlementPriceConditions.map(cp => new CustomerPrice(cp));
                     // Main condition
                     if(mainPriceCondition.priceConditionCode === "YLTF" || mainPriceCondition.priceConditionCode === "YLTP"){
-                        customerPrice.price = mainPriceCondition.netPriceWithTaxAfterDeductionRD
+                        customerPrice.price = candidate.price
                     }
                     customerPrice.priceCondition = mainPriceCondition.priceConditionCode;
                     customerPrice.applied = candidate.applied;

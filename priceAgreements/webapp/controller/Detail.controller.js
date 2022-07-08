@@ -9,12 +9,19 @@ sap.ui.define([
 	"sap/m/MessageBox",
 	"sap/ui/core/Fragment",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
-	"sap/ui/core/BusyIndicator"
-], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterType,FilterOperator, MessageBox, Fragment, PercentageType,BusyIndicator) {
+	"sap/ui/core/BusyIndicator",
+    "sap/m/Dialog",
+    "sap/ui/core/library"
+], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterType,FilterOperator, MessageBox, Fragment, PercentageType,BusyIndicator, Dialog, CoreLibrary) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
 	var URLHelper = mobileLibrary.URLHelper;
+    // shortcut for sap.m.ButtonType
+	var ButtonType = mobileLibrary.ButtonType;
+	// shortcut for sap.m.DialogType
+	var DialogType = mobileLibrary.DialogType;
+    var ValueState = CoreLibrary.ValueState;
 
 	return BaseController.extend("com.bayer.tender.priceagreements.controller.Detail", {
 
@@ -430,8 +437,49 @@ sap.ui.define([
         onCancelPriceAgreement: async function(evt){
 			this.setBusy(true);
 			let that = this;
+            let priceAgreement = this.paState.getPriceAgreementInstance();
 
-            sap.m.MessageBox.warning("Are you sure you want to terminate this price agreement?", {
+            if (!this.oCancelDialog) {
+				this.oCancelDialog = new Dialog({
+					title: "Terminate",
+					type: DialogType.Message,
+                    state: ValueState.Warning,
+					content: [
+						new sap.m.Label({
+							text: "Are you sure you want to terminate this price agreement?",
+							labelFor: "cancellationNote"
+						}),
+						new sap.m.TextArea("cancellationNote", {
+							width: "100%",
+							placeholder: "Add note (mandatory)"
+						})
+					],
+					beginButton: new sap.m.Button({
+						type: ButtonType.Emphasized,
+						text: "Terminate",
+						press: async function () {
+							var sText = sap.ui.getCore().byId("cancellationNote").getValue();
+                            priceAgreement.cancellationComment = sText;
+                            await that.paState.cancelPriceAgreement();
+                            that.paState.getPriceAgreement(that.sObjectId)
+                            .finally(() => {
+							    this.oCancelDialog.close();
+                                that.setBusy(false);
+                            });
+						}.bind(this)
+					}),
+					endButton: new sap.m.Button({
+						text: "Cancel",
+						press: function () {
+							this.oCancelDialog.close();
+						}.bind(this)
+					})
+				});
+			}
+
+			this.oCancelDialog.open();
+
+           /* sap.m.MessageBox.warning("Are you sure you want to terminate this price agreement?", {
                 actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
                 styleClass: "sapUiSizeCompact",
                 onClose: async function (sAction){
@@ -445,7 +493,7 @@ sap.ui.define([
                         that.setBusy(false);
                     }
                 }
-            });
+            });*/
         }
 
 	});
