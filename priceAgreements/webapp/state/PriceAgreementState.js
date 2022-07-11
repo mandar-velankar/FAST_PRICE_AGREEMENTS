@@ -135,8 +135,15 @@ sap.ui.define([
             var currentProductId;
             let deletedSettlementPriceConditions;
 
+            // we only save the applied candidate prices 
+            const candidatePricesToBeProcessed = candidatePrices.filter(cp => (cp.applied || cp.customerPriceId) && !cp.synchronized);
+
+            // get existing customer prices 
+            // these are customer prices already created in the DB
+            const existingCustomerPrices = priceAgreement.customerPrices;
+
             // create customerPrices object based on candidatePrices
-            candidatePrices.forEach((candidate) => {
+            candidatePricesToBeProcessed.forEach((candidate) => {
                 
                 candidate.price = priceAgreement.price;
                 candidate.expiryDate = priceAgreement.expiryDate;
@@ -154,12 +161,19 @@ sap.ui.define([
                 if(candidate.countryCode === "IT"){
                     customerPrice.priceCondition = "YLTP";
                     customerPrice.applied = candidate.applied;
-                    customerPrice.synchronized = false;
+                    customerPrice.synchronized = candidate.synchronized || false;
                     CustomerPrices.push(customerPrice);
 
-                    // 1) loopen over priceAgreement.FOC
+                    // Italy can have FOC for the same product and FOC for other products
+                    // These FOCs are currently saved as different structures.
+                    // Same product FOCs are saved in priceAgreement.FOC and FOCs for other products are saved in 
+                    // priceAgreement.MaterialsFOC.FreeGoodsOther. 
+                    // priceAgreement.MaterialsFOC.FreeGoodsOther contains Materials. Per Material a CustomerPrice
+                    // record should be created
+
+                    // 1) loopen over priceAgreement.FOC (FOC same product)
                     priceAgreement.FOC.forEach((focProduct) => {
-                        const existingCustomerPrice = priceAgreement.customerPrices.find(cp => cp.priceCondition === "YA03" && cp.fOCproductPackID === focProduct.ProductPackId);
+                        const existingCustomerPrice = existingCustomerPrices.find(cp => cp.priceCondition === "YA03" && cp.fOCproductPackID === focProduct.ProductPackId && cp.instituteId === candidate.instituteId);
                         currentProductId = focProduct.ProductPackId;
                     
                         // 2) indien  FOC.productcode === candidate.productcode( dus main product), 1 extra entry saven voor de main product FOC
@@ -173,7 +187,7 @@ sap.ui.define([
                                 "Price": candidate.price,
                                 "PriceAgreementId": candidate.priceAgreementId,
                                 "ProductPackId": candidate.productPackId,
-                                "Synchronized": false,
+                                "Synchronized": candidate.synchronized || false,
                                 "FOCproductPackID": candidate.productPackId ,
                                 "FOCmaterialNumber": candidate.materialNumber,
                                 "PriceCondition": "YA03",
@@ -181,13 +195,17 @@ sap.ui.define([
                             }
 
                             // if there is already a customer price saved, get its ID. This is used for updating
-                            if(existingCustomerPrice?.iD) custPriceFOC.ID = existingCustomerPrice.iD;
+                            if(candidate.instituteId === existingCustomerPrice?.instituteId && existingCustomerPrice?.iD){
+                                custPriceFOC.ID = existingCustomerPrice.iD;
+                            }
                         
                             CustomerPrices.push(new CustomerPrice(custPriceFOC));
                     
-                        } else {
+                        } else { // FOC for other products
                             // 3) Voor de andere FOC's, alle materialen ophalen via priceAgreement.MaterialsFOC. 
                             priceAgreement.MaterialsFOC.FreeGoodsOther.results.forEach((FOC) => {
+
+                                const existingCustomerPrice = existingCustomerPrices.find(cp => cp.priceCondition === "YA03" && cp.fOCproductPackID === FOC.ProductPackId && cp.instituteId === candidate.instituteId);
 
                                 // loopen over elk materiaal en 1 entry per materiaal naar customerprices wegschrijven
 
@@ -203,7 +221,7 @@ sap.ui.define([
                                             "Price": candidate.price,
                                             "PriceAgreementId": candidate.priceAgreementId,
                                             "ProductPackId": candidate.productPackId,
-                                            "Synchronized": false,
+                                            "Synchronized": candidate.synchronized || false,
                                             "FOCproductPackID": Material.ProductPackID,
                                             "FOCmaterialNumber": Material.SKUCode,
                                             "PriceCondition": "YA03",
@@ -211,7 +229,9 @@ sap.ui.define([
                                         }
 
                                         // if there is already a customer price saved, get its ID. This is used for updating
-                                        if(existingCustomerPrice?.iD) custPriceFOC.ID = existingCustomerPrice.iD;
+                                        if(candidate.instituteId === existingCustomerPrice?.instituteId && existingCustomerPrice?.iD){
+                                            custPriceFOC.ID = existingCustomerPrice.iD;
+                                        }
 
                                         CustomerPrices.push(new CustomerPrice(custPriceFOC));
 
@@ -242,7 +262,7 @@ sap.ui.define([
                     deletedSettlementPriceConditions = deletedSettlementPriceConditions.map(cp => new CustomerPrice(cp));
                     // Main condition
                     if(mainPriceCondition.priceConditionCode === "YLTF" || mainPriceCondition.priceConditionCode === "YLTP"){
-                        customerPrice.price = candidate.price
+                        customerPrice.price = mainPriceCondition.netPriceWithoutTaxBeforeDeductionRD; 
                     }
                     customerPrice.priceCondition = mainPriceCondition.priceConditionCode;
                     customerPrice.applied = candidate.applied;
@@ -259,7 +279,7 @@ sap.ui.define([
                             "Price": candidate.price,
                             "PriceAgreementId": candidate.priceAgreementId,
                             "ProductPackId": candidate.productPackId,
-                            "Synchronized": false,
+                            "Synchronized": candidate.synchronized || false,
                             "FOCproductPackID": foc.productPackId,
                             "FOCmaterialNumber": null,
                             "PriceCondition": "YA01",
@@ -304,7 +324,7 @@ sap.ui.define([
                             "Price": candidate.price,
                             "PriceAgreementId": candidate.priceAgreementId,
                             "ProductPackId": candidate.productPackId,
-                            "Synchronized": false,
+                            "Synchronized": candidate.synchronized || false,
                             "FOCproductPackID": null,
                             "FOCmaterialNumber": null,
                             "PriceCondition": "YAW1",
