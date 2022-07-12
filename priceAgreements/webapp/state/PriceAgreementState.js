@@ -262,7 +262,7 @@ sap.ui.define([
                     deletedSettlementPriceConditions = deletedSettlementPriceConditions.map(cp => new CustomerPrice(cp));
                     // Main condition
                     if(mainPriceCondition.priceConditionCode === "YLTF" || mainPriceCondition.priceConditionCode === "YLTP"){
-                        customerPrice.price = mainPriceCondition.netPriceWithoutTaxBeforeDeductionRD; 
+                        customerPrice.price = candidate.price;
                     }
                     customerPrice.priceCondition = mainPriceCondition.priceConditionCode;
                     customerPrice.applied = candidate.applied;
