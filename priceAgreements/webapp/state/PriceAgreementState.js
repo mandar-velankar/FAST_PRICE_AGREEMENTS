@@ -135,11 +135,19 @@ sap.ui.define([
             let deletedSettlementPriceConditions;
 
             // we only save the applied candidate prices 
-            const candidatePricesToBeProcessed = candidatePrices.filter(cp => (cp.applied || cp.customerPriceId) && !cp.synchronized);
-
+            const candidatePricesToBeProcessed = candidatePrices.filter(cp => cp.applied  && !cp.synchronized);
+            
             // get existing customer prices 
             // these are customer prices already created in the DB
             const existingCustomerPrices = priceAgreement.customerPrices;
+
+            // get the unapplied CustomerPrices (these are CustomerPrices wich are already created in the DB but not yet synched with SAP backend)
+            const unappliedCandidatePrices = candidatePrices.filter(cp => !cp.applied && cp.customerPriceId);
+            const candidatePricesToBeDeleted = [];
+            unappliedCandidatePrices.forEach(ucp => {
+                const filteredValues = existingCustomerPrices.filter(cp => cp.instituteId === ucp.instituteId && cp.productPackId === ucp.productPackId && Number(cp.materialNumber) === Number(ucp.materialNumber));
+                candidatePricesToBeDeleted.push(...filteredValues);
+            });
 
             // create customerPrices object based on candidatePrices
             candidatePricesToBeProcessed.forEach((candidate) => {
@@ -341,8 +349,9 @@ sap.ui.define([
 
             //those not existing anymore upon comparison -- delete
             const promiseDeleteSettlementConditions = deletedSettlementPriceConditions?.map(cp => this.getService().deleteCustomerPrice(cp));
+            const promiseCandidatePricesToBeDeleted = candidatePricesToBeDeleted?.map(cp => this.getService().deleteCustomerPrice(cp));
             const promises = CustomerPrices.map(cp => this.getService().saveCustomerPrice(cp));
-            return Promise.all([promises,promiseDeleteSettlementConditions]);
+            return Promise.all([promises,promiseDeleteSettlementConditions,promiseCandidatePricesToBeDeleted]);
 
         },
 
