@@ -52,7 +52,9 @@ sap.ui.define([
 
 
         setCandidatePrices:function(candidatePrices){
-            this.candidatePrices = (candidatePrices && candidatePrices.map(candidatePrice => new CandidatePrice(candidatePrice)) ) || [];
+            let priceCondition = this.mainPriceCondition.priceConditionClassification && this.mainPriceCondition.priceConditionClassification.conditionType;
+            let netPrice = this.mainPriceCondition.netPriceWithoutTaxBeforeDeductionRD && this.mainPriceCondition.netPriceWithoutTaxBeforeDeductionRD;
+            this.candidatePrices = (candidatePrices && candidatePrices.map(candidatePrice => new CandidatePrice(candidatePrice,priceCondition,netPrice )) ) || [];
         },
         calculateSettlementCalendarProposal:function(){
             const settlementId = this.rappelPriceCondition?.settlement?.iD;
