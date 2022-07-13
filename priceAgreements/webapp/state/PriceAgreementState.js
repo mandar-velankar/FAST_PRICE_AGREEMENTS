@@ -153,7 +153,6 @@ sap.ui.define([
             // create customerPrices object based on candidatePrices
             candidatePricesToBeProcessed.forEach((candidate) => {
                 
-                candidate.price = priceAgreement.price;
                 candidate.expiryDate = priceAgreement.expiryDate;
                 candidate.effectiveDate = priceAgreement.effectiveDate;
 
