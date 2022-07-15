@@ -52,8 +52,8 @@ sap.ui.define([
 
 
         setCandidatePrices:function(candidatePrices){
-            let priceCondition = this.mainPriceCondition.priceConditionClassification && this.mainPriceCondition.priceConditionClassification.conditionType;
-            let netPrice = this.mainPriceCondition.netPriceWithoutTaxBeforeDeductionRD && this.mainPriceCondition.netPriceWithoutTaxBeforeDeductionRD;
+            let priceCondition = this.mainPriceCondition?.priceConditionClassification?.conditionType;
+            let netPrice = this.mainPriceCondition?.netPriceWithoutTaxBeforeDeductionRD;
             this.candidatePrices = (candidatePrices && candidatePrices.map(candidatePrice => new CandidatePrice(candidatePrice,priceCondition,netPrice )) ) || [];
         },
         calculateSettlementCalendarProposal:function(){
