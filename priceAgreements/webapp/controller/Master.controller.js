@@ -44,6 +44,11 @@ sap.ui.define([
 
 			this.setModel(oViewModel, "masterView");
 
+            // EHQUT-Price agreement app - Product multiple selection limited 
+            let oModel = this.getModel('masterView');
+            oModel.setSizeLimit(2000);
+            // EHQUT-Price agreement app - Product multiple selection limited 
+
 			// Make sure, busy indication is showing immediately so there is no
 			// break after the busy indication for loading the view's meta data is
 			// ended (see promise 'oWhenMetadataIsLoaded' in AppController)
