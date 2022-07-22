@@ -42,7 +42,7 @@
 						text="Terminate" 
 						type="Emphasized" 
 						press=".onCancelPriceAgreement" 
-						enabled="{= ${pa>/priceAgreement/status} !== 'Cancelled' &amp;&amp; ${pa>/priceAgreement/synchronized} === false}"
+						enabled="{= ${pa>/priceAgreement/status} !== 'Cancelled'}"
                         visible="{= ${pa>/priceAgreement/countryCode} === 'ES' }"
 					/>
 					<m:Button 
