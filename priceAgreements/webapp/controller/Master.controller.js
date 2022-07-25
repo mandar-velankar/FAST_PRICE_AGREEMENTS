@@ -336,6 +336,10 @@ sap.ui.define([
             const cancelledFilter = slctfilterSelectedItemKey === 'cancelledkey';
             const activeAgreementsFilter = slctfilterSelectedItemKey === 'activeagreements';
             const toBeSyncedFilter = slctfilterSelectedItemKey === 'tobesynced';
+            const updatedPVLFilter = slctfilterSelectedItemKey === 'updatedpvlkey';
+            const updatedConfidentialPriceFilter = slctfilterSelectedItemKey === 'updatedconfidentialpricekey';
+            const netPriceAbovePVLFilter = slctfilterSelectedItemKey === 'netpriceabovepvlkey';
+            const netPriceBelowFloorPriceFilter = slctfilterSelectedItemKey === 'netpricebelowfloorpricekey';
             const oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "";
 			
 			if (oCountry != ""){
@@ -455,7 +459,21 @@ sap.ui.define([
 				andFilters.push(new Filter("AppliedCount", FilterOperator.GE, 1));
 			}
 
+            if(updatedPVLFilter){
+				andFilters.push(new Filter("hasNewYLLP", "EQ", 1));
+			}
 
+            if(updatedConfidentialPriceFilter){
+				andFilters.push(new Filter("hasNewYLAP", "EQ", 1));
+			}
+            if(netPriceAbovePVLFilter){
+				andFilters.push(new Filter("hasNewYLLP", "EQ", 3));
+                orFilters.push(new Filter("hasNewYLAP", "EQ", 3))
+			}
+            if(netPriceBelowFloorPriceFilter){
+				andFilters.push(new Filter("hasNewYLLP", "EQ", 4));
+                orFilters.push(new Filter("hasNewYLAP", "EQ", 4))
+			}
 
 			if(andFilters.length > 0){
 				var oFilters = new Filter(andFilters, true);
