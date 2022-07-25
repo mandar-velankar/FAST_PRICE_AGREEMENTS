@@ -39,7 +39,9 @@
 						<core:Item key="{pa>key}" text="{pa>value}"/>
 					</Select>
 					<Label text="{i18n>Product}" visible="{= ${appView>/layout} === 'OneColumn' }"/>
+
               <!-- EHQUT-Price agreement app - Product multiple selection limited -->      
+
 					<Select  
 						id="idProductPackfilter"
 						change=".setFilter" 
@@ -56,7 +58,9 @@
 						}">
 						<core:Item key="{ProductPackId}" text="{ProductName}" />
 					</Select>
+
                  <!-- EHQUT-Price agreement app - Product multiple selection limited --> 
+
 					<ToolbarSpacer/>
 						<Button
 							id="idApplyNewPrice"
