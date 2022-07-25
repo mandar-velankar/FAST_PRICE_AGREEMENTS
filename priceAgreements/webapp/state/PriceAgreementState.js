@@ -17,6 +17,7 @@ sap.ui.define([
                     {key:"expiringSoonKey",country:"ALL",value:"Expiring Soon"},
                     {key:"expiredKey",country:"ALL",value:"Expired"},
                     {key:"activeAgreements",country:"ES",value:"Active Agreements"},
+                    {key:"cancelledKey", country:"ES",value:"Cancelled"},
                     {key:"toBeSynced",country:"ES",value:"To be Synchronized"}],
         constructor: function (service) {
             //data needs to be defined before calling parent. 
