@@ -371,11 +371,24 @@ sap.ui.define([
         },
 
         onIgnorePVLPriceChange: function(evt){
-            
+            this.setBusy(true);
+
+            let priceAgreement = this.paState.getPriceAgreementInstance();
+            priceAgreement.ignorePVLPriceChange = true;
+            this.savePA();
+            /*await this.paState.savePriceAgreement(priceAgreement);
+
+            that.paState.getPriceAgreement(that.sObjectId)
+            .finally(() => {
+                this.oCancelDialog.close();
+                that.setBusy(false);
+            });*/
         },
 
         onIgnoreConfPriceChange: function(evt){
-            
+            let priceAgreement = this.paState.getPriceAgreementInstance();
+            priceAgreement.ignoreConfPriceChange = true;
+            this.savePA();
         },
 
 		synchronizePriceAgreement: async function(priceAgreementID){

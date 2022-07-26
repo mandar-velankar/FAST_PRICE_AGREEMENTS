@@ -51,7 +51,7 @@
 						type="Emphasized" 
 						press=".onIgnorePVLPriceChange" 
 						enabled="true"
-                        visible="{= ${pa>/priceAgreement/countryCode} === 'ES' &amp;&amp; ${pa>/priceAgreement/hasNewYLLP} === 1}"
+                        visible="{= ${pa>/priceAgreement/countryCode} === 'ES' &amp;&amp; ${pa>/priceAgreement/hasNewYLLP} === 1 &amp;&amp; !${pa>/editMode}}"
 					/>
 
                     <m:Button 
@@ -60,7 +60,7 @@
 						type="Emphasized" 
 						press=".onIgnoreConfPriceChange" 
 						enabled="true"
-                        visible="{= ${pa>/priceAgreement/countryCode} === 'ES' &amp;&amp; ${pa>/priceAgreement/hasNewYLAP} === 1}"
+                        visible="{= ${pa>/priceAgreement/countryCode} === 'ES' &amp;&amp; ${pa>/priceAgreement/hasNewYLAP} === 1 &amp;&amp; !${pa>/editMode}}"
 					/>
 
                     <m:Button 
