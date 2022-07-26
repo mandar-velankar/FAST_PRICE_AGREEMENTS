@@ -301,7 +301,7 @@
                                         
                                         <m:Label text="{i18n>applyAll}" />
                                         <m:Switch state="{pa>/allApplied}" customTextOn="Yes" customTextOff="No" change="onApplyAll" 
-                                                  enabled="{ parts: [ 'pa>/priceAgreement/customerPrices',
+                                                  enabled="{ parts: [ 'pa>/priceAgreement/candidatePrices',
                                                                       'pa>/editMode' ], 
 								                             formatter: '.isAllApplied' }">
                                             <m:layoutData>
