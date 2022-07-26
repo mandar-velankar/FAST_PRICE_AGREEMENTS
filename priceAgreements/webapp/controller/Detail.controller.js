@@ -370,25 +370,30 @@ sap.ui.define([
             window.open(`/app/index.html#/tender&/t/detail/${priceAgreement.countryCode}/${priceAgreement.tenderId}/${priceAgreement.offerId}/__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded`);
         },
 
-        onIgnorePVLPriceChange: function(evt){
+        onIgnorePVLPriceChange: async function(evt){
             this.setBusy(true);
 
             let priceAgreement = this.paState.getPriceAgreementInstance();
             priceAgreement.ignorePVLPriceChange = true;
-            this.savePA();
-            /*await this.paState.savePriceAgreement(priceAgreement);
+            await this.paState.savePriceAgreement(priceAgreement);
 
-            that.paState.getPriceAgreement(that.sObjectId)
+            this.paState.getPriceAgreement(this.sObjectId)
             .finally(() => {
-                this.oCancelDialog.close();
-                that.setBusy(false);
-            });*/
+                this.setBusy(false);
+            });
         },
 
-        onIgnoreConfPriceChange: function(evt){
+        onIgnoreConfPriceChange: async function(evt){
+            this.setBusy(true);
+
             let priceAgreement = this.paState.getPriceAgreementInstance();
             priceAgreement.ignoreConfPriceChange = true;
-            this.savePA();
+            await this.paState.savePriceAgreement(priceAgreement);
+
+            this.paState.getPriceAgreement(this.sObjectId)
+            .finally(() => {
+                this.setBusy(false);
+            });
         },
 
 		synchronizePriceAgreement: async function(priceAgreementID){
