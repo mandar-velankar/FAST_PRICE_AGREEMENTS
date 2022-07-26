@@ -37,6 +37,33 @@
 				<!-- ACTIONS -->
 				<actions>
                     <m:Button 
+						id="toOfferButtonId"
+						text="To Offer" 
+						type="Emphasized" 
+						press=".onNavigateToOffer" 
+						enabled="true"
+                        visible="true"
+					/>
+
+                    <m:Button 
+						id="ignorePVLPriceChangeButtonId"
+						text="Ignore PVL Price Change" 
+						type="Emphasized" 
+						press=".onIgnorePVLPriceChange" 
+						enabled="true"
+                        visible="{= ${pa>/priceAgreement/countryCode} === 'ES' &amp;&amp; ${pa>/priceAgreement/hasNewYLLP} === 1}"
+					/>
+
+                    <m:Button 
+						id="ignoreConfPriceChangeButtonId"
+						text="Ignore Confidential Price Change" 
+						type="Emphasized" 
+						press=".onIgnoreConfPriceChange" 
+						enabled="true"
+                        visible="{= ${pa>/priceAgreement/countryCode} === 'ES' &amp;&amp; ${pa>/priceAgreement/hasNewYLAP} === 1}"
+					/>
+
+                    <m:Button 
 						id="terminateButtonId" 
 						icon="sap-icon://cancel" 
 						text="Terminate" 
@@ -77,6 +104,43 @@
 				visible="{= !${pa>/priceAgreement/synchronized}}">
 			  </m:MessageStrip>
 				
+			</m:FlexBox>
+            <m:FlexBox wrap="Wrap" fitContainer="true" alignItems="Stretch">
+			  <m:MessageStrip
+				text="Net Price is above PVL."
+				type="Warning"
+				showIcon="true"
+				showCloseButton="false"
+				class="sapUiSmallMarginBottom" 
+				visible="{= ${pa>/priceAgreement/countryCode} === 'ES' &amp;&amp; ${pa>/priceAgreement/hasNewYLLP} === 3}">
+			  </m:MessageStrip>
+
+			  <m:MessageStrip
+				text="Net Price is above Confidential Price."
+				type="Warning"
+				showIcon="true"
+				showCloseButton="false"
+				class="sapUiSmallMarginBottom" 
+				visible="{= ${pa>/priceAgreement/countryCode} === 'ES' &amp;&amp; ${pa>/priceAgreement/hasNewYLAP} === 3}">
+			  </m:MessageStrip>
+
+              <m:MessageStrip
+				text="Net Price is below Floor Price."
+				type="Warning"
+				showIcon="true"
+				showCloseButton="false"
+				class="sapUiSmallMarginBottom" 
+				visible="{= ${pa>/priceAgreement/countryCode} === 'ES' &amp;&amp; ${pa>/priceAgreement/hasNewYLLP} === 4}">
+			  </m:MessageStrip>
+
+              <m:MessageStrip
+				text="Net Price is below Confidential Price."
+				type="Warning"
+				showIcon="true"
+				showCloseButton="false"
+				class="sapUiSmallMarginBottom" 
+				visible="{= ${pa>/priceAgreement/countryCode} === 'ES' &amp;&amp; ${pa>/priceAgreement/hasNewYLAP} === 4}">
+			  </m:MessageStrip>
 			</m:FlexBox>
 		</headerContent>
 

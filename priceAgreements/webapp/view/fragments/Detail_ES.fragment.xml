@@ -302,7 +302,9 @@
                                         <m:Label text="{i18n>applyAll}" />
                                         <m:Switch state="{pa>/allApplied}" customTextOn="Yes" customTextOff="No" change="onApplyAll" 
                                                   enabled="{ parts: [ 'pa>/priceAgreement/customerPrices',
-                                                                      'pa>/editMode' ], 
+                                                                      'pa>/editMode',
+                                                                      'pa>/hasNewYLLP',
+                                                                      'pa>/hasNewYLAP' ], 
 								                             formatter: '.isAllApplied' }">
                                             <m:layoutData>
                                                 <m:FlexItemData growFactor="1" />
@@ -340,7 +342,7 @@
                                         <m:Text text="{pa>instituteName}"/>
                                         <m:Text text="{pa>customerID}"/>
                                         <m:Text text="{pa>materialNumber}"/>
-                                        <m:Switch state="{pa>applied}" customTextOn="Yes" customTextOff="No" enabled="{= ${pa>/editMode} &amp;&amp; !${pa>synchronized} }">
+                                        <m:Switch state="{pa>applied}" customTextOn="Yes" customTextOff="No" enabled="{= ${pa>/editMode} &amp;&amp; !${pa>synchronized} &amp;&amp; ${pa>/priceAgreement/hasNewYLLP} === 0 &amp;&amp; ${pa>/priceAgreement/hasNewYLAP} === 0}">
                                             <m:layoutData>
                                                 <m:FlexItemData growFactor="1" />
                                             </m:layoutData>
