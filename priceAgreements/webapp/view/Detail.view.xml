@@ -60,7 +60,7 @@
 						type="Emphasized" 
 						press=".onIgnoreConfPriceChange" 
 						enabled="true"
-                        visible="{= ${pa>/priceAgreement/countryCode} === 'ES' &amp;&amp; ${pa>/priceAgreement/hasNewYLAP} === 3 &amp;&amp; !${pa>/editMode}}"
+                        visible="{= ${pa>/priceAgreement/countryCode} === 'ES' &amp;&amp; ${pa>/priceAgreement/hasNewYLAP} === 1 &amp;&amp; !${pa>/editMode}}"
 					/>
 
                     <m:Button 
