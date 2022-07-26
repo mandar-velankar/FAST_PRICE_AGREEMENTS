@@ -428,11 +428,11 @@ sap.ui.define([
 			this.getView().getModel("detailView").setProperty("/selectedProductUoM", uom);
 		},
 
-        isAllApplied: function(customerPrices, editMode){
-            let candidatePrices = customerPrices.length > 0 ? customerPrices : this.paState.getPriceAgreementInstance().getCandidatePrices();
-            let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
+        isAllApplied: function(candidatePrices, editMode){
+            //let candidatePrices = customerPrices.length > 0 ? customerPrices : this.paState.getPriceAgreementInstance().getCandidatePrices();
+            //let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
             let allSynchronized = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.synchronized === true);
-            this.paState.setAllApplied(allApplied);
+            this.paState.setAllApplied(candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true));
             return editMode && !allSynchronized;
 		},
 
