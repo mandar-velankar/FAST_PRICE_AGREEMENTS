@@ -247,7 +247,9 @@ sap.ui.define([
                 "extendPriceAgreement",
                 "expiryExtensionPeriod",
                 "status",
-                "cancellationComment"
+                "cancellationComment",
+                "ignoreConfPriceChange",
+                "ignorePVLPriceChange"
             ]);
             data.SettlementDates = this.settlementDates.map(settlementDate => settlementDate.getJSON());
 
