@@ -468,11 +468,11 @@ sap.ui.define([
 			}
             if(netPriceAbovePVLFilter){
 				andFilters.push(new Filter("hasNewYLLP", "EQ", 3));
-                orFilters.push(new Filter("hasNewYLAP", "EQ", 3))
+                andFilters.push(new Filter("hasNewYLAP", "EQ", 3))
 			}
             if(netPriceBelowFloorPriceFilter){
 				andFilters.push(new Filter("hasNewYLLP", "EQ", 4));
-                orFilters.push(new Filter("hasNewYLAP", "EQ", 4))
+                andFilters.push(new Filter("hasNewYLAP", "EQ", 4))
 			}
 
 			if(andFilters.length > 0){
