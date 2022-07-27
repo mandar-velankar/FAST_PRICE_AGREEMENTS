@@ -463,7 +463,6 @@ sap.ui.define([
 		isSyncButtonEnabled: function(isPriceAgreementSynchronized, customerPrices, isCancelled){
 			if(!Array.isArray(customerPrices)) customerPrices = [];
             let priceAgreement = this.paState.getPriceAgreementInstance();
-            let customerPrices = priceAgreement.CustomerPrices;
             let allSynchronized = customerPrices.length > 0 && customerPrices.every(customerPrice => customerPrice.synchronized === true);
             if( allSynchronized || (isCancelled === 'Cancelled')) return false;
 
