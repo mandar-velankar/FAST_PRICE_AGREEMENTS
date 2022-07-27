@@ -7,6 +7,9 @@ sap.ui.define([
 
 	var PriceAgreementService = CoreService.extend("com.bayer.tender.priceagreements.state.PriceAgreementService", {
 		constructor: function (model) {
+            //EHQUT-Price agreement app - Product multiple selection limited
+            model.setSizeLimit(2000);
+            //EHQUT-Price agreement app - Product multiple selection limited
 			CoreService.call(this, model);
 		},
 		getPriceAgreement: function (id) {
