@@ -211,27 +211,20 @@ sap.ui.define([
 			const bSynchronised = this.paState.getProperty("priceAgreement").synchronized;
 			if(countryCode === "ES"){
                 let priceAgreement = this.paState.getPriceAgreementInstance();
-                let instType = priceAgreement.getInstitute().instituteType;
                 let customerPrices = priceAgreement.CustomerPrices;
-
                 let candidatePrices = customerPrices.length > 0 ? customerPrices : priceAgreement.getCandidatePrices();
                 let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
                 let allSynchronized = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.synchronized === true);
-
 				if(tender.getClassification() === "Commercial Agreement"){
                     let errorMsg = "This commercial agreement is already synchronised with SAP. \nCommercial agreements cannot be extended. A new commercial agreement must be created to proceed.";
-                    if(instType === "Region(s)" && allSynchronized && allApplied){
+                    if(allSynchronized && allApplied){
                         MessageBox.error(errorMsg);
                         return false;
-
                     } else if(bSynchronised){
                         MessageBox.error(errorMsg);
 					return false;
                     }
-
 				}
-
-
 			}
 			return true;
 		},
@@ -469,7 +462,13 @@ sap.ui.define([
 
 		isSyncButtonEnabled: function(isPriceAgreementSynchronized, customerPrices, isCancelled){
 			if(!Array.isArray(customerPrices)) customerPrices = [];
-            const countryCode = this.paState.getProperty("priceAgreement").getTender().getCountryCode();
+            let priceAgreement = this.paState.getPriceAgreementInstance();
+            let allSynchronized = customerPrices.length > 0 && customerPrices.every(customerPrice => customerPrice.synchronized === true);
+            if( allSynchronized || (isCancelled === 'Cancelled')) return false;
+
+            // after call with Jonathan, these checks are not needed anymore, we simplified it above ( just commenting to be safe)
+            
+            /*const countryCode = this.paState.getProperty("priceAgreement").getTender().getCountryCode();
             if(countryCode === "ES"){
                 let priceAgreement = this.paState.getPriceAgreementInstance();
                 let instType = priceAgreement.getInstitute().instituteType;
@@ -485,7 +484,7 @@ sap.ui.define([
 
             } else{
                 if(isPriceAgreementSynchronized || (isCancelled === 'Cancelled')) return false;
-            }
+            }*/
 			
 			if(customerPrices.length <= 0) return false; // when no customer prices are created yet, disable button
 			if(!customerPrices.some(item => item.applied)) return false; // when customer prices do exist but, non are applied
