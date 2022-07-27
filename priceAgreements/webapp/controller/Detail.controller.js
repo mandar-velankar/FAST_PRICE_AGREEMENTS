@@ -212,9 +212,13 @@ sap.ui.define([
 			if(countryCode === "ES"){
                 let priceAgreement = this.paState.getPriceAgreementInstance();
                 let instType = priceAgreement.getInstitute().instituteType;
-                let customerPrices = priceAgreement.CustomerPrices;
+                /*Note: allApplied and allSynchronized can be checked using candidatePrices view instead of customerPrices, 
+                    as when a candidate is unapplied all the entries related to the candidate are deleted from the customerPrices table, 
+                    and thus applied and synchronized values from candidatePrices view and CustomerPrices table would always be same.*/
+                //let customerPrices = priceAgreement.CustomerPrices;
+                let candidatePrices = priceAgreement.getCandidatePrices();
 
-                let candidatePrices = customerPrices.length > 0 ? customerPrices : priceAgreement.getCandidatePrices();
+                //let candidatePrices = customerPrices.length > 0 ? customerPrices : priceAgreement.getCandidatePrices();
                 let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
                 let allSynchronized = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.synchronized === true);
 
@@ -474,8 +478,12 @@ sap.ui.define([
                 let priceAgreement = this.paState.getPriceAgreementInstance();
                 let instType = priceAgreement.getInstitute().instituteType;
                 if(instType === "Region(s)"){
-                    let customerPrices = priceAgreement.CustomerPrices;
-                    let candidatePrices = customerPrices.length > 0 ? customerPrices : priceAgreement.getCandidatePrices();
+                    /*Note: allApplied and allSynchronized can be checked using candidatePrices view instead of customerPrices, 
+                    as when a candidate is unapplied all the entries related to the candidate are deleted from the customerPrices table, 
+                    and thus applied and synchronized values from candidatePrices view and CustomerPrices table would always be same.*/
+                    //let customerPrices = priceAgreement.CustomerPrices;
+                    let candidatePrices = priceAgreement.getCandidatePrices();
+                    //let candidatePrices = customerPrices.length > 0 ? customerPrices : priceAgreement.getCandidatePrices();
                     let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
                     let allSynchronized = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.synchronized === true);
                     if((allApplied && allSynchronized) || (isCancelled === 'Cancelled')) return false;
