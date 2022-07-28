@@ -65,6 +65,9 @@ sap.ui.define([
 
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
+
+            //needed to get correct filters when navigating from tender or refreshing
+            this.correctFilters = 0;
 		},
 
 		/* =========================================================== */
@@ -80,6 +83,12 @@ sap.ui.define([
 		onUpdateFinished : function (oEvent) {
 			// update the master list object counter after new data is loaded
 			this._updateListItemCount(oEvent.getParameter("total"));
+            if(this.paState.getPriceAgreementInstance().iD && this.correctFilters === 0 ) {
+                this.onChangeCountryFilter();
+                // set to 1 so we don't re-execture this code
+                this.correctFilters = 1;
+            };
+
 		},
 
 		/**
