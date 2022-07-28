@@ -257,8 +257,8 @@ sap.ui.define([
                 if(candidate.countryCode === "ES"){ 
                     const existingPriceConditions = priceAgreement.CustomerPrices;
                     //const existingRappelCondition = existingPriceConditions.find(rappel => rappel.PriceCondition === 'YAW1' && !rappel.EffectiveDate && !rappel.ExpiryDate);
-                    const aExistingFOCConditions = existingPriceConditions.filter(foc => foc.PriceCondition === 'YA01');
-                    const aExistingSettlementConditions = existingPriceConditions.filter(rappel => rappel.PriceCondition === 'YAW1' && rappel.EffectiveDate && rappel.ExpiryDate);
+                    const aExistingFOCConditions = existingPriceConditions.filter(foc => foc.PriceCondition === 'YA01' && foc.InstituteId === candidate.instituteId);
+                    const aExistingSettlementConditions = existingPriceConditions.filter(rappel => rappel.PriceCondition === 'YAW1' && rappel.EffectiveDate && rappel.ExpiryDate && rappel.InstituteId === candidate.instituteId);
                     const mainPriceCondition = priceAgreement.priceConditions.find(condition => condition.priceConditionClassification.isMain);
                     const focPriceConditions = priceAgreement.focPriceCondition;
                     //const rappelPriceCondition = priceAgreement.rappelPriceCondition;
