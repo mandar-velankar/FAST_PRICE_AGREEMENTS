@@ -211,8 +211,14 @@ sap.ui.define([
 			const bSynchronised = this.paState.getProperty("priceAgreement").synchronized;
 			if(countryCode === "ES"){
                 let priceAgreement = this.paState.getPriceAgreementInstance();
-                let customerPrices = priceAgreement.CustomerPrices;
-                let candidatePrices = customerPrices.length > 0 ? customerPrices : priceAgreement.getCandidatePrices();
+                let instType = priceAgreement.getInstitute().instituteType;
+                /*Note: allApplied and allSynchronized can be checked using candidatePrices view instead of customerPrices, 
+                    as when a candidate is unapplied all the entries related to the candidate are deleted from the customerPrices table, 
+                    and thus applied and synchronized values from candidatePrices view and CustomerPrices table would always be same.*/
+                //let customerPrices = priceAgreement.CustomerPrices;
+                let candidatePrices = priceAgreement.getCandidatePrices();
+
+                //let candidatePrices = customerPrices.length > 0 ? customerPrices : priceAgreement.getCandidatePrices();
                 let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
                 let allSynchronized = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.synchronized === true);
 				if(tender.getClassification() === "Commercial Agreement"){
@@ -463,6 +469,7 @@ sap.ui.define([
 		isSyncButtonEnabled: function(isPriceAgreementSynchronized, customerPrices, isCancelled){
 			if(!Array.isArray(customerPrices)) customerPrices = [];
             let priceAgreement = this.paState.getPriceAgreementInstance();
+			//let customerPrices = priceAgreement.CustomerPrices;
             let allSynchronized = customerPrices.length > 0 && customerPrices.every(customerPrice => customerPrice.synchronized === true);
             if( allSynchronized || (isCancelled === 'Cancelled')) return false;
 
@@ -484,7 +491,8 @@ sap.ui.define([
 
             } else{
                 if(isPriceAgreementSynchronized || (isCancelled === 'Cancelled')) return false;
-            }*/
+            }
+			*/
 			
 			if(customerPrices.length <= 0) return false; // when no customer prices are created yet, disable button
 			if(!customerPrices.some(item => item.applied)) return false; // when customer prices do exist but, non are applied
