@@ -226,9 +226,6 @@ sap.ui.define([
                     if(allSynchronized && allApplied){
                         MessageBox.error(errorMsg);
                         return false;
-                    } else if(bSynchronised){
-                        MessageBox.error(errorMsg);
-					return false;
                     }
 				}
 			}
