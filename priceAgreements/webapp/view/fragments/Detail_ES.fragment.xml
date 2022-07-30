@@ -138,8 +138,9 @@
                         </m:Select>
                         <m:Input value="{path:'pa>/priceAgreement/royalDecreePercentage', type:'.types.percent'}" type="Number" description="%" enabled="false" width="7em"
                             visible="{= 
-                                        ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento Comercial') > -1 || 
-                                        ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1
+                                        (${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Descuento Comercial') > -1 || 
+                                        ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1) &amp;amp; 
+                                        ${pa>/priceAgreement/mainPriceCondition/royalDecree} === 'Yes'
                             }"
                         />
 
@@ -173,7 +174,8 @@
                             liveChange=".calculateDiscountsAndNetPricesPrecioNeto"
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}"/>              
                         <m:Label text="{i18n>NetPriceAfterRC}" design="Bold" required="false"
-                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}"/>
+                            visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack' &amp;amp; 
+                                        ${pa>/priceAgreement/mainPriceCondition/royalDecree} === 'Yes'}"/>
                         <m:Input 
                             value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
                                 ? parseFloat(${pa>/priceAgreement/mainPriceCondition/netPriceWithoutTaxAfterDeductionRD}).toFixed(6) 
