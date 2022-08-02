@@ -217,7 +217,6 @@ sap.ui.define([
                     and thus applied and synchronized values from candidatePrices view and CustomerPrices table would always be same.*/
                 //let customerPrices = priceAgreement.CustomerPrices;
                 let candidatePrices = priceAgreement.getCandidatePrices();
-
                 //let candidatePrices = customerPrices.length > 0 ? customerPrices : priceAgreement.getCandidatePrices();
                 let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
                 let allSynchronized = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.synchronized === true);
