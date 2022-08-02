@@ -64,14 +64,14 @@ sap.ui.define([
                 case 'VALIDITY':
                     settlementDates.push(new SettlementDate({
                         priceAgreementId:this.priceAgreementId,
-                        fromDate:new Date(this.effectiveDate.getTime()),
+                        fromDate:new Date(this.rappelPriceCondition.refundDate.getTime()),
                         toDate: new Date(this.expiryDate.getTime()),
-                        minDate: new Date(this.effectiveDate.getTime()),
+                        minDate: new Date(this.rappelPriceCondition.refundDate.getTime()),
                         maxDate: new Date(this.expiryDate.getTime())
                     }));
                     break;
                 case 'FREQUENCY':
-                    let dateFrom = new Date(this.effectiveDate.getTime());
+                    let dateFrom = new Date(this.rappelPriceCondition.refundDate.getTime());
                     let idx = 0;
                     do {
                         let dateTo = new Date(dateFrom.getTime());
@@ -107,7 +107,7 @@ sap.ui.define([
         },
         getPreviousSettlementDate:function(idx,settlementDates){
             const prevSettlementDate = settlementDates[idx-1];
-            let prevDate = new Date(this.effectiveDate.getTime());
+            let prevDate = new Date(this.rappelPriceCondition.refundDate.getTime());
             if(prevSettlementDate?.toDate){
                 prevDate = new Date(prevSettlementDate.toDate.getTime());
                 prevDate.setDate(prevDate.getDate()+1);
@@ -124,8 +124,8 @@ sap.ui.define([
                 nextDate = new Date(nextSettlementDate.fromDate.getTime());
                 nextDate.setDate(nextDate.getDate()-1);
             }
-            if(nextDate.getTime()<this.effectiveDate.getTime()){
-                nextDate = new Date(this.effectiveDate.getTime());
+            if(nextDate.getTime()<this.rappelPriceCondition.refundDate.getTime()){
+                nextDate = new Date(this.rappelPriceCondition.refundDate.getTime());
             }
             return nextDate;
         },

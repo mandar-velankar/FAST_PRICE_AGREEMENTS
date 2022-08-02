@@ -184,7 +184,7 @@ sap.ui.define([
 			};
 
 			return this.odata("/CandidatePrices").get(mParameters);
-		},
+		}/*,
 
 		syncFocCustPrices: function (ids) {
 
@@ -196,7 +196,7 @@ sap.ui.define([
 
 			return this.odata("/syncFocCustPrices").post(data);
 
-		},
+		},*/
 
 	});
 	return PriceAgreementService;
