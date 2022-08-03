@@ -71,6 +71,7 @@
 						<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
 						<Button icon="sap-icon://filter" text="" press=".onOpenViewSettings"/>
 				</OverflowToolbar>
+                 <!-- EHQUT-123276-Price agreement app not loading --> 
 				<Table
 						id="list"
 						inset="false"
@@ -89,7 +90,10 @@
 						width="auto"
 						updateFinished=".onUpdateFinished"
 						alternateRowColors="true"
-						contextualWidth="Auto">
+						contextualWidth="Auto" growing="true"
+                        growingThreshold="15"
+                        growingScrollToLoad="false">
+                        <!-- EHQUT-123276-Price agreement app not loading --> 
 					<columns>
 						<Column>
 							<header>
