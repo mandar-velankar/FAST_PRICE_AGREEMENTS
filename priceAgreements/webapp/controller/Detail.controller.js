@@ -410,8 +410,7 @@ sap.ui.define([
 			} catch (error) {
 				this.paState.getPriceAgreement(this.sObjectId);
 				this.setBusy(false);
-				const errMsg = JSON.parse(error.responseText)?.error?.message?.value;
-				MessageBox.error(`Synchronization of Price Agreement failed. ${errMsg}`);
+				MessageBox.error("Try Again Later");
 			}
 		},
 
