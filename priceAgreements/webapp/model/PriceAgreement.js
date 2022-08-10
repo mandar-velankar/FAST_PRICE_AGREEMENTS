@@ -47,6 +47,7 @@ sap.ui.define([
                 data.SettlementDates && this.setSettlementDates(data.SettlementDates.results || data.SettlementDates);
                 data.settlementDates && this.setSettlementDates(data.settlementDates);//used for backup restore
                 this.MaterialsFOC = data.MaterialsFOC;
+                this.MasterPrices = data.MasterPrices;
             }
         },
 
