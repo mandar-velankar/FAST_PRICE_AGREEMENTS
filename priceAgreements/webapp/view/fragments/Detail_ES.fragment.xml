@@ -134,9 +134,9 @@
                             enabled="false" 
                         />
 
-                        <m:Label text="{i18n>ConfidentialPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; !(${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1) &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null}"/>
+                        <m:Label text="{i18n>ConfidentialPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; !(${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1) &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Private Account'}"/>
                         <m:Input 
-                            visible="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; !(${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1) &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null }" 
+                            visible="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; !(${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1) &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Private Account'}" 
                             value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
                                 ? ${path:'pa>/priceAgreement/mainPriceCondition/confidentialPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}} 
                                 : parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/confidentialPrice'}*${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(2)  
@@ -144,9 +144,9 @@
                             description="EUR" 
                             enabled="false" 
                         />
-                        <m:Label text="{i18n>ConfidentialPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; !(${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1) &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null}"/>
+                        <m:Label text="{i18n>ConfidentialPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; !(${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1) &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Private Account'}"/>
                         <m:Input 
-                            visible="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; !(${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1) &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null}" 
+                            visible="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; !(${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1) &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Private Account'}" 
                             value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
                                 ? ${path:'pa>/priceAgreement/mainPriceCondition/confidentialPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}} 
                                 : parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/confidentialPrice'}/${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(2)  
