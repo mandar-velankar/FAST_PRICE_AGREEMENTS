@@ -74,7 +74,9 @@ sap.ui.define([
                 "Liquidation",
                 "RefundDate",
                 "PriceConditionClassification_ID",
-                "PriceAgreement_ID"
+                "PriceAgreement_ID",
+                "IgnorePVLPriceChange",
+                "IgnoreConfPriceChange"
             ]);
         },
 

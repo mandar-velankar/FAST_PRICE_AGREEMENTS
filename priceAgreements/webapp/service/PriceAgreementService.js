@@ -7,11 +7,14 @@ sap.ui.define([
 
 	var PriceAgreementService = CoreService.extend("com.bayer.tender.priceagreements.state.PriceAgreementService", {
 		constructor: function (model) {
+            //EHQUT-Price agreement app - Product multiple selection limited
+            model.setSizeLimit(2000);
+            //EHQUT-Price agreement app - Product multiple selection limited
 			CoreService.call(this, model);
 		},
 		getPriceAgreement: function (id) {
 			const keyPath = this.model.createKey("/PriceAgreements", { ID: id });
-			return this.odata(keyPath).get({ urlParameters: { $expand: "ConsumerPrice,Materials,Institute,Tender,PriceConditions/PriceConditionClassification,PriceConditions/DiscountCondition,PriceConditions/FreeGoodsOther/ProductPack,PriceConditions/Settlement,Product/ProductPack,CustomerPrices,Deliveries,FOC,MaterialsFOC,MaterialsFOC/FreeGoodsOther,MaterialsFOC/FreeGoodsOther/Materials,SettlementDates" } });
+			return this.odata(keyPath).get({ urlParameters: { $expand: "ConsumerPrice,Materials,Institute,Tender,PriceConditions/PriceConditionClassification,PriceConditions/DiscountCondition,PriceConditions/FreeGoodsOther/ProductPack,PriceConditions/Settlement,Product/ProductPack,CustomerPrices,Deliveries,FOC,MaterialsFOC,MaterialsFOC/FreeGoodsOther,MaterialsFOC/FreeGoodsOther/Materials,SettlementDates,MasterPrices" } });
 		},
 		getPriceAgreementsByInstituteProduct: function (instituteId, productPackId,expiryDate) {
 			const filters = [];
@@ -181,7 +184,7 @@ sap.ui.define([
 			};
 
 			return this.odata("/CandidatePrices").get(mParameters);
-		},
+		}/*,
 
 		syncFocCustPrices: function (ids) {
 
@@ -193,7 +196,7 @@ sap.ui.define([
 
 			return this.odata("/syncFocCustPrices").post(data);
 
-		},
+		},*/
 
 	});
 	return PriceAgreementService;

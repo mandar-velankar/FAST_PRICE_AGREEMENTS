@@ -43,6 +43,9 @@ sap.ui.define([
 			};
 
 			this.setModel(oViewModel, "masterView");
+
+             
+
 			// Make sure, busy indication is showing immediately so there is no
 			// break after the busy indication for loading the view's meta data is
 			// ended (see promise 'oWhenMetadataIsLoaded' in AppController)
@@ -62,6 +65,9 @@ sap.ui.define([
 
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
+
+            //needed to get correct filters when navigating from tender or refreshing
+            this.correctFilters = 0;
 		},
 
 		/* =========================================================== */
@@ -77,6 +83,12 @@ sap.ui.define([
 		onUpdateFinished : function (oEvent) {
 			// update the master list object counter after new data is loaded
 			this._updateListItemCount(oEvent.getParameter("total"));
+            if(this.paState.getPriceAgreementInstance().iD && this.correctFilters === 0 ) {
+                this.onChangeCountryFilter();
+                // set to 1 so we don't re-execture this code
+                this.correctFilters = 1;
+            };
+
 		},
 
 		/**
@@ -330,6 +342,10 @@ sap.ui.define([
             const cancelledFilter = slctfilterSelectedItemKey === 'cancelledkey';
             const activeAgreementsFilter = slctfilterSelectedItemKey === 'activeagreements';
             const toBeSyncedFilter = slctfilterSelectedItemKey === 'tobesynced';
+            const updatedPVLFilter = slctfilterSelectedItemKey === 'updatedpvlkey';
+            const updatedConfidentialPriceFilter = slctfilterSelectedItemKey === 'updatedconfidentialpricekey';
+            const netPriceAbovePVLFilter = slctfilterSelectedItemKey === 'netpriceabovepvlkey';
+            const netPriceBelowFloorPriceFilter = slctfilterSelectedItemKey === 'netpricebelowfloorpricekey';
             const oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "";
 			
 			if (oCountry != ""){
@@ -449,7 +465,21 @@ sap.ui.define([
 				andFilters.push(new Filter("AppliedCount", FilterOperator.GE, 1));
 			}
 
+            if(updatedPVLFilter){
+				andFilters.push(new Filter("hasNewYLLP", "EQ", 1));
+			}
 
+            if(updatedConfidentialPriceFilter){
+				andFilters.push(new Filter("hasNewYLAP", "EQ", 1));
+			}
+            if(netPriceAbovePVLFilter){
+				andFilters.push(new Filter("hasNewYLLP", "EQ", 3));
+                andFilters.push(new Filter("hasNewYLAP", "EQ", 3))
+			}
+            if(netPriceBelowFloorPriceFilter){
+				andFilters.push(new Filter("hasNewYLLP", "EQ", 4));
+                andFilters.push(new Filter("hasNewYLAP", "EQ", 4))
+			}
 
 			if(andFilters.length > 0){
 				var oFilters = new Filter(andFilters, true);
@@ -541,7 +571,7 @@ sap.ui.define([
 					await _that.paState.syncPriceAgreements(priceAgreementIDs);
 
 					// synchronize with sap backend
-					await _that.paState.syncFocCustPrices(priceAgreementIDs);
+					//await _that.paState.syncFocCustPrices(priceAgreementIDs);
 
 					// clear the filter and refresh the binding
 					_that.byId("idslctfilter").setSelectedKey();

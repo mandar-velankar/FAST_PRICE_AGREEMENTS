@@ -210,9 +210,22 @@ sap.ui.define([
 			const tender = this.paState.getProperty("priceAgreement").getTender();
 			const bSynchronised = this.paState.getProperty("priceAgreement").synchronized;
 			if(countryCode === "ES"){
-				if(bSynchronised && tender.getClassification() === "Commercial Agreement"){
-					MessageBox.error("This commercial agreement is already synchronised with SAP. \nCommercial agreements cannot be extended. A new commercial agreement must be created to proceed.");
-					return false;
+                let priceAgreement = this.paState.getPriceAgreementInstance();
+                let instType = priceAgreement.getInstitute().instituteType;
+                /*Note: allApplied and allSynchronized can be checked using candidatePrices view instead of customerPrices, 
+                    as when a candidate is unapplied all the entries related to the candidate are deleted from the customerPrices table, 
+                    and thus applied and synchronized values from candidatePrices view and CustomerPrices table would always be same.*/
+                //let customerPrices = priceAgreement.CustomerPrices;
+                let candidatePrices = priceAgreement.getCandidatePrices();
+                //let candidatePrices = customerPrices.length > 0 ? customerPrices : priceAgreement.getCandidatePrices();
+                let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
+                let allSynchronized = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.synchronized === true);
+				if(tender.getClassification() === "Commercial Agreement"){
+                    let errorMsg = "This commercial agreement is already synchronised with SAP. \nCommercial agreements cannot be extended. A new commercial agreement must be created to proceed.";
+                    if(allSynchronized && allApplied){
+                        MessageBox.error(errorMsg);
+                        return false;
+                    }
 				}
 			}
 			return true;
@@ -347,6 +360,37 @@ sap.ui.define([
 			this.synchronizePriceAgreement(this.sObjectId);
 		},
 
+        onNavigateToOffer: function(evt){
+            let priceAgreement = this.paState.getPriceAgreementInstance();
+            window.open(`/app/index.html#/tender&/t/detail/${priceAgreement.countryCode}/${priceAgreement.tenderId}/${priceAgreement.offerId}/__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded`);
+        },
+
+        onIgnorePVLPriceChange: async function(evt){
+            this.setBusy(true);
+
+            let priceAgreement = this.paState.getPriceAgreementInstance();
+            priceAgreement.ignorePVLPriceChange = true;
+            await this.paState.savePriceAgreement(priceAgreement);
+
+            this.paState.getPriceAgreement(this.sObjectId)
+            .finally(() => {
+                this.setBusy(false);
+            });
+        },
+
+        onIgnoreConfPriceChange: async function(evt){
+            this.setBusy(true);
+
+            let priceAgreement = this.paState.getPriceAgreementInstance();
+            priceAgreement.ignoreConfPriceChange = true;
+            await this.paState.savePriceAgreement(priceAgreement);
+
+            this.paState.getPriceAgreement(this.sObjectId)
+            .finally(() => {
+                this.setBusy(false);
+            });
+        },
+
 		synchronizePriceAgreement: async function(priceAgreementID){
 			if(!priceAgreementID){
 				throw new Error("PriceAgreementID not specified");
@@ -366,8 +410,7 @@ sap.ui.define([
 			} catch (error) {
 				this.paState.getPriceAgreement(this.sObjectId);
 				this.setBusy(false);
-				const errMsg = JSON.parse(error.responseText)?.error?.message?.value;
-				MessageBox.error(`Synchronization of Price Agreement failed. ${errMsg}`);
+				MessageBox.error("Try Again Later");
 			}
 		},
 
@@ -410,17 +453,42 @@ sap.ui.define([
 			this.getView().getModel("detailView").setProperty("/selectedProductUoM", uom);
 		},
 
-        isAllApplied: function(customerPrices, editMode){
-            let candidatePrices = customerPrices.length > 0 ? customerPrices : this.paState.getPriceAgreementInstance().getCandidatePrices();
-            let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
+        isAllApplied: function(candidatePrices, editMode){
+            //let candidatePrices = customerPrices.length > 0 ? customerPrices : this.paState.getPriceAgreementInstance().getCandidatePrices();
+            //let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
             let allSynchronized = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.synchronized === true);
-            this.paState.setAllApplied(allApplied);
+            this.paState.setAllApplied(candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true));
             return editMode && !allSynchronized;
 		},
 
 		isSyncButtonEnabled: function(isPriceAgreementSynchronized, customerPrices, isCancelled){
 			if(!Array.isArray(customerPrices)) customerPrices = [];
-			if(isPriceAgreementSynchronized || (isCancelled === 'Cancelled')) return false;
+            let priceAgreement = this.paState.getPriceAgreementInstance();
+			//let customerPrices = priceAgreement.CustomerPrices;
+            let allSynchronized = customerPrices.length > 0 && customerPrices.every(customerPrice => customerPrice.synchronized === true);
+            if( allSynchronized || (isCancelled === 'Cancelled')) return false;
+
+            // after call with Jonathan, these checks are not needed anymore, we simplified it above ( just commenting to be safe)
+            
+            /*const countryCode = this.paState.getProperty("priceAgreement").getTender().getCountryCode();
+            if(countryCode === "ES"){
+                let priceAgreement = this.paState.getPriceAgreementInstance();
+                let instType = priceAgreement.getInstitute().instituteType;
+                if(instType === "Region(s)"){
+                    let customerPrices = priceAgreement.CustomerPrices;
+                    let candidatePrices = customerPrices.length > 0 ? customerPrices : priceAgreement.getCandidatePrices();
+                    let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
+                    let allSynchronized = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.synchronized === true);
+                    if((allApplied && allSynchronized) || (isCancelled === 'Cancelled')) return false;
+                } else {
+                    if(isPriceAgreementSynchronized || (isCancelled === 'Cancelled')) return false;
+                }
+
+            } else{
+                if(isPriceAgreementSynchronized || (isCancelled === 'Cancelled')) return false;
+            }
+			*/
+			
 			if(customerPrices.length <= 0) return false; // when no customer prices are created yet, disable button
 			if(!customerPrices.some(item => item.applied)) return false; // when customer prices do exist but, non are applied
 			return true;

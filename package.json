@@ -7,6 +7,7 @@
 		"setup": "cd priceAgreements && npm install",
 		"start:app": "cd priceAgreements && PORT=5002 npm start",
 		"start:local": "cd priceAgreements && npm run start:local",
+        
 		"build:xsa": "mbt build -p=xsa --mtar=FASTCAP-priceAgreements-Frontend.mtar",
 		"build:cf": "mbt build -p=cf --mtar=FASTCAP-priceAgreements-Frontend-CF.mtar",
 		"deploy:cf": "cf deploy mta_archives/FASTCAP-priceAgreements-Frontend-CF.mtar -e cf.mtaext"
@@ -16,6 +17,6 @@
 		"mbt": "~1.0.17"
 	},
 	"engines": {
-		"node": "^12"
+		"node": "^14"
 	}
 }

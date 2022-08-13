@@ -17,8 +17,8 @@ sap.ui.define([
                     {key:"expiringSoonKey",country:"ALL",value:"Expiring Soon"},
                     {key:"expiredKey",country:"ALL",value:"Expired"},
                     {key:"activeAgreements",country:"ES",value:"Active Agreements"},
-                    {key:"toBeSynced",country:"ES",value:"To be Synchronized"},
-                    {key:"cancelledKey",country:"ES",value:"Cancelled"}],
+                    {key:"cancelledKey", country:"ES",value:"Cancelled"},
+                    {key:"toBeSynced",country:"ES",value:"To be Synchronized"}],
         constructor: function (service) {
             //data needs to be defined before calling parent. 
             //Parent will use this for creating a JSONModel
@@ -257,8 +257,8 @@ sap.ui.define([
                 if(candidate.countryCode === "ES"){ 
                     const existingPriceConditions = priceAgreement.CustomerPrices;
                     //const existingRappelCondition = existingPriceConditions.find(rappel => rappel.PriceCondition === 'YAW1' && !rappel.EffectiveDate && !rappel.ExpiryDate);
-                    const aExistingFOCConditions = existingPriceConditions.filter(foc => foc.PriceCondition === 'YA01');
-                    const aExistingSettlementConditions = existingPriceConditions.filter(rappel => rappel.PriceCondition === 'YAW1' && rappel.EffectiveDate && rappel.ExpiryDate);
+                    const aExistingFOCConditions = existingPriceConditions.filter(foc => foc.PriceCondition === 'YA01' && foc.InstituteId === candidate.instituteId);
+                    const aExistingSettlementConditions = existingPriceConditions.filter(rappel => rappel.PriceCondition === 'YAW1' && rappel.EffectiveDate && rappel.ExpiryDate && rappel.InstituteId === candidate.instituteId);
                     const mainPriceCondition = priceAgreement.priceConditions.find(condition => condition.priceConditionClassification.isMain);
                     const focPriceConditions = priceAgreement.focPriceCondition;
                     //const rappelPriceCondition = priceAgreement.rappelPriceCondition;
@@ -434,9 +434,9 @@ sap.ui.define([
             return this.getService().syncPriceAgreements(ids);
         },
 
-        syncFocCustPrices: function(ids){
+        /*syncFocCustPrices: function(ids){
             return this.getService().syncFocCustPrices(ids);
-        },
+        },*/
 
         //detailPage so we can access it everywhere
 		getDetailPage: function () {
