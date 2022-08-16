@@ -408,6 +408,9 @@
                                     <m:Label text="Institute" wrapping="true"/>
                                 </m:Column>
                                 <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Institute Type" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
                                     <m:Label text="Customer No." wrapping="true"/>
                                 </m:Column>
                                 <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
@@ -430,6 +433,7 @@
                                 <m:ColumnListItem highlight="Indication04">
                                     <m:cells>
                                         <m:Text text="{pa>instituteName}"/>
+                                        <m:Text text="{pa>instituteType}"/>
                                         <m:Text text="{pa>customerID}"/>
                                         <m:Text text="{pa>materialNumber}"/>
                                         <m:Switch state="{pa>applied}" customTextOn="Yes" customTextOff="No" enabled="{= ${pa>/editMode} &amp;&amp; !${pa>synchronized} }">
