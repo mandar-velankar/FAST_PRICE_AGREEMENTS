@@ -29,7 +29,8 @@ sap.ui.define([
                 "priceCondition",
                 "fOCproductPackID",
                 "fOCmaterialNumber",
-                "applied"
+                "applied",
+                "priceCondition"
             ]);
         },
         getAll: function () {
