@@ -568,7 +568,7 @@ sap.ui.define([
 					await Promise.all(priceAgreements.map(pr => _that.applyNewSKU.call(_that, pr)));
 
 					// synchronize with sap backend
-					await _that.paState.syncPriceAgreements(priceAgreementIDs);
+					 await _that.paState.syncPriceAgreements(priceAgreementIDs);
 
 					// synchronize with sap backend
 					//await _that.paState.syncFocCustPrices(priceAgreementIDs);
@@ -670,6 +670,7 @@ sap.ui.define([
 
 			appliedCandidatePrices.forEach(acp => {
 				const newSKUs = candidatePrices.filter(cp => !cp.applied && cp.instituteId === acp.instituteId);
+                newSKUs.map(sku => sku.priceCondition = acp.priceCondition);
 				newSKUsWithoutCustomerPrice.push(...newSKUs);
 			});
 
