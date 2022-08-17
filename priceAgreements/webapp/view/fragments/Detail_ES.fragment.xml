@@ -24,7 +24,7 @@
                                 <m:Label text="{i18n>PVL}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Pack'}" 
-                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/MasterPrices/UoM} 
                                 ? ${path:'pa>/priceAgreement/MasterPrices/YLLP', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
                                 : parseFloat(${path:'pa>/priceAgreement/MasterPrices/YLLP'}*${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
                             }" 
@@ -34,7 +34,7 @@
                         <m:Label text="{i18n>PVL}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'}"/>
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" 
-                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/MasterPrices/UoM} 
                                 ? ${path:'pa>/priceAgreement/MasterPrices/YLLP', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
                                 : parseFloat(${path:'pa>/priceAgreement/MasterPrices/YLLP'}/${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
                             }" 
@@ -45,7 +45,7 @@
                         <m:Label text="{i18n>ConfidentialPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'  &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Private Account' &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Cluster'}"/>
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Private Account' &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Cluster'}" 
-                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/MasterPrices/UoM} 
                                 ? ${path:'pa>/priceAgreement/MasterPrices/YLAP', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
                                 : parseFloat(${path:'pa>/priceAgreement/MasterPrices/YLAP'}*${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
                             }" 
@@ -55,7 +55,7 @@
                         <m:Label text="{i18n>ConfidentialPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'  &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Private Account' &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Cluster'}"/>
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Unit'  &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Private Account' &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Cluster'}" 
-                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/MasterPrices/UoM} 
                                 ? ${path:'pa>/priceAgreement/MasterPrices/YLAP', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
                                 : parseFloat(${path:'pa>/priceAgreement/MasterPrices/YLAP'}/${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
                             }" 
