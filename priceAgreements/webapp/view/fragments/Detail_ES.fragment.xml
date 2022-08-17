@@ -24,7 +24,7 @@
                                 <m:Label text="{i18n>PVL}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Pack'}" 
-                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/MasterPrices/UoM} 
                                 ? ${path:'pa>/priceAgreement/MasterPrices/YLLP', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
                                 : parseFloat(${path:'pa>/priceAgreement/MasterPrices/YLLP'}*${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
                             }" 
@@ -34,7 +34,7 @@
                         <m:Label text="{i18n>PVL}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'}"/>
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" 
-                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/MasterPrices/UoM} 
                                 ? ${path:'pa>/priceAgreement/MasterPrices/YLLP', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
                                 : parseFloat(${path:'pa>/priceAgreement/MasterPrices/YLLP'}/${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
                             }" 
@@ -45,7 +45,7 @@
                         <m:Label text="{i18n>ConfidentialPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'  &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Private Account' &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Cluster'}"/>
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Private Account' &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Cluster'}" 
-                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                            value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/MasterPrices/UoM} 
                                 ? ${path:'pa>/priceAgreement/MasterPrices/YLAP', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
                                 : parseFloat(${path:'pa>/priceAgreement/MasterPrices/YLAP'}*${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
                             }" 
@@ -55,7 +55,7 @@
                         <m:Label text="{i18n>ConfidentialPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'  &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Private Account' &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Cluster'}"/>
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Unit'  &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Private Account' &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Cluster'}" 
-                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
+                            value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/MasterPrices/UoM} 
                                 ? ${path:'pa>/priceAgreement/MasterPrices/YLAP', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
                                 : parseFloat(${path:'pa>/priceAgreement/MasterPrices/YLAP'}/${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
                             }" 
@@ -205,7 +205,7 @@
                         <m:Input 
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Unit'}" 
                             value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
-                                ? ${path:'pa>/priceAgreement/mainPriceCondition/pVL', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
+                                ? parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/pVL'}).toFixed(6) 
                                 : parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/pVL'}/${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
                             }" 
                             description="EUR" 
@@ -226,7 +226,7 @@
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Private Account' &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Cluster'}" 
                             value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
-                                ? ${path:'pa>/priceAgreement/mainPriceCondition/confidentialPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
+                                ? parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/confidentialPrice'}).toFixed(6)  
                                 : parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/confidentialPrice'}/${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
                             }" 
                             description="EUR" 
@@ -408,6 +408,9 @@
                                     <m:Label text="Institute" wrapping="true"/>
                                 </m:Column>
                                 <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
+                                    <m:Label text="Institute Type" wrapping="true"/>
+                                </m:Column>
+                                <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
                                     <m:Label text="Customer No." wrapping="true"/>
                                 </m:Column>
                                 <m:Column minScreenWidth="Desktop" demandPopin="true" width="150px" popinDisplay="Inline">
@@ -430,6 +433,7 @@
                                 <m:ColumnListItem highlight="Indication04">
                                     <m:cells>
                                         <m:Text text="{pa>instituteName}"/>
+                                        <m:Text text="{pa>instituteType}"/>
                                         <m:Text text="{pa>customerID}"/>
                                         <m:Text text="{pa>materialNumber}"/>
                                         <m:Switch state="{pa>applied}" customTextOn="Yes" customTextOff="No" enabled="{= ${pa>/editMode} &amp;&amp; !${pa>synchronized} }">
