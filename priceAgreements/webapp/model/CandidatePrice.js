@@ -31,7 +31,11 @@ sap.ui.define([
                 "price",
                 "synchronized",
                 "effectiveDate",
-                "expiryDate"
+                "expiryDate",
+                "applied",
+                "PriceCondition",
+                "priceAgreementId",
+                "priceCondition"
             ]);
 
         },
