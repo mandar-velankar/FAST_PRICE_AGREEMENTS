@@ -127,7 +127,7 @@
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; !(${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1)}" 
                             value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
-                                ? ${path:'pa>/priceAgreement/mainPriceCondition/pVL', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}} 
+                                ? parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/pVL'}).toFixed(2) 
                                 : parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/pVL'}/${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(2)  
                             }" 
                             description="EUR" 
@@ -148,7 +148,7 @@
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; !(${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1) &amp;&amp; ${pa>/priceAgreement/mainPriceCondition/confidentialPrice} !== null &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Private Account' &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Cluster'}" 
                             value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
-                                ? ${path:'pa>/priceAgreement/mainPriceCondition/confidentialPrice', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}} 
+                                ? parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/confidentialPrice'}).toFixed(2) 
                                 : parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/confidentialPrice'}/${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(2)  
                             }" 
                             description="EUR" 
