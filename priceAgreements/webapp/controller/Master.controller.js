@@ -433,7 +433,7 @@ sap.ui.define([
 			const productPackfilter = this.byId("idProductPackfilter").getSelectedKey();
 
 			if(productPackfilter){
-				andFilters.push(new Filter("ProductPackId", "EQ", productPackfilter));
+				andFilters.push(new Filter("hasProductPackId", "EQ", productPackfilter));
 			}
 
 			if(expiringSoonFilter){
