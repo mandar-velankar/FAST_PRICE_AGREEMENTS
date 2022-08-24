@@ -306,9 +306,7 @@ sap.ui.define([
 					return this.confirmCancelMessage("ExistingPA");
 				} 
 				return true;
-			}).then((ok) => {
-				this.savePA();
-			});
+			}).then(this.savePA());
 			// MessageBox.warning(this.getResourceBundle().getText("confirmCancelExisting"), {
 			// 	actions: [MessageBox.Action.YES, MessageBox.Action.NO],
 			// 	emphasizedAction: MessageBox.Action.YES,
@@ -343,7 +341,7 @@ sap.ui.define([
 				.then(() => {
 					this.paState.setEditMode(false);
 					//update view with saved values from database - to be sure that UI and DB are in sync
-					this.paState.getPriceAgreement(this.sObjectId);
+					return this.paState.getPriceAgreement(this.sObjectId);
 					//update master - UI5 framework triggers refresh automatically after merge/update
 					//not needed otherwise will reload twice
 					// this.refreshMaster();
