@@ -345,9 +345,7 @@ sap.ui.define([
 					//update master - UI5 framework triggers refresh automatically after merge/update
 					//not needed otherwise will reload twice
 					// this.refreshMaster();
-				}).finally(() => {
-					this.setBusy(false);
-				});
+				}).finally(this.setBusy(false));
 		},
 
 		/**
