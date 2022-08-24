@@ -50,11 +50,9 @@
 							events: {
 								dataReceived: '.onProductPackIdsReceived'
 							},
-                             sorter: {
-                                path: 'ProductName'
-                                                            
+                            sorter: {
+                                path: 'ProductName'         
                             }
-
 						}">
 						<core:Item key="{ProductPackId}" text="{ProductName}" />
 					</Select>
