@@ -350,6 +350,11 @@ sap.ui.define([
 			
 			if (oCountry != ""){
 				andFilters.push(new Filter("CountryCode", "EQ", oCountry));
+
+                let oFilterCC = (andFilters.length > 0 && new sap.ui.model.Filter(andFilters, true)) || [];
+                //filter the product dropdown filter, based on the selected country code
+                //this could not be handled in the view, as the filters property does not allow dynamic parameters coming from the model
+                this.byId('idProductPackfilter').getBinding("items")?.filter(oFilterCC, FilterType.Application);
 			}
 
 			let sSearch = this.byId("idSearch").getProperty("value");
