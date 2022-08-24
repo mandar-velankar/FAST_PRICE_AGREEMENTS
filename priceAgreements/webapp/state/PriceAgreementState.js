@@ -95,7 +95,7 @@ sap.ui.define([
             if (priceAgreement.iD) {
                 return this.getService().updatePriceAgreement(priceAgreement);
             }
-
+            return  Promise.reject();
         },
 
         createPriceAgreementObject: function(priceAgreement){
@@ -351,7 +351,7 @@ sap.ui.define([
             const promiseDeleteSettlementConditions = deletedSettlementPriceConditions?.map(cp => this.getService().deleteCustomerPrice(cp));
             const promiseCandidatePricesToBeDeleted = candidatePricesToBeDeleted?.map(cp => this.getService().deleteCustomerPrice(cp));
             const promises = CustomerPrices.map(cp => this.getService().saveCustomerPrice(cp));
-            return Promise.all([promises,promiseDeleteSettlementConditions,promiseCandidatePricesToBeDeleted]);
+            return Promise.all([...promises,...promiseDeleteSettlementConditions,...promiseCandidatePricesToBeDeleted]);
 
         },
 
