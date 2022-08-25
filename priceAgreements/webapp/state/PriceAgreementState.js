@@ -348,9 +348,9 @@ sap.ui.define([
             });
 
             //those not existing anymore upon comparison -- delete
-            const promiseDeleteSettlementConditions = deletedSettlementPriceConditions?.map(cp => this.getService().deleteCustomerPrice(cp));
-            const promiseCandidatePricesToBeDeleted = candidatePricesToBeDeleted?.map(cp => this.getService().deleteCustomerPrice(cp));
-            const promises = CustomerPrices.map(cp => this.getService().saveCustomerPrice(cp));
+            const promiseDeleteSettlementConditions = deletedSettlementPriceConditions?.map(cp => this.getService().deleteCustomerPrice(cp)) || [];
+            const promiseCandidatePricesToBeDeleted = candidatePricesToBeDeleted?.map(cp => this.getService().deleteCustomerPrice(cp)) || [] ;
+            const promises = CustomerPrices.map(cp => this.getService().saveCustomerPrice(cp)) || [];
             return Promise.all([...promises,...promiseDeleteSettlementConditions,...promiseCandidatePricesToBeDeleted]);
 
         },

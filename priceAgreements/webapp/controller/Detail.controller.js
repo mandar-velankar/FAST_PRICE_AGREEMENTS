@@ -283,6 +283,7 @@ sap.ui.define([
 			return oMasterTable.getBinding("items");
 		},
 		onFooterSavePress: async function (oEvent) {
+            this.setBusy(true);
 			const isValid = this.paState.getPriceAgreementInstance().isValid();
 			this.paState.updateModel();
 			if (!isValid || !this.byId("expiryDateID").isValidValue() || !this.byId("effectiveDateId").isValidValue()) {
@@ -335,7 +336,6 @@ sap.ui.define([
 			});
 		},
 		savePA: function () {
-			this.setBusy(true);
 			return this.paState.saveCandidatePrices()
 				.then(this.paState.savePriceAgreement.bind(this.paState, this.paState.getPriceAgreementInstance()))
 				.then(() => {
@@ -345,7 +345,9 @@ sap.ui.define([
 					//update master - UI5 framework triggers refresh automatically after merge/update
 					//not needed otherwise will reload twice
 					// this.refreshMaster();
-				}).finally(this.setBusy(false));
+				}).then(() => {
+                    this.setBusy(false);
+                });
 		},
 
 		/**
