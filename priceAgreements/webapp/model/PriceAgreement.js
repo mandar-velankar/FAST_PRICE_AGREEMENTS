@@ -247,6 +247,7 @@ sap.ui.define([
                 "synchronized",
                 "extendPriceAgreement",
                 "expiryExtensionPeriod",
+                "expiryExtensionAcknowledged",
                 "status",
                 "cancellationComment",
                 "ignoreConfPriceChange",
