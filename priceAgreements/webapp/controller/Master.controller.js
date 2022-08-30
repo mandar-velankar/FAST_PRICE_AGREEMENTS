@@ -350,6 +350,11 @@ sap.ui.define([
 			
 			if (oCountry != ""){
 				andFilters.push(new Filter("CountryCode", "EQ", oCountry));
+
+                let oFilterCC = (andFilters.length > 0 && new sap.ui.model.Filter(andFilters, true)) || [];
+                //filter the product dropdown filter, based on the selected country code
+                //this could not be handled in the view, as the filters property does not allow dynamic parameters coming from the model
+                this.byId('idProductPackfilter').getBinding("items")?.filter(oFilterCC, FilterType.Application);
 			}
 
 			let sSearch = this.byId("idSearch").getProperty("value");
@@ -433,7 +438,7 @@ sap.ui.define([
 			const productPackfilter = this.byId("idProductPackfilter").getSelectedKey();
 
 			if(productPackfilter){
-				andFilters.push(new Filter("ProductPackId", "EQ", productPackfilter));
+				andFilters.push(new Filter("hasProductPackId", "EQ", productPackfilter));
 			}
 
 			if(expiringSoonFilter){
@@ -568,7 +573,7 @@ sap.ui.define([
 					await Promise.all(priceAgreements.map(pr => _that.applyNewSKU.call(_that, pr)));
 
 					// synchronize with sap backend
-					await _that.paState.syncPriceAgreements(priceAgreementIDs);
+					 await _that.paState.syncPriceAgreements(priceAgreementIDs);
 
 					// synchronize with sap backend
 					//await _that.paState.syncFocCustPrices(priceAgreementIDs);
@@ -670,6 +675,7 @@ sap.ui.define([
 
 			appliedCandidatePrices.forEach(acp => {
 				const newSKUs = candidatePrices.filter(cp => !cp.applied && cp.instituteId === acp.instituteId);
+                newSKUs.map(sku => sku.priceCondition = acp.priceCondition);
 				newSKUsWithoutCustomerPrice.push(...newSKUs);
 			});
 

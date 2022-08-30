@@ -87,7 +87,7 @@
 								formatter: '.isSyncButtonEnabled' 
 						}"
 					/>
-					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${pa>/editMode} === false &amp;&amp; !(${pa>/priceAgreement/status} === 'Cancelled') }"/>
+					<m:Button id="editButtonId" text="Edit" type="Emphasized" press=".onEditModePress" enabled="{= ${pa>/editMode} === false &amp;&amp; !(${pa>/priceAgreement/status} === 'Cancelled') &amp;&amp; !(${pa>/priceAgreement/synchronizationStatus} === 'RUNNING') }"/>
 				</actions>
 				
 			</ObjectPageDynamicHeaderTitle>
@@ -96,12 +96,28 @@
 		<headerContent>
 			<m:FlexBox wrap="Wrap" fitContainer="true" alignItems="Stretch">
 			  <m:MessageStrip
+				text="Synchronization of this Price Agreement is running"
+				type="Warning"
+				showIcon="true"
+				showCloseButton="false"
+				class="sapUiSmallMarginBottom" 
+				visible="{= ${pa>/priceAgreement/synchronizationStatus} === 'RUNNING'}">
+			  </m:MessageStrip>
+			  <m:MessageStrip
+				text="Synchronization of this Price Agreement has failed."
+				type="Error"
+				showIcon="true"
+				showCloseButton="false"
+				class="sapUiSmallMarginBottom" 
+				visible="{= ${pa>/priceAgreement/synchronizationStatus} === 'ERROR'}">
+			  </m:MessageStrip>
+			  <m:MessageStrip
 				text="Your changes have not yet been synchronized."
 				type="Warning"
 				showIcon="true"
 				showCloseButton="false"
 				class="sapUiSmallMarginBottom" 
-				visible="{= !${pa>/priceAgreement/synchronized}}">
+				visible="{= !${pa>/priceAgreement/synchronized} &amp;&amp; ${pa>/priceAgreement/synchronizationStatus} !== 'RUNNING' &amp;&amp; ${pa>/priceAgreement/synchronizationStatus} !== 'ERROR'}">
 			  </m:MessageStrip>
 				
 			</m:FlexBox>

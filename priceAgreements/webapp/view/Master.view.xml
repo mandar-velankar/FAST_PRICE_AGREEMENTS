@@ -50,11 +50,9 @@
 							events: {
 								dataReceived: '.onProductPackIdsReceived'
 							},
-                             sorter: {
-                                path: 'ProductName'
-                                                            
+                            sorter: {
+                                path: 'ProductName'         
                             }
-
 						}">
 						<core:Item key="{ProductPackId}" text="{ProductName}" />
 					</Select>
@@ -91,8 +89,10 @@
 						updateFinished=".onUpdateFinished"
 						alternateRowColors="true"
 						contextualWidth="Auto" growing="true"
-                        growingThreshold="15"
-                        growingScrollToLoad="false">
+                        growingThreshold="200" 
+                        growingScrollToLoad="false"> 
+                        <!-- !!!!!!!!!!!!THE GROWING THRESHOLD HAS BEEN SET TO 200, THIS CAN NOT BE MOVED TO PRODUCTION!!!!!!!!!!!! --> 
+                        
                         <!-- EHQUT-123276-Price agreement app not loading --> 
 					<columns>
 						<Column>
