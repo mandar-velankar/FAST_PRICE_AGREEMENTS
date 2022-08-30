@@ -100,6 +100,7 @@
                                                         !${pa>/priceAgreement/synchronized}}"/>
                         
 						<m:CheckBox id="idExtendExpiry" text="{i18n>extendExpiry}" select=".extendExpiry" enabled="{pa>/editMode}" selected="{path:'pa>/priceAgreement/extendPriceAgreement'}" visible="{= ${pa>/priceAgreement/tender/classification} === 'Commercial Agreement' }"/>
+						<m:CheckBox id="idExpiryAcknowledged" text="{i18n>expiryAcknowledged}" enabled="{pa>/editMode}" selected="{path:'pa>/priceAgreement/expiryExtensionAcknowledged'}" visible="{= ${pa>/priceAgreement/extendPriceAgreement} || false }"/>
                         <m:Label text="{i18n>expiryExtensionPeriod}" design="Bold" required="false"/>
                         <m:StepInput
                             id="idExtendExpiryDateID"
