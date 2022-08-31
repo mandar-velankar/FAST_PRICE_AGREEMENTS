@@ -25,7 +25,7 @@
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Pack'}" 
                             value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/MasterPrices/UoM} 
-                                ? ${path:'pa>/priceAgreement/MasterPrices/YLLP', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
+                                ? parseFloat(${path:'pa>/priceAgreement/MasterPrices/YLLP'}).toFixed(6) 
                                 : parseFloat(${path:'pa>/priceAgreement/MasterPrices/YLLP'}*${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
                             }" 
                             description="EUR" 
@@ -35,7 +35,7 @@
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" 
                             value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/MasterPrices/UoM} 
-                                ? ${path:'pa>/priceAgreement/MasterPrices/YLLP', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
+                                ? parseFloat(${path:'pa>/priceAgreement/MasterPrices/YLLP'}).toFixed(6) 
                                 : parseFloat(${path:'pa>/priceAgreement/MasterPrices/YLLP'}/${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
                             }" 
                             description="EUR" 
@@ -46,7 +46,7 @@
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Private Account' &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Cluster'}" 
                             value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/MasterPrices/UoM} 
-                                ? ${path:'pa>/priceAgreement/MasterPrices/YLAP', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
+                                ? parseFloat(${path:'pa>/priceAgreement/MasterPrices/YLAP'}).toFixed(6) 
                                 : parseFloat(${path:'pa>/priceAgreement/MasterPrices/YLAP'}*${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
                             }" 
                             description="EUR" 
@@ -56,7 +56,7 @@
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Unit'  &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Private Account' &amp;&amp; ${pa>/priceAgreement/institute/instituteType} !== 'Cluster'}" 
                             value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/MasterPrices/UoM} 
-                                ? ${path:'pa>/priceAgreement/MasterPrices/YLAP', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
+                                ? parseFloat(${path:'pa>/priceAgreement/MasterPrices/YLAP'}).toFixed(6)
                                 : parseFloat(${path:'pa>/priceAgreement/MasterPrices/YLAP'}/${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
                             }" 
                             description="EUR" 
@@ -118,7 +118,7 @@
                         <m:Input 
                             visible="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; !(${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1)}" 
                             value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
-                                ? ${path:'pa>/priceAgreement/mainPriceCondition/pVL', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 2, minFractionDigits: 2}} 
+                                ? parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/pVL'}).toFixed(2) 
                                 : parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/pVL'}*${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(2)  
                             }" 
                             description="EUR" 
@@ -196,7 +196,7 @@
                         <m:Input 
                             visible="{= ${pa>/priceAgreement/mainPriceCondition/priceConditionClassification/conditionType}.indexOf('Precio Neto') > -1 &amp;&amp; ${detailView>/selectedProductUoM} === 'Pack'}" 
                             value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp; ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} 
-                                ? ${path:'pa>/priceAgreement/mainPriceCondition/pVL', type:'sap.ui.model.type.Float', formatOptions: { maxFractionDigits: 6, minFractionDigits: 6}} 
+                                ? parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/pVL'}).toFixed(6) 
                                 : parseFloat(${path:'pa>/priceAgreement/mainPriceCondition/pVL'}*${path:'pa>/priceAgreement/product/productPack/pACKFACTOR'}).toFixed(6)  
                             }" 
                             description="EUR" 
