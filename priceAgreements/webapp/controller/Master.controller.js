@@ -417,6 +417,13 @@ sap.ui.define([
 					caseSensitive: false
 				}));
 
+                orFilters.push(new Filter({
+					path: "OfferId",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
 				andFilters.push(new Filter(orFilters, false));
 			}
 
