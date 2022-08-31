@@ -82,7 +82,8 @@
 								parts: [ 
 									'pa>/priceAgreement/synchronized', 
 									'pa>/priceAgreement/customerPrices',
-                                    'pa>/priceAgreement/status'
+                                    'pa>/priceAgreement/status',
+                                    'pa>/priceAgreement/synchronizationStatus'
 								], 
 								formatter: '.isSyncButtonEnabled' 
 						}"
