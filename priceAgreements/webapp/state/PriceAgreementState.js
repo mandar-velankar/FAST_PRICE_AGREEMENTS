@@ -273,6 +273,7 @@ sap.ui.define([
                     }
                     customerPrice.priceCondition = mainPriceCondition.priceConditionCode;
                     customerPrice.applied = candidate.applied;
+                    customerPrice.synchronized = candidate.countryCode === 'ES' && candidate.instituteType === 'Ship-To' && (customerPrice.priceCondition === 'YLTF' || customerPrice.priceCondition === 'YLTP' || customerPrice.priceCondition === 'YL60' || customerPrice.priceCondition === 'YA01') ? true : false;
                     CustomerPrices.push(customerPrice);
 
                     // FOC condition
@@ -290,7 +291,8 @@ sap.ui.define([
                             "FOCproductPackID": foc.productPackId,
                             "FOCmaterialNumber": null,
                             "PriceCondition": "YA01",
-                            "Applied": candidate.applied
+                            "Applied": candidate.applied,
+                            "Synchronized": candidate.countryCode === 'ES' && candidate.instituteType === 'Ship-To' ? true : false
                         });
                         CustomerPrices.push(focCustomerPrice);
                         const existingFOCCondition = aExistingFOCConditions.find(condition => condition.FOCproductPackID === foc.productPackId);
