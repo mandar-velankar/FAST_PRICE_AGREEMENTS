@@ -459,7 +459,7 @@ sap.ui.define([
             return editMode && !allSynchronized;
 		},
 
-		isSyncButtonEnabled: function(isPriceAgreementSynchronized, customerPrices, isCancelled){
+		isSyncButtonEnabled: function(isPriceAgreementSynchronized, customerPrices, isCancelled,syncStatus){
 			if(!Array.isArray(customerPrices)) customerPrices = [];
             let priceAgreement = this.paState.getPriceAgreementInstance();
 			//let customerPrices = priceAgreement.CustomerPrices;
@@ -489,6 +489,7 @@ sap.ui.define([
 			
 			if(customerPrices.length <= 0) return false; // when no customer prices are created yet, disable button
 			if(!customerPrices.some(item => item.applied)) return false; // when customer prices do exist but, non are applied
+            if(syncStatus === "RUNNING") return false; //when sync is running,disable button
 			return true;
 		},
 
