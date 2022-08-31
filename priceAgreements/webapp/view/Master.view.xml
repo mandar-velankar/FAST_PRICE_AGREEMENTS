@@ -100,6 +100,11 @@
 								<ObjectIdentifier title="{i18n>TenderId}" />
 							</header>
 						</Column>
+                        <Column>
+							<header>
+								<ObjectIdentifier title="{i18n>OfferID}" />
+							</header>
+						</Column>
 						<Column>
 							<header>
 								<ObjectIdentifier title="{i18n>UserName}" />
@@ -149,6 +154,7 @@
 									<Text text="{Tender/ExternalID}"/>
 									<Text text="{Tender/SAPID}"/>
 								</VBox>
+                                <Text text="{OfferId}"/>
 								<Text text="{Tender/User/UserName}"/>
 								<Text text="{Tender/Classification}"/>
 								<Text text="{Tender/TenderName}"/>
