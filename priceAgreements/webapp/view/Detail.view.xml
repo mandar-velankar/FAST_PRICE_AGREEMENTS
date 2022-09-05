@@ -151,7 +151,7 @@
 			  </m:MessageStrip>
 
               <m:MessageStrip
-				text="Net Price is below Confidential Price."
+				text="Net Price is below Floor Price."
 				type="Warning"
 				showIcon="true"
 				showCloseButton="false"
