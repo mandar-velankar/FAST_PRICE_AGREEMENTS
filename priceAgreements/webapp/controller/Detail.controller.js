@@ -530,8 +530,11 @@ sap.ui.define([
                             await that.paState.cancelPriceAgreement();
                             that.paState.getPriceAgreement(that.sObjectId)
                             .finally(() => {
-							    this.oCancelDialog.close();
-                                that.setBusy(false);
+                                this.paState.getPriceAgreement(this.sObjectId)
+                                .finally(() => {                         
+                                    this.oCancelDialog.close();
+                                    that.setBusy(false);
+                                });
                             });
 						}.bind(this)
 					}),
