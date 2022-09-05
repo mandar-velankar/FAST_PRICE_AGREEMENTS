@@ -433,6 +433,7 @@ sap.ui.define([
 
 			if(hasNewMaterialsFilter){ 
 				andFilters.push(new Filter("hasNewMaterials", "EQ", hasNewMaterialsFilter));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
 
 			// enabled/disable the ApplyNewPrice button 
@@ -450,10 +451,12 @@ sap.ui.define([
 
 			if(expiringSoonFilter){
 				andFilters.push(new Filter("ExpiringSoon", "EQ", true));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
 
             if(expiredFilter){
 				andFilters.push(new Filter("Expired", "EQ", true));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
 
             if(cancelledFilter){
@@ -462,12 +465,14 @@ sap.ui.define([
 
 			if(newAgreementFilter){
 				andFilters.push(new Filter("isNewPriceAgreement", "EQ", true));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
 
 			if(activeAgreementsFilter){
 				// active agreement = expiry date in future + synchronized
 				andFilters.push(new Filter("Expired", FilterOperator.EQ, false));
 				andFilters.push(new Filter("Synchronized", FilterOperator.EQ, true));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
 
 			if(toBeSyncedFilter){
@@ -475,22 +480,27 @@ sap.ui.define([
 				andFilters.push(new Filter("Expired", FilterOperator.EQ, false));
 				andFilters.push(new Filter("Synchronized", FilterOperator.EQ, false));
 				andFilters.push(new Filter("AppliedCount", FilterOperator.GE, 1));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
 
             if(updatedPVLFilter){
 				andFilters.push(new Filter("hasNewYLLP", "EQ", 1));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
 
             if(updatedConfidentialPriceFilter){
 				andFilters.push(new Filter("hasNewYLAP", "EQ", 1));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
             if(netPriceAbovePVLFilter){
 				andFilters.push(new Filter("hasNewYLLP", "EQ", 3));
-                andFilters.push(new Filter("hasNewYLAP", "EQ", 3))
+                andFilters.push(new Filter("hasNewYLAP", "EQ", 3));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
             if(netPriceBelowFloorPriceFilter){
 				andFilters.push(new Filter("hasNewYLLP", "EQ", 4));
-                andFilters.push(new Filter("hasNewYLAP", "EQ", 4))
+                andFilters.push(new Filter("hasNewYLAP", "EQ", 4));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
 
 			if(andFilters.length > 0){
