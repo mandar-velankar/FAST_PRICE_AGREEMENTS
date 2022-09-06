@@ -9,7 +9,7 @@ sap.ui.define([
             BaseObject.call(this, data);
 
             this.discount = Number(this.discount);
-            if(this.discount && this.discount > 1) {this.discount /= 100;} // this is needed because the binding type:'.types.percent' used in the view is doing discount * 100
+            if(this.discount && this.discount > 0) {this.discount /= 100;} // this is needed because the binding type:'.types.percent' used in the view is doing discount * 100
 
             if (data) {
                 //copy array's manually to objects
