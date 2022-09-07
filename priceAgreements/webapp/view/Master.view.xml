@@ -89,7 +89,7 @@
 						updateFinished=".onUpdateFinished"
 						alternateRowColors="true"
 						contextualWidth="Auto" growing="true"
-                        growingThreshold="200" 
+                        growingThreshold="20" 
                         growingScrollToLoad="false"> 
                         <!-- !!!!!!!!!!!!THE GROWING THRESHOLD HAS BEEN SET TO 200, THIS CAN NOT BE MOVED TO PRODUCTION!!!!!!!!!!!! --> 
                         
