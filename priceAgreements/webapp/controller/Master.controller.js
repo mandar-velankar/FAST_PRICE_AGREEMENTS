@@ -587,7 +587,7 @@ sap.ui.define([
 					await Promise.all(priceAgreements.map(pr => _that.applyNewPrice.call(_that, pr)));
 
 					// apply new SKU on each price agreement
-                    await Promise.all(priceAgreements.map(pr => pr.CountryCode === 'IT' ? _that.applyNewSKU.call(_that, pr) : _that.applyNewSKUSpain.call(_that, pr)));
+					await Promise.all(priceAgreements.map(pr => _that.applyNewSKU.call(_that, pr)));
 
 					// synchronize with sap backend
 					 await _that.paState.syncPriceAgreements(priceAgreementIDs);
@@ -710,10 +710,6 @@ sap.ui.define([
 			}));
 
 		},
-
-        applyNewSKUSpain: async function(priceAgreement){
-            await this.paState.saveCandidatePricesOnApplyPrices(priceAgreement.ID);
-        },
 
 	});
 
