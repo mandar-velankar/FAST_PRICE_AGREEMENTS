@@ -125,6 +125,18 @@ sap.ui.define([
             const priceAgreement = this.getProperty("priceAgreement");
             return this.saveCandidatePrice(priceAgreement,candidatePrices);
         },
+
+        saveCandidatePricesOnApplyPrices: async function (priceAgreementId) {
+            const existingPriceAgreement = await this.getPriceAgreement(priceAgreementId);
+            const candidatePrices = existingPriceAgreement.candidatePrices;
+
+            //set all candidateprices to applied = true before saving them
+            candidatePrices.filter(candidatePrice => candidatePrice.applied != true && candidatePrice.synchronized === false)?.map(candidatePrice => { candidatePrice.applied = true; });
+
+            //create all new customer prices
+            return this.saveCandidatePrice(existingPriceAgreement,candidatePrices);
+        },
+        
         saveCandidatePrice:function(priceAgreement,candidatePrices){
 
             // cponst candidatePrices = this.getProperty("candidatePrices").filter(cap => cap.applied); // get only the applied candidatePrices
