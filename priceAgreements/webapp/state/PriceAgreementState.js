@@ -63,6 +63,11 @@ sap.ui.define([
         getPriceAgreementInstance: function () {
             return this.getProperty("priceAgreement");
         },
+        getNewMaterials: async function(id){
+            return this.getService().getNewMaterials({
+                priceAgreementId: id
+            });
+        },
         updateCustomerPrices:async function(priceAgreement){
             // other solutions, but MaterialsFOC is not loaded in master so undefined. 
             // if this would be need in master list, this could improve performance for update customer prices in mass
@@ -130,8 +135,12 @@ sap.ui.define([
             const existingPriceAgreement = await this.getPriceAgreement(priceAgreementId);
             const candidatePrices = existingPriceAgreement.candidatePrices;
 
+            //retrieve all new material numbers from NewMaterialsView by the given priceAgreementId
+            //use these for filtering on candidatePrices - prices should only be applied for the new materials
+            const newMaterials = await this.getNewMaterials(priceAgreementId);
+
             //set all candidateprices to applied = true before saving them
-            candidatePrices.filter(candidatePrice => candidatePrice.applied != true && candidatePrice.synchronized === false)?.map(candidatePrice => { candidatePrice.applied = true; });
+            candidatePrices.filter(candidatePrice => candidatePrice.applied != true && candidatePrice.synchronized === false && candidatePrice.materialNumber in newMaterials.data.results)?.map(candidatePrice => { candidatePrice.applied = true; });
 
             //create all new customer prices
             return this.saveCandidatePrice(existingPriceAgreement,candidatePrices);
