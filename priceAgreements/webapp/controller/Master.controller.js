@@ -83,7 +83,7 @@ sap.ui.define([
 		onUpdateFinished : function (oEvent) {
 			// update the master list object counter after new data is loaded
 			this._updateListItemCount(oEvent.getParameter("total"));
-            if(this.paState.getPriceAgreementInstance().iD && this.correctFilters === 0 ) {
+            if(this.paState.getPriceAgreementInstance().iD && this.correctFilters === 0 && !this.paState.refreshAfterSave ) {
                 this.onChangeCountryFilter();
                 // set to 1 so we don't re-execture this code
                 this.correctFilters = 1;

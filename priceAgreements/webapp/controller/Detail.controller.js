@@ -346,6 +346,9 @@ sap.ui.define([
 					//not needed otherwise will reload twice
 					// this.refreshMaster();
 				}).then(() => {
+					this.paState.refreshAfterSave = true;
+					const oMasterTable = this.getOwnerComponent().oListSelector._oList; 
+					oMasterTable && oMasterTable.getBinding("items").refresh();
                     this.setBusy(false);
                 });
 		},
