@@ -62,7 +62,7 @@ sap.ui.define([
 				ID: data.ID
 			});
 
-			return this.odata(sKey).put(data);
+			return this.odata(sKey).put(data,{refreshAfterChange:false});
 
 		},
 

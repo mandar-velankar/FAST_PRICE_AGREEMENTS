@@ -20,6 +20,7 @@ sap.ui.define([
                     {key:"cancelledKey", country:"ES",value:"Cancelled"},
                     {key:"toBeSynced",country:"ES",value:"To be Synchronized"}],
         constructor: function (service) {
+            this.refreshAfterSave = false;
             //data needs to be defined before calling parent. 
             //Parent will use this for creating a JSONModel
             this.data = {
