@@ -20,6 +20,7 @@ sap.ui.define([
                     {key:"cancelledKey", country:"ES",value:"Cancelled"},
                     {key:"toBeSynced",country:"ES",value:"To be Synchronized"}],
         constructor: function (service) {
+            this.refreshAfterSave = false;
             //data needs to be defined before calling parent. 
             //Parent will use this for creating a JSONModel
             this.data = {
@@ -137,13 +138,31 @@ sap.ui.define([
 
             //retrieve all new material numbers from NewMaterialsView by the given priceAgreementId
             //use these for filtering on candidatePrices - prices should only be applied for the new materials
-            const newMaterials = await this.getNewMaterials(priceAgreementId);
+            let newMaterials = await this.getNewMaterials(priceAgreementId);
+            newMaterials = this.ConvertKeysToLowerCase(newMaterials.data.results);
 
             //set all candidateprices to applied = true before saving them
-            candidatePrices.filter(candidatePrice => candidatePrice.applied != true && candidatePrice.synchronized === false && candidatePrice.materialNumber in newMaterials.data.results)?.map(candidatePrice => { candidatePrice.applied = true; });
+            let finalCandidatePricesSet = candidatePrices.map((candidatePrice) => {
+                if(newMaterials.find(newMaterial => newMaterial.materialNumber === candidatePrice.materialNumber) && candidatePrice.applied != true && candidatePrice.synchronized === false){
+                    candidatePrice.applied = true;
+                    return candidatePrice;
+                }
+            })?.filter(cp => cp != undefined);
 
             //create all new customer prices
-            return this.saveCandidatePrice(existingPriceAgreement,candidatePrices);
+            return this.saveCandidatePrice(existingPriceAgreement,finalCandidatePricesSet);
+        },
+
+        ConvertKeysToLowerCase: function (obj) {
+            var output = {};
+            let coll = obj[0];
+
+            obj = obj.map((o) => {
+                return Object.fromEntries(
+                    Object.entries(o).map(([k, v]) => [(k.charAt(0).toLowerCase())+k.substring(1), v])
+                );
+            })
+            return obj
         },
         
         saveCandidatePrice:function(priceAgreement,candidatePrices){
