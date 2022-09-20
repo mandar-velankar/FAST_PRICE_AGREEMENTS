@@ -62,7 +62,7 @@ sap.ui.define([
 				ID: data.ID
 			});
 
-			return this.odata(sKey).put(data);
+			return this.odata(sKey).put(data,{refreshAfterChange:false});
 
 		},
 
@@ -131,6 +131,34 @@ sap.ui.define([
 			};
 
 			return this.odata("/CandidatePrices").get(mParameters);
+		},
+
+        getNewMaterials: function (id) {		
+
+			if (!id) {
+				return "Please provide price agreement ID.";
+			}
+
+			var aFilters = [];
+
+            aFilters.push(new Filter({
+                path: 'PriceAgreementId',
+                operator: FilterOperator.EQ,
+                value1: id.priceAgreementId
+            }))
+
+            aFilters.push(new Filter({
+                path: 'isNew',
+                operator: FilterOperator.EQ,
+                value1: true
+            }))
+
+			var mParameters = {
+				filters: aFilters
+
+			};
+
+			return this.odata("/NewMaterialsView").get(mParameters);
 		},
 
 		syncPriceAgreements: function (ids) {

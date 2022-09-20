@@ -20,6 +20,7 @@ sap.ui.define([
                     {key:"cancelledKey", country:"ES",value:"Cancelled"},
                     {key:"toBeSynced",country:"ES",value:"To be Synchronized"}],
         constructor: function (service) {
+            this.refreshAfterSave = false;
             //data needs to be defined before calling parent. 
             //Parent will use this for creating a JSONModel
             this.data = {
@@ -62,6 +63,11 @@ sap.ui.define([
         },
         getPriceAgreementInstance: function () {
             return this.getProperty("priceAgreement");
+        },
+        getNewMaterials: async function(id){
+            return this.getService().getNewMaterials({
+                priceAgreementId: id
+            });
         },
         updateCustomerPrices:async function(priceAgreement){
             // other solutions, but MaterialsFOC is not loaded in master so undefined. 
@@ -125,6 +131,40 @@ sap.ui.define([
             const priceAgreement = this.getProperty("priceAgreement");
             return this.saveCandidatePrice(priceAgreement,candidatePrices);
         },
+
+        saveCandidatePricesOnApplyPrices: async function (priceAgreementId) {
+            const existingPriceAgreement = await this.getPriceAgreement(priceAgreementId);
+            const candidatePrices = existingPriceAgreement.candidatePrices;
+
+            //retrieve all new material numbers from NewMaterialsView by the given priceAgreementId
+            //use these for filtering on candidatePrices - prices should only be applied for the new materials
+            let newMaterials = await this.getNewMaterials(priceAgreementId);
+            newMaterials = this.ConvertKeysToLowerCase(newMaterials.data.results);
+
+            //set all candidateprices to applied = true before saving them
+            let finalCandidatePricesSet = candidatePrices.map((candidatePrice) => {
+                if(newMaterials.find(newMaterial => newMaterial.materialNumber === candidatePrice.materialNumber) && candidatePrice.applied != true && candidatePrice.synchronized === false){
+                    candidatePrice.applied = true;
+                    return candidatePrice;
+                }
+            })?.filter(cp => cp != undefined);
+
+            //create all new customer prices
+            return this.saveCandidatePrice(existingPriceAgreement,finalCandidatePricesSet);
+        },
+
+        ConvertKeysToLowerCase: function (obj) {
+            var output = {};
+            let coll = obj[0];
+
+            obj = obj.map((o) => {
+                return Object.fromEntries(
+                    Object.entries(o).map(([k, v]) => [(k.charAt(0).toLowerCase())+k.substring(1), v])
+                );
+            })
+            return obj
+        },
+        
         saveCandidatePrice:function(priceAgreement,candidatePrices){
 
             // cponst candidatePrices = this.getProperty("candidatePrices").filter(cap => cap.applied); // get only the applied candidatePrices
