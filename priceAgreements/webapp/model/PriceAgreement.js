@@ -137,7 +137,7 @@ sap.ui.define([
             this.settlementDates = settlementDates.map( settlementDate => new SettlementDate(settlementDate.getAll()));
         },
         setSettlementDates:function(settlementDates){
-            this.settlementDates = settlementDates && settlementDates.map(settlementDate => new SettlementDate(settlementDate));
+            this.settlementDates = settlementDates && settlementDates.length > 0 && settlementDates.map(settlementDate => new SettlementDate(settlementDate));
             
             // if(!this.effectiveDate || !this.expiryDate){
             //     return;
