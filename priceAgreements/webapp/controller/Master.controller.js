@@ -65,6 +65,9 @@ sap.ui.define([
 
 			this.getRouter().getRoute("master").attachPatternMatched(this._onMasterMatched, this);
 			this.getRouter().attachBypassed(this.onBypassed, this);
+
+            //needed to get correct filters when navigating from tender or refreshing
+            this.correctFilters = 0;
 		},
 
 		/* =========================================================== */
@@ -80,6 +83,12 @@ sap.ui.define([
 		onUpdateFinished : function (oEvent) {
 			// update the master list object counter after new data is loaded
 			this._updateListItemCount(oEvent.getParameter("total"));
+            if(this.paState.getPriceAgreementInstance().iD && this.correctFilters === 0 && !this.paState.refreshAfterSave ) {
+                this.onChangeCountryFilter();
+                // set to 1 so we don't re-execture this code
+                this.correctFilters = 1;
+            };
+
 		},
 
 		/**
@@ -330,12 +339,22 @@ sap.ui.define([
 			const expiringSoonFilter = slctfilterSelectedItemKey === 'expiringsoonkey';
 			const newAgreementFilter = slctfilterSelectedItemKey === 'newagreementskey';
             const expiredFilter = slctfilterSelectedItemKey === 'expiredkey';
+            const cancelledFilter = slctfilterSelectedItemKey === 'cancelledkey';
             const activeAgreementsFilter = slctfilterSelectedItemKey === 'activeagreements';
             const toBeSyncedFilter = slctfilterSelectedItemKey === 'tobesynced';
+            const updatedPVLFilter = slctfilterSelectedItemKey === 'updatedpvlkey';
+            const updatedConfidentialPriceFilter = slctfilterSelectedItemKey === 'updatedconfidentialpricekey';
+            const netPriceAbovePVLFilter = slctfilterSelectedItemKey === 'netpriceabovepvlkey';
+            const netPriceBelowFloorPriceFilter = slctfilterSelectedItemKey === 'netpricebelowfloorpricekey';
             const oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "";
 			
 			if (oCountry != ""){
 				andFilters.push(new Filter("CountryCode", "EQ", oCountry));
+
+                let oFilterCC = (andFilters.length > 0 && new sap.ui.model.Filter(andFilters, true)) || [];
+                //filter the product dropdown filter, based on the selected country code
+                //this could not be handled in the view, as the filters property does not allow dynamic parameters coming from the model
+                this.byId('idProductPackfilter').getBinding("items")?.filter(oFilterCC, FilterType.Application);
 			}
 
 			let sSearch = this.byId("idSearch").getProperty("value");
@@ -398,6 +417,13 @@ sap.ui.define([
 					caseSensitive: false
 				}));
 
+                orFilters.push(new Filter({
+					path: "OfferId",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
 				andFilters.push(new Filter(orFilters, false));
 			}
 
@@ -407,6 +433,7 @@ sap.ui.define([
 
 			if(hasNewMaterialsFilter){ 
 				andFilters.push(new Filter("hasNewMaterials", "EQ", hasNewMaterialsFilter));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
 
 			// enabled/disable the ApplyNewPrice button 
@@ -419,25 +446,33 @@ sap.ui.define([
 			const productPackfilter = this.byId("idProductPackfilter").getSelectedKey();
 
 			if(productPackfilter){
-				andFilters.push(new Filter("ProductPackId", "EQ", productPackfilter));
+				andFilters.push(new Filter("hasProductPackId", "EQ", productPackfilter));
 			}
 
 			if(expiringSoonFilter){
 				andFilters.push(new Filter("ExpiringSoon", "EQ", true));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
 
             if(expiredFilter){
 				andFilters.push(new Filter("Expired", "EQ", true));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
+
+            if(cancelledFilter){
+                andFilters.push(new Filter("isCancelled", "EQ", true));
+            }
 
 			if(newAgreementFilter){
 				andFilters.push(new Filter("isNewPriceAgreement", "EQ", true));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
 
 			if(activeAgreementsFilter){
 				// active agreement = expiry date in future + synchronized
 				andFilters.push(new Filter("Expired", FilterOperator.EQ, false));
 				andFilters.push(new Filter("Synchronized", FilterOperator.EQ, true));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
 
 			if(toBeSyncedFilter){
@@ -445,9 +480,28 @@ sap.ui.define([
 				andFilters.push(new Filter("Expired", FilterOperator.EQ, false));
 				andFilters.push(new Filter("Synchronized", FilterOperator.EQ, false));
 				andFilters.push(new Filter("AppliedCount", FilterOperator.GE, 1));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
 
+            if(updatedPVLFilter){
+				andFilters.push(new Filter("hasNewYLLP", "EQ", 1));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
+			}
 
+            if(updatedConfidentialPriceFilter){
+				andFilters.push(new Filter("hasNewYLAP", "EQ", 1));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
+			}
+            if(netPriceAbovePVLFilter){
+				andFilters.push(new Filter("hasNewYLLP", "EQ", 3));
+                andFilters.push(new Filter("hasNewYLAP", "EQ", 3));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
+			}
+            if(netPriceBelowFloorPriceFilter){
+				andFilters.push(new Filter("hasNewYLLP", "EQ", 4));
+                andFilters.push(new Filter("hasNewYLAP", "EQ", 4));
+                andFilters.push(new Filter("isCancelled", "EQ", false));
+			}
 
 			if(andFilters.length > 0){
 				var oFilters = new Filter(andFilters, true);
@@ -533,13 +587,13 @@ sap.ui.define([
 					await Promise.all(priceAgreements.map(pr => _that.applyNewPrice.call(_that, pr)));
 
 					// apply new SKU on each price agreement
-					await Promise.all(priceAgreements.map(pr => _that.applyNewSKU.call(_that, pr)));
+                    await Promise.all(priceAgreements.map(pr => pr.CountryCode === 'IT' ? _that.applyNewSKU.call(_that, pr) : _that.applyNewSKUSpain.call(_that, pr)));
 
 					// synchronize with sap backend
-					await _that.paState.syncPriceAgreements(priceAgreementIDs);
+					 await _that.paState.syncPriceAgreements(priceAgreementIDs);
 
 					// synchronize with sap backend
-					await _that.paState.syncFocCustPrices(priceAgreementIDs);
+					//await _that.paState.syncFocCustPrices(priceAgreementIDs);
 
 					// clear the filter and refresh the binding
 					_that.byId("idslctfilter").setSelectedKey();
@@ -638,6 +692,7 @@ sap.ui.define([
 
 			appliedCandidatePrices.forEach(acp => {
 				const newSKUs = candidatePrices.filter(cp => !cp.applied && cp.instituteId === acp.instituteId);
+                newSKUs.map(sku => sku.priceCondition = acp.priceCondition);
 				newSKUsWithoutCustomerPrice.push(...newSKUs);
 			});
 
@@ -645,7 +700,7 @@ sap.ui.define([
 			await Promise.all(newSKUsWithoutCustomerPrice.map(candidate => {
 
 				candidate.applied = true;
-				candidate.price = priceAgreement.Price;
+				//candidate.price = priceAgreement.Price;
 				candidate.validFrom = new Date();
                 candidate.validTo = priceAgreement.ExpiryDate;
 
@@ -655,6 +710,10 @@ sap.ui.define([
 			}));
 
 		},
+
+        applyNewSKUSpain: async function(priceAgreement){
+            await this.paState.saveCandidatePricesOnApplyPrices(priceAgreement.ID);
+        },
 
 	});
 

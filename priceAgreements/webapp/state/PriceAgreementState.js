@@ -17,8 +17,10 @@ sap.ui.define([
                     {key:"expiringSoonKey",country:"ALL",value:"Expiring Soon"},
                     {key:"expiredKey",country:"ALL",value:"Expired"},
                     {key:"activeAgreements",country:"ES",value:"Active Agreements"},
+                    {key:"cancelledKey", country:"ES",value:"Cancelled"},
                     {key:"toBeSynced",country:"ES",value:"To be Synchronized"}],
         constructor: function (service) {
+            this.refreshAfterSave = false;
             //data needs to be defined before calling parent. 
             //Parent will use this for creating a JSONModel
             this.data = {
@@ -62,6 +64,11 @@ sap.ui.define([
         getPriceAgreementInstance: function () {
             return this.getProperty("priceAgreement");
         },
+        getNewMaterials: async function(id){
+            return this.getService().getNewMaterials({
+                priceAgreementId: id
+            });
+        },
         updateCustomerPrices:async function(priceAgreement){
             // other solutions, but MaterialsFOC is not loaded in master so undefined. 
             // if this would be need in master list, this could improve performance for update customer prices in mass
@@ -94,7 +101,7 @@ sap.ui.define([
             if (priceAgreement.iD) {
                 return this.getService().updatePriceAgreement(priceAgreement);
             }
-
+            return  Promise.reject();
         },
 
         createPriceAgreementObject: function(priceAgreement){
@@ -124,6 +131,40 @@ sap.ui.define([
             const priceAgreement = this.getProperty("priceAgreement");
             return this.saveCandidatePrice(priceAgreement,candidatePrices);
         },
+
+        saveCandidatePricesOnApplyPrices: async function (priceAgreementId) {
+            const existingPriceAgreement = await this.getPriceAgreement(priceAgreementId);
+            const candidatePrices = existingPriceAgreement.candidatePrices;
+
+            //retrieve all new material numbers from NewMaterialsView by the given priceAgreementId
+            //use these for filtering on candidatePrices - prices should only be applied for the new materials
+            let newMaterials = await this.getNewMaterials(priceAgreementId);
+            newMaterials = this.ConvertKeysToLowerCase(newMaterials.data.results);
+
+            //set all candidateprices to applied = true before saving them
+            let finalCandidatePricesSet = candidatePrices.map((candidatePrice) => {
+                if(newMaterials.find(newMaterial => newMaterial.materialNumber === candidatePrice.materialNumber) && candidatePrice.applied != true && candidatePrice.synchronized === false){
+                    candidatePrice.applied = true;
+                    return candidatePrice;
+                }
+            })?.filter(cp => cp != undefined);
+
+            //create all new customer prices
+            return this.saveCandidatePrice(existingPriceAgreement,finalCandidatePricesSet);
+        },
+
+        ConvertKeysToLowerCase: function (obj) {
+            var output = {};
+            let coll = obj[0];
+
+            obj = obj.map((o) => {
+                return Object.fromEntries(
+                    Object.entries(o).map(([k, v]) => [(k.charAt(0).toLowerCase())+k.substring(1), v])
+                );
+            })
+            return obj
+        },
+        
         saveCandidatePrice:function(priceAgreement,candidatePrices){
 
             // cponst candidatePrices = this.getProperty("candidatePrices").filter(cap => cap.applied); // get only the applied candidatePrices
@@ -152,7 +193,6 @@ sap.ui.define([
             // create customerPrices object based on candidatePrices
             candidatePricesToBeProcessed.forEach((candidate) => {
                 
-                candidate.price = priceAgreement.price;
                 candidate.expiryDate = priceAgreement.expiryDate;
                 candidate.effectiveDate = priceAgreement.effectiveDate;
 
@@ -257,8 +297,8 @@ sap.ui.define([
                 if(candidate.countryCode === "ES"){ 
                     const existingPriceConditions = priceAgreement.CustomerPrices;
                     //const existingRappelCondition = existingPriceConditions.find(rappel => rappel.PriceCondition === 'YAW1' && !rappel.EffectiveDate && !rappel.ExpiryDate);
-                    const aExistingFOCConditions = existingPriceConditions.filter(foc => foc.PriceCondition === 'YA01');
-                    const aExistingSettlementConditions = existingPriceConditions.filter(rappel => rappel.PriceCondition === 'YAW1' && rappel.EffectiveDate && rappel.ExpiryDate);
+                    const aExistingFOCConditions = existingPriceConditions.filter(foc => foc.PriceCondition === 'YA01' && foc.InstituteId === candidate.instituteId);
+                    const aExistingSettlementConditions = existingPriceConditions.filter(rappel => rappel.PriceCondition === 'YAW1' && rappel.EffectiveDate && rappel.ExpiryDate && rappel.InstituteId === candidate.instituteId);
                     const mainPriceCondition = priceAgreement.priceConditions.find(condition => condition.priceConditionClassification.isMain);
                     const focPriceConditions = priceAgreement.focPriceCondition;
                     //const rappelPriceCondition = priceAgreement.rappelPriceCondition;
@@ -269,10 +309,11 @@ sap.ui.define([
                     deletedSettlementPriceConditions = deletedSettlementPriceConditions.map(cp => new CustomerPrice(cp));
                     // Main condition
                     if(mainPriceCondition.priceConditionCode === "YLTF" || mainPriceCondition.priceConditionCode === "YLTP"){
-                        customerPrice.price = mainPriceCondition.netPriceWithTaxAfterDeductionRD
+                        customerPrice.price = candidate.price;
                     }
                     customerPrice.priceCondition = mainPriceCondition.priceConditionCode;
                     customerPrice.applied = candidate.applied;
+                    customerPrice.synchronized = candidate.countryCode === 'ES' && candidate.instituteType === 'Ship-To' && (customerPrice.priceCondition === 'YLTF' || customerPrice.priceCondition === 'YLTP' || customerPrice.priceCondition === 'YL60' || customerPrice.priceCondition === 'YA01') ? true : false;
                     CustomerPrices.push(customerPrice);
 
                     // FOC condition
@@ -290,7 +331,8 @@ sap.ui.define([
                             "FOCproductPackID": foc.productPackId,
                             "FOCmaterialNumber": null,
                             "PriceCondition": "YA01",
-                            "Applied": candidate.applied
+                            "Applied": candidate.applied,
+                            "Synchronized": candidate.countryCode === 'ES' && candidate.instituteType === 'Ship-To' ? true : false
                         });
                         CustomerPrices.push(focCustomerPrice);
                         const existingFOCCondition = aExistingFOCConditions.find(condition => condition.FOCproductPackID === foc.productPackId);
@@ -348,10 +390,10 @@ sap.ui.define([
             });
 
             //those not existing anymore upon comparison -- delete
-            const promiseDeleteSettlementConditions = deletedSettlementPriceConditions?.map(cp => this.getService().deleteCustomerPrice(cp));
-            const promiseCandidatePricesToBeDeleted = candidatePricesToBeDeleted?.map(cp => this.getService().deleteCustomerPrice(cp));
-            const promises = CustomerPrices.map(cp => this.getService().saveCustomerPrice(cp));
-            return Promise.all([promises,promiseDeleteSettlementConditions,promiseCandidatePricesToBeDeleted]);
+            const promiseDeleteSettlementConditions = deletedSettlementPriceConditions?.map(cp => this.getService().deleteCustomerPrice(cp)) || [];
+            const promiseCandidatePricesToBeDeleted = candidatePricesToBeDeleted?.map(cp => this.getService().deleteCustomerPrice(cp)) || [] ;
+            const promises = CustomerPrices.map(cp => this.getService().saveCustomerPrice(cp)) || [];
+            return Promise.all([...promises,...promiseDeleteSettlementConditions,...promiseCandidatePricesToBeDeleted]);
 
         },
 
@@ -434,9 +476,9 @@ sap.ui.define([
             return this.getService().syncPriceAgreements(ids);
         },
 
-        syncFocCustPrices: function(ids){
+        /*syncFocCustPrices: function(ids){
             return this.getService().syncFocCustPrices(ids);
-        },
+        },*/
 
         //detailPage so we can access it everywhere
 		getDetailPage: function () {

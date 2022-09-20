@@ -9,12 +9,19 @@ sap.ui.define([
 	"sap/m/MessageBox",
 	"sap/ui/core/Fragment",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
-	"sap/ui/core/BusyIndicator"
-], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterType,FilterOperator, MessageBox, Fragment, PercentageType,BusyIndicator) {
+	"sap/ui/core/BusyIndicator",
+    "sap/m/Dialog",
+    "sap/ui/core/library"
+], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterType,FilterOperator, MessageBox, Fragment, PercentageType,BusyIndicator, Dialog, CoreLibrary) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
 	var URLHelper = mobileLibrary.URLHelper;
+    // shortcut for sap.m.ButtonType
+	var ButtonType = mobileLibrary.ButtonType;
+	// shortcut for sap.m.DialogType
+	var DialogType = mobileLibrary.DialogType;
+    var ValueState = CoreLibrary.ValueState;
 
 	return BaseController.extend("com.bayer.tender.priceagreements.controller.Detail", {
 
@@ -203,9 +210,22 @@ sap.ui.define([
 			const tender = this.paState.getProperty("priceAgreement").getTender();
 			const bSynchronised = this.paState.getProperty("priceAgreement").synchronized;
 			if(countryCode === "ES"){
-				if(bSynchronised && tender.getClassification() === "Commercial Agreement"){
-					MessageBox.error("This commercial agreement is already synchronised with SAP. \nCommercial agreements cannot be extended. A new commercial agreement must be created to proceed.");
-					return false;
+                let priceAgreement = this.paState.getPriceAgreementInstance();
+                let instType = priceAgreement.getInstitute().instituteType;
+                /*Note: allApplied and allSynchronized can be checked using candidatePrices view instead of customerPrices, 
+                    as when a candidate is unapplied all the entries related to the candidate are deleted from the customerPrices table, 
+                    and thus applied and synchronized values from candidatePrices view and CustomerPrices table would always be same.*/
+                //let customerPrices = priceAgreement.CustomerPrices;
+                let candidatePrices = priceAgreement.getCandidatePrices();
+                //let candidatePrices = customerPrices.length > 0 ? customerPrices : priceAgreement.getCandidatePrices();
+                let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
+                let allSynchronized = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.synchronized === true);
+				if(tender.getClassification() === "Commercial Agreement"){
+                    let errorMsg = "This commercial agreement is already synchronised with SAP. \nCommercial agreements cannot be extended. A new commercial agreement must be created to proceed.";
+                    if(allSynchronized && allApplied){
+                        MessageBox.error(errorMsg);
+                        return false;
+                    }
 				}
 			}
 			return true;
@@ -263,6 +283,7 @@ sap.ui.define([
 			return oMasterTable.getBinding("items");
 		},
 		onFooterSavePress: async function (oEvent) {
+            this.setBusy(true);
 			const isValid = this.paState.getPriceAgreementInstance().isValid();
 			this.paState.updateModel();
 			if (!isValid || !this.byId("expiryDateID").isValidValue() || !this.byId("effectiveDateId").isValidValue()) {
@@ -286,9 +307,7 @@ sap.ui.define([
 					return this.confirmCancelMessage("ExistingPA");
 				} 
 				return true;
-			}).then((ok) => {
-				this.savePA();
-			});
+			}).then(this.savePA());
 			// MessageBox.warning(this.getResourceBundle().getText("confirmCancelExisting"), {
 			// 	actions: [MessageBox.Action.YES, MessageBox.Action.NO],
 			// 	emphasizedAction: MessageBox.Action.YES,
@@ -317,19 +336,21 @@ sap.ui.define([
 			});
 		},
 		savePA: function () {
-			this.setBusy(true);
 			return this.paState.saveCandidatePrices()
 				.then(this.paState.savePriceAgreement.bind(this.paState, this.paState.getPriceAgreementInstance()))
 				.then(() => {
 					this.paState.setEditMode(false);
 					//update view with saved values from database - to be sure that UI and DB are in sync
-					this.paState.getPriceAgreement(this.sObjectId);
+					return this.paState.getPriceAgreement(this.sObjectId);
 					//update master - UI5 framework triggers refresh automatically after merge/update
 					//not needed otherwise will reload twice
 					// this.refreshMaster();
-				}).finally(() => {
-					this.setBusy(false);
-				});
+				}).then(() => {
+					this.paState.refreshAfterSave = true;
+					const oMasterTable = this.getOwnerComponent().oListSelector._oList; 
+					oMasterTable && oMasterTable.getBinding("items").refresh();
+                    this.setBusy(false);
+                });
 		},
 
 		/**
@@ -339,6 +360,37 @@ sap.ui.define([
 		onSynchronize: function (evt) {
 			this.synchronizePriceAgreement(this.sObjectId);
 		},
+
+        onNavigateToOffer: function(evt){
+            let priceAgreement = this.paState.getPriceAgreementInstance();
+            window.open(`/app/index.html#/tender&/t/detail/${priceAgreement.countryCode}/${priceAgreement.tenderId}/${priceAgreement.offerId}/__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded`);
+        },
+
+        onIgnorePVLPriceChange: async function(evt){
+            this.setBusy(true);
+
+            let priceAgreement = this.paState.getPriceAgreementInstance();
+            priceAgreement.ignorePVLPriceChange = true;
+            await this.paState.savePriceAgreement(priceAgreement);
+
+            this.paState.getPriceAgreement(this.sObjectId)
+            .finally(() => {
+                this.setBusy(false);
+            });
+        },
+
+        onIgnoreConfPriceChange: async function(evt){
+            this.setBusy(true);
+
+            let priceAgreement = this.paState.getPriceAgreementInstance();
+            priceAgreement.ignoreConfPriceChange = true;
+            await this.paState.savePriceAgreement(priceAgreement);
+
+            this.paState.getPriceAgreement(this.sObjectId)
+            .finally(() => {
+                this.setBusy(false);
+            });
+        },
 
 		synchronizePriceAgreement: async function(priceAgreementID){
 			if(!priceAgreementID){
@@ -359,8 +411,7 @@ sap.ui.define([
 			} catch (error) {
 				this.paState.getPriceAgreement(this.sObjectId);
 				this.setBusy(false);
-				const errMsg = JSON.parse(error.responseText)?.error?.message?.value;
-				MessageBox.error(`Synchronization of Price Agreement failed. ${errMsg}`);
+				MessageBox.error("Try Again Later");
 			}
 		},
 
@@ -403,19 +454,45 @@ sap.ui.define([
 			this.getView().getModel("detailView").setProperty("/selectedProductUoM", uom);
 		},
 
-        isAllApplied: function(customerPrices, editMode){
-            let candidatePrices = customerPrices.length > 0 ? customerPrices : this.paState.getPriceAgreementInstance().getCandidatePrices();
-            let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
+        isAllApplied: function(candidatePrices, editMode){
+            //let candidatePrices = customerPrices.length > 0 ? customerPrices : this.paState.getPriceAgreementInstance().getCandidatePrices();
+            //let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
             let allSynchronized = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.synchronized === true);
-            this.paState.setAllApplied(allApplied);
+            this.paState.setAllApplied(candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true));
             return editMode && !allSynchronized;
 		},
 
-		isSyncButtonEnabled: function(isPriceAgreementSynchronized, customerPrices, isCancelled){
+		isSyncButtonEnabled: function(isPriceAgreementSynchronized, customerPrices, isCancelled,syncStatus){
 			if(!Array.isArray(customerPrices)) customerPrices = [];
-			if(isPriceAgreementSynchronized || (isCancelled === 'Cancelled')) return false;
+            let priceAgreement = this.paState.getPriceAgreementInstance();
+			//let customerPrices = priceAgreement.CustomerPrices;
+            let allSynchronized = customerPrices.length > 0 && customerPrices.every(customerPrice => customerPrice.synchronized === true);
+            if( allSynchronized || (isCancelled === 'Cancelled')) return false;
+
+            // after call with Jonathan, these checks are not needed anymore, we simplified it above ( just commenting to be safe)
+            
+            /*const countryCode = this.paState.getProperty("priceAgreement").getTender().getCountryCode();
+            if(countryCode === "ES"){
+                let priceAgreement = this.paState.getPriceAgreementInstance();
+                let instType = priceAgreement.getInstitute().instituteType;
+                if(instType === "Region(s)"){
+                    let customerPrices = priceAgreement.CustomerPrices;
+                    let candidatePrices = customerPrices.length > 0 ? customerPrices : priceAgreement.getCandidatePrices();
+                    let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
+                    let allSynchronized = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.synchronized === true);
+                    if((allApplied && allSynchronized) || (isCancelled === 'Cancelled')) return false;
+                } else {
+                    if(isPriceAgreementSynchronized || (isCancelled === 'Cancelled')) return false;
+                }
+
+            } else{
+                if(isPriceAgreementSynchronized || (isCancelled === 'Cancelled')) return false;
+            }
+			*/
+			
 			if(customerPrices.length <= 0) return false; // when no customer prices are created yet, disable button
 			if(!customerPrices.some(item => item.applied)) return false; // when customer prices do exist but, non are applied
+            if(syncStatus === "RUNNING") return false; //when sync is running,disable button
 			return true;
 		},
 
@@ -430,8 +507,52 @@ sap.ui.define([
         onCancelPriceAgreement: async function(evt){
 			this.setBusy(true);
 			let that = this;
+            let priceAgreement = this.paState.getPriceAgreementInstance();
 
-            sap.m.MessageBox.warning("Are you sure you want to terminate this price agreement?", {
+            if (!this.oCancelDialog) {
+				this.oCancelDialog = new Dialog({
+					title: "Terminate",
+					type: DialogType.Message,
+                    state: ValueState.Warning,
+					content: [
+						new sap.m.Label({
+							text: "Are you sure you want to terminate this price agreement?",
+							labelFor: "cancellationNote"
+						}),
+						new sap.m.TextArea("cancellationNote", {
+							width: "100%",
+							placeholder: "Add note (mandatory)"
+						})
+					],
+					beginButton: new sap.m.Button({
+						type: ButtonType.Emphasized,
+						text: "Terminate",
+						press: async function () {
+							var sText = sap.ui.getCore().byId("cancellationNote").getValue();
+                            priceAgreement.cancellationComment = sText;
+                            await that.paState.cancelPriceAgreement();
+                            that.paState.getPriceAgreement(that.sObjectId)
+                            .finally(() => {
+                                this.paState.getPriceAgreement(this.sObjectId)
+                                .finally(() => {                         
+                                    this.oCancelDialog.close();
+                                    that.setBusy(false);
+                                });
+                            });
+						}.bind(this)
+					}),
+					endButton: new sap.m.Button({
+						text: "Cancel",
+						press: function () {
+							this.oCancelDialog.close();
+						}.bind(this)
+					})
+				});
+			}
+
+			this.oCancelDialog.open();
+
+           /* sap.m.MessageBox.warning("Are you sure you want to terminate this price agreement?", {
                 actions: [sap.m.MessageBox.Action.YES, sap.m.MessageBox.Action.NO],
                 styleClass: "sapUiSizeCompact",
                 onClose: async function (sAction){
@@ -445,7 +566,7 @@ sap.ui.define([
                         that.setBusy(false);
                     }
                 }
-            });
+            });*/
         }
 
 	});
