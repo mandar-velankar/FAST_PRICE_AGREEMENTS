@@ -4,7 +4,10 @@ sap.ui.define([
     "use strict";
 
     var CandidatePrice = BaseObject.extend("com.bayer.tender.priceagreements.model.CandidatePrice", {
-        constructor: function (data) {
+        constructor: function (data,priceCondition,netPrice) {
+            if(priceCondition === "Precio Neto"){
+                data.Price = netPrice;
+            }
             //will copy all properties and make them camelcase starting with lowercase ;)
             BaseObject.call(this, data);
 
@@ -28,7 +31,11 @@ sap.ui.define([
                 "price",
                 "synchronized",
                 "effectiveDate",
-                "expiryDate"
+                "expiryDate",
+                "applied",
+                "PriceCondition",
+                "priceAgreementId",
+                "priceCondition"
             ]);
 
         },

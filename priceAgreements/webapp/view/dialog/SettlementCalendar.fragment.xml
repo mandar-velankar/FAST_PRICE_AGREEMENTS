@@ -23,12 +23,12 @@
 				<items>
 					<ColumnListItem>
 						<cells>
+                        
                             <DatePicker value="{
                                                 path:'sc>fromDate',
                                                 type:'sap.ui.model.type.Date', 
                                                 formatOptions: { style: 'short', pattern: 'yyyy-MM-dd',UTC: true}
                                         }"
-										minDate="{sc>minDate}"
 										maxDate="{= ${sc>toDate} || ${sc>maxDate} }"
 										valueState="{sc>fromValueState}"
                                         valueFormat="yyyy-MM-dd" 

@@ -14,7 +14,7 @@ sap.ui.define([
 		},
 		getPriceAgreement: function (id) {
 			const keyPath = this.model.createKey("/PriceAgreements", { ID: id });
-			return this.odata(keyPath).get({ urlParameters: { $expand: "ConsumerPrice,Materials,Institute,Tender,PriceConditions/PriceConditionClassification,PriceConditions/DiscountCondition,PriceConditions/FreeGoodsOther/ProductPack,PriceConditions/Settlement,Product/ProductPack,CustomerPrices,Deliveries,FOC,MaterialsFOC,MaterialsFOC/FreeGoodsOther,MaterialsFOC/FreeGoodsOther/Materials,SettlementDates" } });
+			return this.odata(keyPath).get({ urlParameters: { $expand: "ConsumerPrice,Materials,Institute,Tender,PriceConditions/PriceConditionClassification,PriceConditions/DiscountCondition,PriceConditions/FreeGoodsOther/ProductPack,PriceConditions/Settlement,Product/ProductPack,CustomerPrices,Deliveries,FOC,MaterialsFOC,MaterialsFOC/FreeGoodsOther,MaterialsFOC/FreeGoodsOther/Materials,SettlementDates,MasterPrices" } });
 		},
 		getPriceAgreementsByInstituteProduct: function (instituteId, productPackId,expiryDate) {
 			const filters = [];
@@ -62,7 +62,7 @@ sap.ui.define([
 				ID: data.ID
 			});
 
-			return this.odata(sKey).put(data);
+			return this.odata(sKey).put(data,{refreshAfterChange:false});
 
 		},
 
@@ -133,6 +133,34 @@ sap.ui.define([
 			return this.odata("/CandidatePrices").get(mParameters);
 		},
 
+        getNewMaterials: function (id) {		
+
+			if (!id) {
+				return "Please provide price agreement ID.";
+			}
+
+			var aFilters = [];
+
+            aFilters.push(new Filter({
+                path: 'PriceAgreementId',
+                operator: FilterOperator.EQ,
+                value1: id.priceAgreementId
+            }))
+
+            aFilters.push(new Filter({
+                path: 'isNew',
+                operator: FilterOperator.EQ,
+                value1: true
+            }))
+
+			var mParameters = {
+				filters: aFilters
+
+			};
+
+			return this.odata("/NewMaterialsView").get(mParameters);
+		},
+
 		syncPriceAgreements: function (ids) {
 
 			if (!ids || !Array.isArray(ids) || ids.length <= 0) return "You must provide a list of PriceAgreement IDs";
@@ -184,7 +212,7 @@ sap.ui.define([
 			};
 
 			return this.odata("/CandidatePrices").get(mParameters);
-		},
+		}/*,
 
 		syncFocCustPrices: function (ids) {
 
@@ -196,7 +224,7 @@ sap.ui.define([
 
 			return this.odata("/syncFocCustPrices").post(data);
 
-		},
+		},*/
 
 	});
 	return PriceAgreementService;

@@ -47,12 +47,15 @@ sap.ui.define([
                 data.SettlementDates && this.setSettlementDates(data.SettlementDates.results || data.SettlementDates);
                 data.settlementDates && this.setSettlementDates(data.settlementDates);//used for backup restore
                 this.MaterialsFOC = data.MaterialsFOC;
+                this.MasterPrices = data.MasterPrices;
             }
         },
 
 
         setCandidatePrices:function(candidatePrices){
-            this.candidatePrices = (candidatePrices && candidatePrices.map(candidatePrice => new CandidatePrice(candidatePrice)) ) || [];
+            let priceCondition = this.mainPriceCondition?.priceConditionClassification?.conditionType;
+            let netPrice = this.mainPriceCondition?.netPriceWithoutTaxBeforeDeductionRD;
+            this.candidatePrices = (candidatePrices && candidatePrices.map(candidatePrice => new CandidatePrice(candidatePrice,priceCondition,netPrice )) ) || [];
         },
         calculateSettlementCalendarProposal:function(){
             const settlementId = this.rappelPriceCondition?.settlement?.iD;
@@ -62,14 +65,14 @@ sap.ui.define([
                 case 'VALIDITY':
                     settlementDates.push(new SettlementDate({
                         priceAgreementId:this.priceAgreementId,
-                        fromDate:new Date(this.effectiveDate.getTime()),
+                        fromDate:new Date(this.rappelPriceCondition.refundDate.getTime()),
                         toDate: new Date(this.expiryDate.getTime()),
-                        minDate: new Date(this.effectiveDate.getTime()),
+                        minDate: new Date(this.rappelPriceCondition.refundDate.getTime()),
                         maxDate: new Date(this.expiryDate.getTime())
                     }));
                     break;
                 case 'FREQUENCY':
-                    let dateFrom = new Date(this.effectiveDate.getTime());
+                    let dateFrom = new Date(this.rappelPriceCondition.refundDate.getTime());
                     let idx = 0;
                     do {
                         let dateTo = new Date(dateFrom.getTime());
@@ -105,7 +108,7 @@ sap.ui.define([
         },
         getPreviousSettlementDate:function(idx,settlementDates){
             const prevSettlementDate = settlementDates[idx-1];
-            let prevDate = new Date(this.effectiveDate.getTime());
+            let prevDate = new Date(this.rappelPriceCondition.refundDate.getTime());
             if(prevSettlementDate?.toDate){
                 prevDate = new Date(prevSettlementDate.toDate.getTime());
                 prevDate.setDate(prevDate.getDate()+1);
@@ -122,19 +125,19 @@ sap.ui.define([
                 nextDate = new Date(nextSettlementDate.fromDate.getTime());
                 nextDate.setDate(nextDate.getDate()-1);
             }
-            if(nextDate.getTime()<this.effectiveDate.getTime()){
-                nextDate = new Date(this.effectiveDate.getTime());
+            if(nextDate.getTime()<this.rappelPriceCondition.refundDate.getTime()){
+                nextDate = new Date(this.rappelPriceCondition.refundDate.getTime());
             }
             return nextDate;
         },
         cloneSettlementDates:function(){
-            return this.settlementDates.map( settlementDate => new SettlementDate(settlementDate.getAll()));
+            return this.settlementDates && this.settlementDates.length > 0 && this.settlementDates.map( settlementDate => new SettlementDate(settlementDate.getAll()));
         },
         applySettlementDates:function(settlementDates){
-            this.settlementDates = settlementDates.map( settlementDate => new SettlementDate(settlementDate.getAll()));
+            this.settlementDates = settlementDates && settlementDates.length > 0 && settlementDates.map( settlementDate => new SettlementDate(settlementDate.getAll()));
         },
         setSettlementDates:function(settlementDates){
-            this.settlementDates = settlementDates && settlementDates.map(settlementDate => new SettlementDate(settlementDate));
+            this.settlementDates = settlementDates && settlementDates.length > 0 && settlementDates.map(settlementDate => new SettlementDate(settlementDate));
             
             // if(!this.effectiveDate || !this.expiryDate){
             //     return;
@@ -244,9 +247,13 @@ sap.ui.define([
                 "synchronized",
                 "extendPriceAgreement",
                 "expiryExtensionPeriod",
-                "status"
+                "expiryExtensionAcknowledged",
+                "status",
+                "cancellationComment",
+                "ignoreConfPriceChange",
+                "ignorePVLPriceChange"
             ]);
-            data.SettlementDates = this.settlementDates.map(settlementDate => settlementDate.getJSON());
+            data.SettlementDates = this.settlementDates && this.settlementDates.length > 0 && this.settlementDates.map(settlementDate => settlementDate.getJSON());
 
             return data;
         },
@@ -271,7 +278,7 @@ sap.ui.define([
             all.customerPrices = this.customerPrices.map(customerPrice=>customerPrice.getAll());
             all.candidatePrices = this.candidatePrices.map(candidatePrice=>candidatePrice.getAll());
             all.priceConditions = this.priceConditions.map(priceCondition => priceCondition.getAll());
-            all.settlementDates = this.settlementDates.map(settlementDate => settlementDate.getAll());
+            all.settlementDates = this.settlementDates && this.settlementDates.length > 0 && this.settlementDates.map(settlementDate => settlementDate.getAll());
             return all;
         }
     });
