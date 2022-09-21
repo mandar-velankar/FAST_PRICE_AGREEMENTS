@@ -131,10 +131,10 @@ sap.ui.define([
             return nextDate;
         },
         cloneSettlementDates:function(){
-            return this.settlementDates && this.settlementDates.length > 0 && this.settlementDates.map( settlementDate => new SettlementDate(settlementDate.getAll()));
+            return this.settlementDates.map( settlementDate => new SettlementDate(settlementDate.getAll()));
         },
         applySettlementDates:function(settlementDates){
-            this.settlementDates = settlementDates && settlementDates.length > 0 && settlementDates.map( settlementDate => new SettlementDate(settlementDate.getAll()));
+            this.settlementDates = settlementDates.map( settlementDate => new SettlementDate(settlementDate.getAll()));
         },
         setSettlementDates:function(settlementDates){
             this.settlementDates = settlementDates && settlementDates.length > 0 && settlementDates.map(settlementDate => new SettlementDate(settlementDate));
@@ -253,7 +253,7 @@ sap.ui.define([
                 "ignoreConfPriceChange",
                 "ignorePVLPriceChange"
             ]);
-            data.SettlementDates = this.settlementDates && this.settlementDates.length > 0 && this.settlementDates.map(settlementDate => settlementDate.getJSON());
+            data.SettlementDates = this.settlementDates.map(settlementDate => settlementDate.getJSON());
 
             return data;
         },
@@ -278,7 +278,7 @@ sap.ui.define([
             all.customerPrices = this.customerPrices.map(customerPrice=>customerPrice.getAll());
             all.candidatePrices = this.candidatePrices.map(candidatePrice=>candidatePrice.getAll());
             all.priceConditions = this.priceConditions.map(priceCondition => priceCondition.getAll());
-            all.settlementDates = this.settlementDates && this.settlementDates.length > 0 && this.settlementDates.map(settlementDate => settlementDate.getAll());
+            all.settlementDates = this.settlementDates.map(settlementDate => settlementDate.getAll());
             return all;
         }
     });
