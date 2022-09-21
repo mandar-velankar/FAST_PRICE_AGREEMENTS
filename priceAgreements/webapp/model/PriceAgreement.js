@@ -137,20 +137,21 @@ sap.ui.define([
             this.settlementDates = settlementDates.map( settlementDate => new SettlementDate(settlementDate.getAll()));
         },
         setSettlementDates:function(settlementDates){
-            this.settlementDates = settlementDates && settlementDates.map(settlementDate => new SettlementDate(settlementDate));
+            if(!Array.isArray(settlementDates)) return;
+
+            this.settlementDates = settlementDates.map(settlementDate => new SettlementDate(settlementDate));
             
             // if(!this.effectiveDate || !this.expiryDate){
             //     return;
             // }
             
-            if(this.settlementDates && this.settlementDates.length > 0){
-                this.settlementDates.sort( ( settlementDateA,settlementDateB ) => {
-                    if(settlementDateA.fromDate < settlementDateB.fromDate) return -1;
-                    if(settlementDateA.fromDate > settlementDateB.fromDate) return 1;
-                    return 0;
-                });
-                this.settlementDates = this.calculateSettlementCalendarMinMaxDate(this.settlementDates);
-            }
+            this.settlementDates.sort( ( settlementDateA,settlementDateB ) => {
+                if(settlementDateA.fromDate < settlementDateB.fromDate) return -1;
+                if(settlementDateA.fromDate > settlementDateB.fromDate) return 1;
+                return 0;
+            });
+            
+            this.settlementDates = this.calculateSettlementCalendarMinMaxDate(this.settlementDates);
         },
         setPriceConditions:function(priceConditions){
             this.priceConditions = priceConditions && priceConditions.map(priceCondition => new PriceCondition(priceCondition));
