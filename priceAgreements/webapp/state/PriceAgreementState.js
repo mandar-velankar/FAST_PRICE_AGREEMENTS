@@ -93,8 +93,12 @@ sap.ui.define([
                 responsePA.data.Price = priceAgreement.Price;
             }
 
+            const candidatePrices = responseCandidate.data.results;
+            // when we "Apply price" from the Master screen, we must make sure that all Candidate Prices are set to Applied. 
+            candidatePrices.forEach(cp => !cp.Applied && (cp.Applied = true));
+
             const pa = new PriceAgreement(responsePA.data);
-            pa.setCandidatePrices(responseCandidate.data.results);
+            pa.setCandidatePrices(candidatePrices);
             return this.saveCandidatePrice(pa,pa.getCandidatePrices());
         },
         savePriceAgreement: function (priceAgreement) {
@@ -220,7 +224,7 @@ sap.ui.define([
 
                     // 1) loopen over priceAgreement.FOC (FOC same product)
                     priceAgreement.FOC.forEach((focProduct) => {
-                        const existingCustomerPrice = existingCustomerPrices.find(cp => cp.priceCondition === "YA03" && cp.fOCproductPackID === focProduct.ProductPackId && cp.instituteId === candidate.instituteId);
+                        const existingCustomerPrice = existingCustomerPrices.find(cp => cp.priceCondition === "YA03" && cp.fOCproductPackID === focProduct.ProductPackId && cp.instituteId === candidate.instituteId && cp.materialNumber == candidate.materialNumber);
                         currentProductId = focProduct.ProductPackId;
                     
                         // 2) indien  FOC.productcode === candidate.productcode( dus main product), 1 extra entry saven voor de main product FOC
@@ -252,7 +256,7 @@ sap.ui.define([
                             // 3) Voor de andere FOC's, alle materialen ophalen via priceAgreement.MaterialsFOC. 
                             priceAgreement.MaterialsFOC.FreeGoodsOther.results.forEach((FOC) => {
 
-                                const existingCustomerPrice = existingCustomerPrices.find(cp => cp.priceCondition === "YA03" && cp.fOCproductPackID === FOC.ProductPackId && cp.instituteId === candidate.instituteId);
+                                const existingCustomerPrice = existingCustomerPrices.find(cp => cp.priceCondition === "YA03" && cp.fOCproductPackID === FOC.ProductPackId && cp.instituteId === candidate.instituteId && cp.materialNumber == candidate.materialNumber);
 
                                 // loopen over elk materiaal en 1 entry per materiaal naar customerprices wegschrijven
 
@@ -311,6 +315,7 @@ sap.ui.define([
                     if(mainPriceCondition.priceConditionCode === "YLTF" || mainPriceCondition.priceConditionCode === "YLTP"){
                         customerPrice.price = candidate.price;
                     }
+
                     customerPrice.priceCondition = mainPriceCondition.priceConditionCode;
                     customerPrice.applied = candidate.applied;
                     customerPrice.synchronized = candidate.countryCode === 'ES' && candidate.instituteType === 'Ship-To' && (customerPrice.priceCondition === 'YLTF' || customerPrice.priceCondition === 'YLTP' || customerPrice.priceCondition === 'YL60' || customerPrice.priceCondition === 'YA01') ? true : false;
@@ -335,7 +340,7 @@ sap.ui.define([
                             "Synchronized": candidate.countryCode === 'ES' && candidate.instituteType === 'Ship-To' ? true : false
                         });
                         CustomerPrices.push(focCustomerPrice);
-                        const existingFOCCondition = aExistingFOCConditions.find(condition => condition.FOCproductPackID === foc.productPackId);
+                        const existingFOCCondition = aExistingFOCConditions.find(condition => condition.FOCproductPackID === foc.productPackId && condition.MaterialNumber == candidate.materialNumber);
                         if(existingFOCCondition) {
                             focCustomerPrice.iD = existingFOCCondition.ID;
                         }
@@ -379,7 +384,7 @@ sap.ui.define([
                             "PriceCondition": "YAW1",
                             "Applied": candidate.applied
                         });
-                        const existingSettlementCondition = aExistingSettlementConditions.find(condition => condition.EffectiveDate.toISOString() === settlementDateCustomerPrice.effectiveDate.toISOString() && condition.ExpiryDate.toISOString() === settlementDateCustomerPrice.expiryDate.toISOString());
+                        const existingSettlementCondition = aExistingSettlementConditions.find(condition => condition.EffectiveDate.toISOString() === settlementDateCustomerPrice.effectiveDate.toISOString() && condition.ExpiryDate.toISOString() === settlementDateCustomerPrice.expiryDate.toISOString() && condition.MaterialNumber == candidate.materialNumber);
                         if(existingSettlementCondition) {
                             settlementDateCustomerPrice.iD = existingSettlementCondition.ID;
                         }
