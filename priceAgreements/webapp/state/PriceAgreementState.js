@@ -93,8 +93,12 @@ sap.ui.define([
                 responsePA.data.Price = priceAgreement.Price;
             }
 
+            const candidatePrices = responseCandidate.data.results;
+            // when we "Apply price" from the Master screen, we must make sure that all Candidate Prices are set to Applied. 
+            candidatePrices.forEach(cp => !cp.Applied && (cp.Applied = true));
+
             const pa = new PriceAgreement(responsePA.data);
-            pa.setCandidatePrices(responseCandidate.data.results);
+            pa.setCandidatePrices(candidatePrices);
             return this.saveCandidatePrice(pa,pa.getCandidatePrices());
         },
         savePriceAgreement: function (priceAgreement) {
