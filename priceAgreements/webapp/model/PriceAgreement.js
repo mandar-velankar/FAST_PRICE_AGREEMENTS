@@ -131,40 +131,27 @@ sap.ui.define([
             return nextDate;
         },
         cloneSettlementDates:function(){
-            if(this.settlementDates && this.settlementDates.length > 0){
-                return this.settlementDates.map( settlementDate => new SettlementDate(settlementDate.getAll()));
-            } else {
-                this.settlementDates = [];
-            }
-            
+            return this.settlementDates.map( settlementDate => new SettlementDate(settlementDate.getAll()));
         },
         applySettlementDates:function(settlementDates){
-            if(settlementDates && settlementDates.length > 0){
-                this.settlementDates = settlementDates.map( settlementDate => new SettlementDate(settlementDate.getAll()));
-            } else {
-                this.settlementDates = [];
-            }
+            this.settlementDates = settlementDates.map( settlementDate => new SettlementDate(settlementDate.getAll()));
         },
         setSettlementDates:function(settlementDates){
-            if(settlementDates && settlementDates.length > 0){
-                this.settlementDates =  settlementDates.map(settlementDate => new SettlementDate(settlementDate));
-            } else {
-                this.settlementDates = [];
-            }
-            
+            if(!Array.isArray(settlementDates)) return;
+
+            this.settlementDates = settlementDates.map(settlementDate => new SettlementDate(settlementDate));
             
             // if(!this.effectiveDate || !this.expiryDate){
             //     return;
             // }
             
-            if(this.settlementDates && this.settlementDates.length > 0){
-                this.settlementDates.sort( ( settlementDateA,settlementDateB ) => {
-                    if(settlementDateA.fromDate < settlementDateB.fromDate) return -1;
-                    if(settlementDateA.fromDate > settlementDateB.fromDate) return 1;
-                    return 0;
-                });
-                this.settlementDates = this.calculateSettlementCalendarMinMaxDate(this.settlementDates);
-            }
+            this.settlementDates.sort( ( settlementDateA,settlementDateB ) => {
+                if(settlementDateA.fromDate < settlementDateB.fromDate) return -1;
+                if(settlementDateA.fromDate > settlementDateB.fromDate) return 1;
+                return 0;
+            });
+            
+            this.settlementDates = this.calculateSettlementCalendarMinMaxDate(this.settlementDates);
         },
         setPriceConditions:function(priceConditions){
             this.priceConditions = priceConditions && priceConditions.map(priceCondition => new PriceCondition(priceCondition));
@@ -267,12 +254,7 @@ sap.ui.define([
                 "ignoreConfPriceChange",
                 "ignorePVLPriceChange"
             ]);
-            if(this.settlementDates && this.settlementDates.length > 0){
-                data.SettlementDates =  this.settlementDates.map(settlementDate => settlementDate.getJSON());
-            } else {
-                data.SettlementDates = [];
-            }
-            
+            data.SettlementDates = this.settlementDates.map(settlementDate => settlementDate.getJSON());
 
             return data;
         },
@@ -297,12 +279,7 @@ sap.ui.define([
             all.customerPrices = this.customerPrices.map(customerPrice=>customerPrice.getAll());
             all.candidatePrices = this.candidatePrices.map(candidatePrice=>candidatePrice.getAll());
             all.priceConditions = this.priceConditions.map(priceCondition => priceCondition.getAll());
-            if(this.settlementDates && this.settlementDates.length > 0){
-                all.settlementDates =  this.settlementDates.map(settlementDate => settlementDate.getAll());
-            } else {
-                all.settlementDates = [];
-            }
-            
+            all.settlementDates = this.settlementDates.map(settlementDate => settlementDate.getAll());
             return all;
         }
     });
