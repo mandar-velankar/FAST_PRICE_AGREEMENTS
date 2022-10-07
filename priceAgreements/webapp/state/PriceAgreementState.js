@@ -113,6 +113,10 @@ sap.ui.define([
                 return new PriceAgreement(priceAgreement);
             }
         },
+        //EHQUT-Italy Synchronise button enable
+        getCustomerPrics: async function(priceAgreementID, material) {
+            return this.getService().getCustomerPrics(priceAgreementID, material);
+        },
 
         getCandidatePrices: function (filters) {
             // this.setProperty("candidatePrices", []);
