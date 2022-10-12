@@ -22,7 +22,8 @@ sap.ui.define([
 	// shortcut for sap.m.DialogType
 	var DialogType = mobileLibrary.DialogType;
     var ValueState = CoreLibrary.ValueState;
-
+    //EHQUT-168231- Italy Synchronise button enable
+    var syncButtonenableflag=false;
 	return BaseController.extend("com.bayer.tender.priceagreements.controller.Detail", {
 
 		formatter: formatter,
@@ -129,6 +130,7 @@ sap.ui.define([
 				}.bind(this));
 				// this.paState.getCandidatePrices(this.sObjectId, null);
 			}.bind(this))
+            syncButtonenableflag=false;
 		},
 
 		addCountryDetailFragments: function(sCountryCode){
@@ -295,6 +297,8 @@ sap.ui.define([
                 MessageBox.error(this.getText("errorExpiry"));
                 return false;
             }
+            //EHQUT-Synchronise button enable
+            syncButtonenableflag=this.paState.hasPAExpiryDateChanged();
 			//expiry date changed + already synchronized ==> price agreement in SAP should be cancelled first
 			Promise.resolve(((this.paState.hasPAExpiryDateChanged() || this.paState.hasPAEffectiveDateChanged()) && this.paState.getPriceAgreementInstance().synchronized)).then((confirm) => {
 				if(confirm){
@@ -337,6 +341,14 @@ sap.ui.define([
 			});
 		},
 		savePA: function () {
+            //EHQUT-Italy-Synchronise Button enable 
+            let priceAgreement=this.paState.getPriceAgreementInstance();
+            const countryCode = this.paState.getProperty("priceAgreement").getTender().getCountryCode();
+            let priceAgreementID=priceAgreement.iD;
+            let material=priceAgreement.Materials[0].SKUCode;
+            if(syncButtonenableflag===true && countryCode === "IT") {
+             let customerprice=this.paState.getCustomerPrics(priceAgreementID, material);
+            }
 			return this.paState.saveCandidatePrices()
 				.then(this.paState.savePriceAgreement.bind(this.paState, this.paState.getPriceAgreementInstance()))
 				.then(() => {
