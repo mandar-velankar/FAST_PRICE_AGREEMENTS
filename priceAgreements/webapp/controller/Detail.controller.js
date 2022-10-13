@@ -22,7 +22,8 @@ sap.ui.define([
 	// shortcut for sap.m.DialogType
 	var DialogType = mobileLibrary.DialogType;
     var ValueState = CoreLibrary.ValueState;
-
+    //EHQUT-168231- Italy Synchronise button enable
+    var syncButtonenableflag=false;
 	return BaseController.extend("com.bayer.tender.priceagreements.controller.Detail", {
 
 		formatter: formatter,
@@ -129,6 +130,7 @@ sap.ui.define([
 				}.bind(this));
 				// this.paState.getCandidatePrices(this.sObjectId, null);
 			}.bind(this))
+            syncButtonenableflag=false;
 		},
 
 		addCountryDetailFragments: function(sCountryCode){
@@ -210,23 +212,24 @@ sap.ui.define([
 			const tender = this.paState.getProperty("priceAgreement").getTender();
 			const bSynchronised = this.paState.getProperty("priceAgreement").synchronized;
 			if(countryCode === "ES"){
-                let priceAgreement = this.paState.getPriceAgreementInstance();
-                let instType = priceAgreement.getInstitute().instituteType;
+                //let priceAgreement = this.paState.getPriceAgreementInstance();
+                //let instType = priceAgreement.getInstitute().instituteType;
                 /*Note: allApplied and allSynchronized can be checked using candidatePrices view instead of customerPrices, 
                     as when a candidate is unapplied all the entries related to the candidate are deleted from the customerPrices table, 
                     and thus applied and synchronized values from candidatePrices view and CustomerPrices table would always be same.*/
                 //let customerPrices = priceAgreement.CustomerPrices;
-                let candidatePrices = priceAgreement.getCandidatePrices();
+                //let candidatePrices = priceAgreement.getCandidatePrices();
                 //let candidatePrices = customerPrices.length > 0 ? customerPrices : priceAgreement.getCandidatePrices();
-                let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
-                let allSynchronized = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.synchronized === true);
+                //let allApplied = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.applied === true);
+                //let allSynchronized = candidatePrices.length > 0 && candidatePrices.every(candidatePrice => candidatePrice.synchronized === true);
 				if(tender.getClassification() === "Commercial Agreement"){
-                    let errorMsg = "This commercial agreement is already synchronised with SAP. \nCommercial agreements cannot be extended. A new commercial agreement must be created to proceed.";
+                    /*let errorMsg = "This commercial agreement is already synchronised with SAP. \nCommercial agreements cannot be extended. A new commercial agreement must be created to proceed.";
                     if(allSynchronized && allApplied){
                         MessageBox.error(errorMsg);
                         return false;
-                    }
-				}
+                    }*/
+                    return true;
+				} 
 			}
 			return true;
 		},
@@ -294,6 +297,8 @@ sap.ui.define([
                 MessageBox.error(this.getText("errorExpiry"));
                 return false;
             }
+            //EHQUT-Synchronise button enable
+            syncButtonenableflag=this.paState.hasPAExpiryDateChanged();
 			//expiry date changed + already synchronized ==> price agreement in SAP should be cancelled first
 			Promise.resolve(((this.paState.hasPAExpiryDateChanged() || this.paState.hasPAEffectiveDateChanged()) && this.paState.getPriceAgreementInstance().synchronized)).then((confirm) => {
 				if(confirm){
@@ -336,6 +341,14 @@ sap.ui.define([
 			});
 		},
 		savePA: function () {
+            //EHQUT-Italy-Synchronise Button enable 
+            let priceAgreement=this.paState.getPriceAgreementInstance();
+            const countryCode = this.paState.getProperty("priceAgreement").getTender().getCountryCode();
+            let priceAgreementID=priceAgreement.iD;
+            let material=priceAgreement.Materials[0].SKUCode;
+            if(syncButtonenableflag===true && countryCode === "IT") {
+             let customerprice=this.paState.getCustomerPrics(priceAgreementID, material);
+            }
 			return this.paState.saveCandidatePrices()
 				.then(this.paState.savePriceAgreement.bind(this.paState, this.paState.getPriceAgreementInstance()))
 				.then(() => {
