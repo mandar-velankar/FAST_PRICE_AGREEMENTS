@@ -120,6 +120,12 @@
 								<ObjectIdentifier title="{i18n>Reference}" />
 							</header>
 						</Column>
+                         <!-- EHQUT-175601-Customer Code added in price agreement -->
+                        <Column>
+							<header>
+								<ObjectIdentifier title="{i18n>CustID}" />
+							</header>
+						</Column>
 						<Column>
 							<header>
 								<ObjectIdentifier title="{i18n>Institute}" />
@@ -154,10 +160,12 @@
 									<Text text="{Tender/ExternalID}"/>
 									<Text text="{Tender/SAPID}"/>
 								</VBox>
+                                <!-- EHQUT-175601-Customer Code added in price agreement -->
                                 <Text text="{OfferId}"/>
 								<Text text="{Tender/User/UserName}"/>
 								<Text text="{Tender/Classification}"/>
 								<Text text="{Tender/TenderName}"/>
+                                <Text text="{Institute/CustomerID}"/>
 								<Text text="{Institute/InstituteName}"/>
 								<Text text="{Product/ProductPack/PRODUCTPACKNAME}"/>
 								<Text text="{Price}"/>

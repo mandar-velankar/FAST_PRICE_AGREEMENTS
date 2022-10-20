@@ -65,7 +65,30 @@ sap.ui.define([
 			return this.odata(sKey).put(data,{refreshAfterChange:false});
 
 		},
+        //EHQUT-Italy Synchronise Button enable
+        getCustomerPrics : function(priceAgreementID, material){
+            var aFilters = [];
 
+            aFilters.push(new Filter({
+                path: 'PriceAgreementId',
+                operator: FilterOperator.EQ,
+                value1: priceAgreementID
+
+            }))
+
+            aFilters.push(new Filter({
+                path: 'MaterialNumber',
+                operator: FilterOperator.EQ,
+                value1: material
+            }))
+
+			var mParameters = {
+				filters: aFilters
+
+			};
+
+			return this.odata("/CustomerPrices").get(mParameters);
+		},
 		saveCustomerPrice: function (customerPrice) {
 
 			// const data = customerPrice.getAll();
