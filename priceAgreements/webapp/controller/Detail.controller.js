@@ -535,7 +535,10 @@ sap.ui.define([
 						new sap.m.TextArea("cancellationNote", {
 							width: "100%",
 							placeholder: "Add note (mandatory)"
-						})
+						}),
+                        new sap.m.Text({ 
+                            text: "Disclaimer: This action will not cancel price condition in SAP. Please take necessary action to cancel it manually, if required." 
+                        }),
 					],
 					beginButton: new sap.m.Button({
 						type: ButtonType.Emphasized,
