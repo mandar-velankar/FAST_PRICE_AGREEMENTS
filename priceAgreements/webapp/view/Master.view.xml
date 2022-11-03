@@ -80,7 +80,7 @@
 								descending: false
 							},
 							parameters: {
-								expand: 'Product/ProductPack,Tender,Tender/User,Institute,CustomerPrices,ConsumerPrice,FOC'
+								expand: 'Product/ProductPack,Tender,Tender/User,Institute,CustomerPrices,ConsumerPrice,FOC,Materials,OfferProduct/Offer'
 							}, 
 							suspended : true
 						}"
@@ -100,11 +100,11 @@
 								<ObjectIdentifier title="{i18n>TenderId}" />
 							</header>
 						</Column>
-                        <Column>
+                        <!-- <Column>
 							<header>
 								<ObjectIdentifier title="{i18n>OfferID}" />
 							</header>
-						</Column>
+						</Column> -->
 						<Column>
 							<header>
 								<ObjectIdentifier title="{i18n>UserName}" />
@@ -120,10 +120,20 @@
 								<ObjectIdentifier title="{i18n>Reference}" />
 							</header>
 						</Column>
+                        <Column>
+							<header>
+								<ObjectIdentifier title="{i18n>MaterialNumber}" />
+							</header>
+						</Column>
                          <!-- EHQUT-175601-Customer Code added in price agreement -->
                         <Column>
 							<header>
 								<ObjectIdentifier title="{i18n>CustID}" />
+							</header>
+						</Column>
+                        <Column>
+							<header>
+								<ObjectIdentifier title="{i18n>Division}" />
 							</header>
 						</Column>
 						<Column>
@@ -156,16 +166,21 @@
 						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="{= ${Synchronized} === true ? 'None' : 'Warning'}" id="items">
 							<cells>
 								<VBox>
-									<Text text="{Tender/TenderID}"/>
+									<Text text="{OfferId}"/>
 									<Text text="{Tender/ExternalID}"/>
 									<Text text="{Tender/SAPID}"/>
 								</VBox>
                                 <!-- EHQUT-175601-Customer Code added in price agreement -->
-                                <Text text="{OfferId}"/>
+                                <!-- <Text text="{OfferId}"/> -->
 								<Text text="{Tender/User/UserName}"/>
 								<Text text="{Tender/Classification}"/>
 								<Text text="{Tender/TenderName}"/>
+                                <Text text="{
+                                    path: 'Materials',
+                                    formatter: '.formatter.commaSeparator'
+                                        }"/>
                                 <Text text="{Institute/CustomerID}"/>
+                                <Text text="{OfferProduct/Offer/Division}"/>
 								<Text text="{Institute/InstituteName}"/>
 								<Text text="{Product/ProductPack/PRODUCTPACKNAME}"/>
 								<Text text="{Price}"/>

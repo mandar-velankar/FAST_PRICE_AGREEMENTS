@@ -14,7 +14,7 @@ sap.ui.define([
 		},
 		getPriceAgreement: function (id) {
 			const keyPath = this.model.createKey("/PriceAgreements", { ID: id });
-			return this.odata(keyPath).get({ urlParameters: { $expand: "ConsumerPrice,Materials,Institute,Tender,PriceConditions/PriceConditionClassification,PriceConditions/DiscountCondition,PriceConditions/FreeGoodsOther/ProductPack,PriceConditions/Settlement,Product/ProductPack,CustomerPrices,Deliveries,FOC,MaterialsFOC,MaterialsFOC/FreeGoodsOther,MaterialsFOC/FreeGoodsOther/Materials,SettlementDates,MasterPrices" } });
+			return this.odata(keyPath).get({ urlParameters: { $expand: "ConsumerPrice,OfferProduct,Materials,Institute,Tender,PriceConditions/PriceConditionClassification,PriceConditions/DiscountCondition,PriceConditions/FreeGoodsOther/ProductPack,PriceConditions/Settlement,Product/ProductPack,CustomerPrices,Deliveries,FOC,MaterialsFOC,MaterialsFOC/FreeGoodsOther,MaterialsFOC/FreeGoodsOther/Materials,SettlementDates,MasterPrices" } });
 		},
 		getPriceAgreementsByInstituteProduct: function (instituteId, productPackId,expiryDate) {
 			const filters = [];
