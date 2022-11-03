@@ -15,6 +15,17 @@ sap.ui.define([], function () {
 			}
 
 			return parseFloat(sValue).toFixed(2);
-		}
+		},
+
+        commaSeparator : function (Materials){
+            if(!Materials){return}
+            const newMat = Materials;
+            const SKUCode = [];
+            newMat.forEach((element) => {
+                const SKUs = element.split('=').pop().slice(0,-1);
+                SKUCode.push(SKUs);
+            });
+            return SKUCode.join(',');
+        }
 	};
 });
