@@ -76,6 +76,9 @@
 			},
 			"": {
 				"dataSource": "mainService",
+				"settings": {
+                    "defaultCountMode": "Inline"
+                },
 				"preload": true
 			}
 		},
