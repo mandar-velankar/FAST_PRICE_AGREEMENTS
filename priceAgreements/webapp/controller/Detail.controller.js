@@ -562,8 +562,8 @@ sap.ui.define([
 						press: function () {
 							this.oCancelDialog.close();
 							this.setBusy(false);
-						}
-					}).bind(this)
+						}.bind(this)
+					})
 				});
 			}
 
