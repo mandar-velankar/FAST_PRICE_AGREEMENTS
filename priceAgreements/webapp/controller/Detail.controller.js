@@ -561,8 +561,9 @@ sap.ui.define([
 						text: "Cancel",
 						press: function () {
 							this.oCancelDialog.close();
-						}.bind(this)
-					})
+							this.setBusy(false);
+						}
+					}).bind(this)
 				});
 			}
 
