@@ -23,7 +23,7 @@ sap.ui.define([
 	var DialogType = mobileLibrary.DialogType;
     var ValueState = CoreLibrary.ValueState;
     //EHQUT-168231- Italy Synchronise button enable
-    var syncButtonenableflag=false;
+    //var syncButtonenableflag=false;
 	return BaseController.extend("com.bayer.tender.priceagreements.controller.Detail", {
 
 		formatter: formatter,
@@ -130,7 +130,7 @@ sap.ui.define([
 				}.bind(this));
 				// this.paState.getCandidatePrices(this.sObjectId, null);
 			}.bind(this))
-            syncButtonenableflag=false;
+           // syncButtonenableflag=false;
 		},
 
 		addCountryDetailFragments: function(sCountryCode){
@@ -298,7 +298,7 @@ sap.ui.define([
                 return false;
             }
             //EHQUT-Synchronise button enable
-            syncButtonenableflag=this.paState.hasPAExpiryDateChanged();
+          //  syncButtonenableflag=this.paState.hasPAExpiryDateChanged();
 			//expiry date changed + already synchronized ==> price agreement in SAP should be cancelled first
 			Promise.resolve(((this.paState.hasPAExpiryDateChanged() || this.paState.hasPAEffectiveDateChanged()) && this.paState.getPriceAgreementInstance().synchronized)).then((confirm) => {
 				if(confirm){
@@ -342,13 +342,13 @@ sap.ui.define([
 		},
 		savePA: function () {
             //EHQUT-Italy-Synchronise Button enable 
-            let priceAgreement=this.paState.getPriceAgreementInstance();
-            const countryCode = this.paState.getProperty("priceAgreement").getTender().getCountryCode();
-            let priceAgreementID=priceAgreement.iD;
-            let material=priceAgreement.Materials[0].SKUCode;
-            if(syncButtonenableflag===true && countryCode === "IT") {
-             let customerprice=this.paState.getCustomerPrics(priceAgreementID, material);
-            }
+            // let priceAgreement=this.paState.getPriceAgreementInstance();
+            // const countryCode = this.paState.getProperty("priceAgreement").getTender().getCountryCode();
+            // let priceAgreementID=priceAgreement.iD;
+            // let material=priceAgreement.Materials[0].SKUCode;
+            // if(syncButtonenableflag===true && countryCode === "IT") {
+            //  let customerprice=this.paState.getCustomerPrics(priceAgreementID, material);
+            // }
 			return this.paState.saveCandidatePrices()
 				.then(this.paState.savePriceAgreement.bind(this.paState, this.paState.getPriceAgreementInstance()))
 				.then(() => {
@@ -535,7 +535,10 @@ sap.ui.define([
 						new sap.m.TextArea("cancellationNote", {
 							width: "100%",
 							placeholder: "Add note (mandatory)"
-						})
+						}),
+                        new sap.m.Text({ 
+                            text: "Disclaimer: This action will not cancel price condition in SAP. Please take necessary action to cancel it manually, if required." 
+                        }),
 					],
 					beginButton: new sap.m.Button({
 						type: ButtonType.Emphasized,
