@@ -416,6 +416,10 @@ sap.ui.define([
             return this.getService().saveCustomerPrice(customerPrice);
         },
 
+        updateTenderOwner: function (tender){
+            return this.getService().updateTenderOwner(tender);
+        },
+
         cancelPriceAgreement: async function (){
             let priceAgreement = this.getPriceAgreementInstance();
             if(priceAgreement){
@@ -440,6 +444,15 @@ sap.ui.define([
             }
             this.setProperty("editMode", sEditMode);
         },
+
+        setOwnerChanged: function (bOwnerChanged) {
+            this.setProperty("ownerChanged", bOwnerChanged);
+        },
+
+        getOwnerChanged: function (){
+            return this.getProperty("ownerChanged");
+        },
+
         setAllApplied: function(sAllApplied){
             this.setProperty("allApplied", sAllApplied);
         },

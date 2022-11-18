@@ -201,6 +201,10 @@ sap.ui.define([
 			const bValid = this._validateEditMode();
 			if(bValid) this.paState.setEditMode(true);
 		},
+
+		onPaOwnerChange: function() {
+			this.paState.setOwnerChanged(true);
+		},
 		
 		_validateEditMode: function(){
 			const countryCode = this.paState.getProperty("priceAgreement").getTender().getCountryCode();
@@ -352,6 +356,14 @@ sap.ui.define([
 			return this.paState.saveCandidatePrices()
 				.then(this.paState.savePriceAgreement.bind(this.paState, this.paState.getPriceAgreementInstance()))
 				.then(() => {
+					if(this.paState.getOwnerChanged()){
+						let oPriceAgreement = this.paState.getPriceAgreementInstance();
+						let oTender = oPriceAgreement.tender;
+						oTender.submittedBy = this.byId('idPaOwnerSelect').getSelectedItem().getKey();
+						this.paState.updateTenderOwner(oTender);
+					}
+				})
+				.then(() => {
 					this.paState.setEditMode(false);
 					//update view with saved values from database - to be sure that UI and DB are in sync
 					return this.paState.getPriceAgreement(this.sObjectId);
@@ -379,6 +391,11 @@ sap.ui.define([
             window.open(`/app/index.html#/tender&/t/detail/${priceAgreement.countryCode}/${priceAgreement.tenderId}/${priceAgreement.offerId}/__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded`);
         },
 
+		onLoadPaOwnersFinished: async function(evt){
+			let oDropdown = this.byId('idPaOwnerSelect');
+			let aItems = oDropdown.getItems();
+		},
+		
         onIgnorePVLPriceChange: async function(evt){
             this.setBusy(true);
 
