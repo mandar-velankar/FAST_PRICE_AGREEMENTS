@@ -396,9 +396,14 @@ sap.ui.define([
 			let oDropdown = this.byId('idPaOwnerSelect');
 			let aContexts = oDropdown.getBinding("items").getContexts()?.map(oContext => oContext.getObject());
 
+
 			aContexts = aContexts.filter(function (oContext){
 				return oContext.Countries.__list?.some((item) => item.includes("'ES'"));
 			});
+
+			let oModel = new JSONModel({'Users': aContexts});
+    		oDropdown.setModel(oModel);
+			
 		},
 		
         onIgnorePVLPriceChange: async function(evt){
