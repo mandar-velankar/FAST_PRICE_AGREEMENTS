@@ -67,7 +67,7 @@
 							type="Emphasized"
 							press=".onApplyNewPricePress"/>				
 						<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
-						<Button icon="sap-icon://filter" text="" press=".onOpenViewSettings"/>
+						<Button icon="sap-icon://sort" text="" press=".onOpenViewSettings"/>
 				</OverflowToolbar>
                  <!-- EHQUT-123276-Price agreement app not loading --> 
 				<Table
