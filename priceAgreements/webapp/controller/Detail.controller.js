@@ -361,6 +361,7 @@ sap.ui.define([
 						let oTender = oPriceAgreement.tender;
 						oTender.submittedBy = this.byId('idPaOwnerSelect').getSelectedItem().getKey();
 						this.paState.updateTenderOwner(oTender);
+						this.paState.setOwnerChanged(false);
 					}
 				})
 				.then(() => {
@@ -393,7 +394,11 @@ sap.ui.define([
 
 		onLoadPaOwnersFinished: async function(evt){
 			let oDropdown = this.byId('idPaOwnerSelect');
-			let aItems = oDropdown.getItems();
+			let aContexts = oDropdown.getBinding("items").getContexts()?.map(oContext => oContext.getObject());
+
+			aContexts = aContexts.filter(function (oContext){
+				return oContext.Countries.__list?.some((item) => item.includes("'ES'"));
+			});
 		},
 		
         onIgnorePVLPriceChange: async function(evt){
