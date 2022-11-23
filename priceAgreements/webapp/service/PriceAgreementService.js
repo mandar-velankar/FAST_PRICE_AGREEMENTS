@@ -14,7 +14,7 @@ sap.ui.define([
 		},
 		getPriceAgreement: function (id) {
 			const keyPath = this.model.createKey("/PriceAgreements", { ID: id });
-			return this.odata(keyPath).get({ urlParameters: { $expand: "ConsumerPrice,OfferProduct,Materials,Institute,Tender,PriceConditions/PriceConditionClassification,PriceConditions/DiscountCondition,PriceConditions/FreeGoodsOther/ProductPack,PriceConditions/Settlement,Product/ProductPack,CustomerPrices,Deliveries,FOC,MaterialsFOC,MaterialsFOC/FreeGoodsOther,MaterialsFOC/FreeGoodsOther/Materials,SettlementDates,MasterPrices" } });
+			return this.odata(keyPath).get({ urlParameters: { $expand: "ConsumerPrice,OfferProduct,Materials,Institute,Tender/User,PriceConditions/PriceConditionClassification,PriceConditions/DiscountCondition,PriceConditions/FreeGoodsOther/ProductPack,PriceConditions/Settlement,Product/ProductPack,CustomerPrices,Deliveries,FOC,MaterialsFOC,MaterialsFOC/FreeGoodsOther,MaterialsFOC/FreeGoodsOther/Materials,SettlementDates,MasterPrices" } });
 		},
 		getPriceAgreementsByInstituteProduct: function (instituteId, productPackId,expiryDate) {
 			const filters = [];
@@ -104,6 +104,19 @@ sap.ui.define([
 				return this.odata("/CustomerPrices").post(data);
 			}
 
+		},
+
+		updateTenderOwner: function(tender) {
+
+			const data = tender.getJSON();
+
+			if(data.TenderID) {
+				const sKey = this.model.createKey("/PT_TMTEND", {
+					TenderID: data.TenderID
+				});
+
+				return this.odata(sKey).put(data);
+			}
 		},
 
         deleteCustomerPrice: function (customerPrice) {

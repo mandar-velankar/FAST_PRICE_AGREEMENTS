@@ -19,6 +19,27 @@
                     <m:RadioButton text="Pack" />
                     <m:RadioButton text="Unit" />
                 </m:RadioButtonGroup>
+
+                <m:Panel expandable="true" headerText="Owner">
+                    <m:VBox>
+                        <m:Select id="idPaOwnerSelect" 
+                                  enabled="{= ${pa>/editMode} }" 
+                                  change=".onPaOwnerChange" 
+                                  selectedKey="{pa>/priceAgreement/tender/submittedBy}"
+                                  items="{ 
+                                            path: '/Users',
+                                            parameters: {
+                                                expand: 'Countries'
+                                            },
+                                            events: {
+                                                dataReceived: '.onLoadPaOwnersFinished'
+                                            }
+                                        }">
+                            <core:Item key="{CWID}" text="{UserName}" />
+                        </m:Select>
+                    </m:VBox>
+                </m:Panel>
+
                 <m:Panel expandable="true" headerText="Current Prices">
                             <m:VBox id="idCurrentPricesVbox">
                                 <m:Label text="{i18n>PVL}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
