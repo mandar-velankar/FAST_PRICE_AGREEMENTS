@@ -27,7 +27,8 @@ sap.ui.define([
                 "countryCode",
                 "toolID",
                 "tenderNo",
-                "cloneTenderID"
+                "cloneTenderID",
+                "submittedBy"
             ]);
         },
 
