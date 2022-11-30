@@ -57,7 +57,16 @@
 			<Button text="Apply" 
 				press=".onApply" 
 				enabled="{sc>/valid}"
-				visible="{= ${pa>/editMode} &amp;&amp; !${pa>/priceAgreement/synchronized} }"></Button>
+				visible="{ 
+							parts: [ 
+								'pa>/editMode',
+								'pa>/priceAgreement/synchronized', 
+								'pa>/priceAgreement/customerPrices',
+								'pa>/priceAgreement/status',
+								'pa>/priceAgreement/synchronizationStatus'
+							], 
+							formatter: '.isApplyButtonEnabled' 
+						}"/>
 			<Button icon="sap-icon://decline" text="Cancel" press=".onClose"></Button>
 		</buttons>
 	</Dialog>
