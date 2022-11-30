@@ -85,6 +85,19 @@ sap.ui.define([
 		},
 		getText:function(key,props){
 			return this.parent.getModel("i18n").getResourceBundle().getText(key,props);
-		}
+		},
+		isApplyButtonEnabled: function(editmode,isPriceAgreementSynchronized, customerPrices, isCancelled,syncStatus){
+			if(!Array.isArray(customerPrices)) customerPrices = [];
+            let allSynchronized = customerPrices.length > 0 && customerPrices.every(customerPrice => customerPrice.synchronized === true);
+            if( allSynchronized || (isCancelled === 'Cancelled')) return false;
+			
+			if(syncStatus === "RUNNING") return false; //when sync is running,disable button
+
+			if(editmode){
+				return true;
+			} else {
+				return false;
+			}
+		},
 	});
 });
