@@ -70,6 +70,7 @@
 						<Button icon="sap-icon://filter" text="" press=".onOpenViewSettings"/>
 				</OverflowToolbar>
                  <!-- EHQUT-123276-Price agreement app not loading --> 
+				 <!-- EHQUT-199067-Italy – Price Agreements multiple selection --> 
 				<Table
 						id="list"
 						inset="false"
@@ -90,7 +91,7 @@
 						alternateRowColors="true"
 						contextualWidth="Auto" growing="true"
                         growingThreshold="20" 
-                        growingScrollToLoad="false"> 
+                        growingScrollToLoad="false" mode="{= ${pa>/selectedCountryFilter} === 'IT' ? 'MultiSelect' : 'None'}"> 
                         <!-- !!!!!!!!!!!!THE GROWING THRESHOLD HAS BEEN SET TO 200, THIS CAN NOT BE MOVED TO PRODUCTION!!!!!!!!!!!! --> 
                         
                         <!-- EHQUT-123276-Price agreement app not loading --> 
