@@ -198,15 +198,20 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the list selectionChange event
 		 * @public
 		 */
+		//EHQUT-199067-Italy – Price Agreements multiple selection
 		onSelectionChange : function (oEvent) {
 			var oList = oEvent.getSource(),
 				bSelected = oEvent.getParameter("selected");
-
+				var CountryCode=this.getModel("pa").oData.selectedCountryFilter;
+				if(CountryCode === 'IT'){
+					this._showDetail(oEvent.getParameter("listItem") || oEvent.getSource());
+				}else{
 			// skip navigation when deselecting an item in multi selection mode
 			if (!(oList.getMode() === "MultiSelect" && !bSelected)) {
 				// get the list item, either from the listItem parameter or from the event's source itself (will depend on the device-dependent mode).
 				this._showDetail(oEvent.getParameter("listItem") || oEvent.getSource());
 			}
+		}
 		},
 
 		/**
@@ -516,7 +521,11 @@ sap.ui.define([
 			if (this.getView().byId("list").getBinding("items").isSuspended()) {
 				this.getView().byId("list").getBinding("items").resume();
 			}
-
+			//EHQUT-199067-Italy – Price Agreements multiple selection
+			var CountryCode=this.getModel("pa").oData.selectedCountryFilter;
+			if(CountryCode === 'IT'){
+			this.getOwnerComponent().oListSelector.clearMasterListSelection();
+			}
 		},
 
         /**
@@ -564,9 +573,17 @@ sap.ui.define([
 		 * @param {Object} evt - Event object
 		 */
 		onApplyNewPricePress: function(evt){
-
+			//EHQUT-199067-Italy – Price Agreements multiple selection
 			const _that = this;
-			const priceAgreementsTableItems = this.byId("list").getItems();
+			var priceAgreementsTableItems;
+			var CountryCode=this.getModel("pa").oData.selectedCountryFilter;
+			if(CountryCode === 'IT'){
+				priceAgreementsTableItems = this.byId("list").getSelectedItems();
+			}else{
+				priceAgreementsTableItems = this.byId("list").Items()
+			}
+			//EHQUT-199067-Italy – Price Agreements multiple selection
+			//const priceAgreementsTableItems = this.byId("list").getItems();
 			const priceAgreements = priceAgreementsTableItems.map(item => item.getBindingContext().getObject());
 			const priceAgreementIDs = priceAgreements.map(pr => pr.ID);
 			const filterTxt = this.byId("idslctfilter").getSelectedItem().getText();
