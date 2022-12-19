@@ -9,8 +9,15 @@ sap.ui.define([
 	"sap/ui/Device",
 	"sap/ui/core/Fragment",
 	"../model/formatter",
-	"sap/m/MessageBox"
-], function (BaseController, JSONModel, Filter,FilterType, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, formatter,MessageBox) {
+	"sap/m/MessageBox",
+	"sap/m/Dialog",
+	"sap/m/MessageToast",
+	"sap/m/Token",
+	"sap/m/Tokenizer",
+	"sap/ui/core/BusyIndicator",
+	"sap/m/library"
+	
+], function (BaseController, JSONModel, Filter,FilterType, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, formatter,MessageBox,Dialog,MessageToast,Token,Tokenizer, BusyIndicator,mLib) {
 	"use strict";
 
 	return BaseController.extend("com.bayer.tender.priceagreements.controller.Master", {
@@ -728,6 +735,449 @@ sap.ui.define([
 			}));
 
 		},
+		//EHQUT-199066-Italy – Brand filter in Price Agreements
+		onAddProductForOffer: async function (oEvent) {
+
+			
+			this.getModel("pa").setProperty("/ProductCollection", null);
+			this.getModel("pa").setProperty("/products", null);
+
+ 			//if dialog exists destroy it first, so we always set dialog buttons in correct state
+			if (this._oDialog) {
+				this._oDialog.destroy();
+			}
+
+			this._oDialog = new sap.m.Dialog("addProductDialog", {
+				title: this.getResourceBundle().getText("Addprod"),
+				stretch: true,
+				horizontalScrolling:false,
+				verticalScrolling:false,
+				buttons: [new sap.m.Button({
+						id: "idAddProductsBtn",
+						text: this.getResourceBundle().getText("Apply"),
+						enabled: true,
+						tap: [this.onAddProductDialogConfirm, this]
+
+					})
+
+				],
+				//content with all fields that need to be filled
+				content: [sap.ui.xmlfragment(this.getView().getId(), "com.bayer.tender.priceagreements.view.fragments.SelectBrandProductList", this)]
+					// End of content of dialog
+			});
+
+			this.getView().addDependent(this._oDialog);
+			this._oDialog.open();
+
+			//Clear all fields
+			 var oBrandList = this.byId("idBrandList");
+			var aBrandTokens = [];
+			oBrandList.setTokens(aBrandTokens);
+
+		},
+
+		//EHQUT-199066-Italy – Brand filter in Price Agreements
+		onAddProductDialogConfirm:function(){
+			var oFastAppDataModel=this.getModel("pa");
+			var productlist=oFastAppDataModel.getProperty("/products");
+				var orFilters = [];
+				var andFilters = [];
+				const slctfilterSelectedItem = this.byId("idslctfilter").getSelectedItem();
+				const slctfilterSelectedItemKey = slctfilterSelectedItem && slctfilterSelectedItem.getKey().toLowerCase();
+				//get filters
+				var hasNewMaterialsFilter = slctfilterSelectedItemKey === 'newmaterialnumberskey';
+				const updatedRetailPriceFilter = slctfilterSelectedItemKey === 'updatedretailpricekey';
+				const expiringSoonFilter = slctfilterSelectedItemKey === 'expiringsoonkey';
+				const newAgreementFilter = slctfilterSelectedItemKey === 'newagreementskey';
+				const expiredFilter = slctfilterSelectedItemKey === 'expiredkey';
+				const cancelledFilter = slctfilterSelectedItemKey === 'cancelledkey';
+				const activeAgreementsFilter = slctfilterSelectedItemKey === 'activeagreements';
+				const toBeSyncedFilter = slctfilterSelectedItemKey === 'tobesynced';
+				const updatedPVLFilter = slctfilterSelectedItemKey === 'updatedpvlkey';
+				const updatedConfidentialPriceFilter = slctfilterSelectedItemKey === 'updatedconfidentialpricekey';
+				const netPriceAbovePVLFilter = slctfilterSelectedItemKey === 'netpriceabovepvlkey';
+				const netPriceBelowFloorPriceFilter = slctfilterSelectedItemKey === 'netpricebelowfloorpricekey';
+				const oCountry = this.byId("idSlctCountry").getSelectedItem() ? this.byId("idSlctCountry").getSelectedItem().getKey() : "";
+				
+				if (oCountry != ""){
+					andFilters.push(new Filter("CountryCode", "EQ", oCountry));
+	
+					let oFilterCC = (andFilters.length > 0 && new sap.ui.model.Filter(andFilters, true)) || [];
+					this.byId('idProductPackfilter').getBinding("items")?.filter(oFilterCC, FilterType.Application);
+				}
+				if(productlist!== null){
+					if(productlist.length>0){
+						for(var i=0;i<productlist.length;i++){
+							orFilters.push(new sap.ui.model.Filter("ProductPackId", sap.ui.model.FilterOperator.EQ, productlist[i].ProductPackId));
+							
+						}
+						andFilters.push(new sap.ui.model.Filter(orFilters, false));
+					}
+	
+				
+				if(updatedRetailPriceFilter){
+					andFilters.push(new Filter("hasNewPrice", "EQ", updatedRetailPriceFilter));
+				}
+	
+				if(hasNewMaterialsFilter){ 
+					andFilters.push(new Filter("hasNewMaterials", "EQ", hasNewMaterialsFilter));
+					andFilters.push(new Filter("isCancelled", "EQ", false));
+				}
+	
+				// enabled/disable the ApplyNewPrice button 
+				if(hasNewMaterialsFilter || updatedRetailPriceFilter){ 
+					this.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", true); 
+				}else{
+					this.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", false);
+				}
+	
+				const productPackfilter = this.byId("idProductPackfilter").getSelectedKey();
+	
+				if(productPackfilter){
+					andFilters.push(new Filter("hasProductPackId", "EQ", productPackfilter));
+				}
+	
+				if(expiringSoonFilter){
+					andFilters.push(new Filter("ExpiringSoon", "EQ", true));
+					andFilters.push(new Filter("isCancelled", "EQ", false));
+				}
+	
+				if(expiredFilter){
+					andFilters.push(new Filter("Expired", "EQ", true));
+					andFilters.push(new Filter("isCancelled", "EQ", false));
+				}
+	
+				if(cancelledFilter){
+					andFilters.push(new Filter("isCancelled", "EQ", true));
+				}
+	
+				if(newAgreementFilter){
+					andFilters.push(new Filter("isNewPriceAgreement", "EQ", true));
+					andFilters.push(new Filter("isCancelled", "EQ", false));
+				}
+	
+				if(activeAgreementsFilter){
+					// active agreement = expiry date in future + synchronized
+					andFilters.push(new Filter("Expired", FilterOperator.EQ, false));
+					andFilters.push(new Filter("Synchronized", FilterOperator.EQ, true));
+					andFilters.push(new Filter("isCancelled", "EQ", false));
+				}
+	
+				if(toBeSyncedFilter){
+					// to be synchronized = expiry date in future + not synchronized
+					andFilters.push(new Filter("Expired", FilterOperator.EQ, false));
+					andFilters.push(new Filter("Synchronized", FilterOperator.EQ, false));
+					andFilters.push(new Filter("AppliedCount", FilterOperator.GE, 1));
+					andFilters.push(new Filter("isCancelled", "EQ", false));
+				}
+	
+				if(updatedPVLFilter){
+					andFilters.push(new Filter("hasNewYLLP", "EQ", 1));
+					andFilters.push(new Filter("isCancelled", "EQ", false));
+				}
+	
+				if(updatedConfidentialPriceFilter){
+					andFilters.push(new Filter("hasNewYLAP", "EQ", 1));
+					andFilters.push(new Filter("isCancelled", "EQ", false));
+				}
+				if(netPriceAbovePVLFilter){
+					andFilters.push(new Filter("hasNewYLLP", "EQ", 3));
+					andFilters.push(new Filter("hasNewYLAP", "EQ", 3));
+					andFilters.push(new Filter("isCancelled", "EQ", false));
+				}
+				if(netPriceBelowFloorPriceFilter){
+					andFilters.push(new Filter("hasNewYLLP", "EQ", 4));
+					andFilters.push(new Filter("hasNewYLAP", "EQ", 4));
+					andFilters.push(new Filter("isCancelled", "EQ", false));
+				}
+	
+				if(andFilters.length > 0){
+					var oFilters = new Filter(andFilters, true);
+	
+					//Binding to table with the filters and the sorters
+					this.getView().byId("list").getBinding("items").filter(oFilters, FilterType.Application);
+					this._oDialog.close();
+				}else{
+					this.getView().byId("list").getBinding("items").aApplicationFilters = [];
+					this.getView().byId("list").getBinding("items").filter();
+					this._oDialog.close();
+					
+				}
+			
+				
+			}else{
+				this._oDialog.close();
+			}
+			},
+
+			//EHQUT-199066-Italy – Brand filter in Price Agreements
+			brandNameList_f4: function () {
+
+				//that is this
+				var that = this;
+					
+				//selection
+				var sCountryCode=this.getModel("pa").oData.selectedCountryFilter;
+				var aBrandTokens = [];
+				this.aBrandProducts = [];
+	
+					//load the corresponding products for the input list
+					$.when(this.paState.loadBrandProductNameList(sCountryCode)).done(function (oData) {
+	
+						//check if results are found
+						if (oData && oData.data.results.length > 0) {
+	
+							//keep brand products
+							that.aBrandProducts = oData.data.results;
+	
+							var aUniqueBrands = Array.from(new Set(oData.data.results.map(x => x.BRAND_ID)))
+							.map(BRAND_ID => {
+								return {
+									BRAND_ID: BRAND_ID,
+									BRAND_NAME: oData.data.results.find(x => x.BRAND_ID === BRAND_ID).BRAND_NAME
+								};
+							});
+							
+							aUniqueBrands.sort((a,b)=> ( a.BRAND_NAME.localeCompare(b.BRAND_NAME))); 
+							
+					var oBrandResults = {
+						results: aUniqueBrands
+					};
+					
+							//binding statemodel to value help popup
+							var stateModel = new sap.ui.model.json.JSONModel();
+							stateModel.setData(oBrandResults);
+							if (!that._valueHelpSelectBrandDialog) {
+								that._valueHelpSelectBrandDialog = new sap.m.TableSelectDialog({
+									title: that.getResourceBundle().getText("brandname"),
+									multiSelect: true,
+									rememberSelections: true,
+									growing: true,
+									growingThreshold :100,
+									items: {
+										path: "/results",
+										template: new sap.m.ColumnListItem({
+											selected: "{selected}",
+											cells: [
+												new sap.m.Text({
+												text: "{BRAND_NAME}"
+												 })
+												]
+											
+										})
+									},
+									columns:new sap.m.Column({
+											
+											header: new sap.m.Label({
+												text: "Brand"
+											})
+										
+									}),
+								
+									liveChange: function (oEvent) {
+										var sValue = oEvent.getParameter("value");
+										var oFilters = [];
+										oFilters.push(new sap.ui.model.Filter("BRAND_NAME", sap.ui.model.FilterOperator.Contains, sValue));
+										oFilters.push(new sap.ui.model.Filter("BRAND_ID", sap.ui.model.FilterOperator.Contains, sValue));
+										oEvent.getSource().getBinding("items").filter(new sap.ui.model.Filter(oFilters, false));
+									},
+									confirm: function (oEvent) {
+										that._handleCloseBrandNameList(oEvent);
+									},
+									cancel: function (oEvent) {
+										that._handleCloseBrandNameList(oEvent);
+									}
+									
+								});
+							}
+	
+							that._valueHelpSelectBrandDialog.setModel(stateModel);
+							
+							that._valueHelpSelectBrandDialog.open();
+	
+						} else {
+							MessageToast.show("There are no brands to display.");
+						}
+	
+				});
+	
+			},
+
+			//EHQUT-199066-Italy – Brand filter in Price Agreements
+			onBrandTokenChange: function (oEvent) {
+
+				var that = this;
+				var oPriceDataModel = this.getModel("pa");
+	
+				//get multi input box
+				var oBrandList = this.byId("idBrandList");
+				var oDefaultModel = Services.getDefaultModel();
+	
+				//Brands already existing in the multi input field
+				that._aBrandTokens = oBrandList.getTokens();
+	
+				//added brands
+				if (oEvent.getParameter('type') === Tokenizer.TokenUpdateType.Added) {
+					var aBrandsAdded = oEvent.getParameter("addedTokens");
+					aBrandsAdded.forEach(function (iIndex, oBrandToken) {
+						that._aBrandTokens.push(oBrandToken);
+					});
+				}
+	
+				//removed brands
+				if (oEvent.getParameter('type') === Tokenizer.TokenUpdateType.Removed) {
+					var aBrandsRemoved = oEvent.getParameter("removedTokens");
+					aBrandsRemoved.forEach(function (oRemovedBrandToken, iIndex) {
+						that._aBrandTokens = $.grep(that._aBrandTokens, function (oBrandToken) {
+							return oBrandToken.getProperty("key") != oRemovedBrandToken.getProperty("key");
+						});
+					});
+				}
+	
+	
+				//load products for list
+				if (that._aBrandTokens && that._aBrandTokens.length > 0) {
+					$.when(Services.loadBrandProductNameList( sCountryCode)).done(function (oData) {
+						//loaded products
+	
+						//path where the products should be stored
+						var sPathProductCollection = "/ProductCollection";
+	
+						//path is updated with the products
+						oPriceDataModel.setProperty(sPathProductCollection, oData.results);
+	
+						oProductInputList.getBinding("items").refresh(true);
+						that.setScrollProductsInputContainter();
+					});
+				} else {
+					//path for clearing
+					var sPathProductCollection = "/ProductCollection";
+	
+					var aEmpty = [];
+	
+					//path is updated with the products
+					oPriceDataModel.setProperty(sPathProductCollection, aEmpty);
+	
+					//refresh empty list
+					oProductInputList.getBinding("items").refresh(true);
+					
+				}
+			},
+			// EHQUT-199066-Italy – Brand filter in Price Agreements
+			_handleCloseBrandNameList: function (oEvent) {
+
+				// //general
+				var that = this;
+				var oFastAppDataModel = that.getModel("pa");
+	
+				// //no selection anymore
+				this.byId("idInfoToolbarInput").setVisible(false);
+				var oListInput = this.byId("idListProductsInput");
+			   oListInput.removeSelections();
+	
+				//selected brands
+				var aContexts = oEvent.getParameter("selectedContexts");
+				if (aContexts && aContexts.length) {
+	
+					MessageToast.show("The following brands where selected: " + aContexts.map(function (oContext) {
+						return oContext.getObject().BRAND_NAME;
+					}).join(", "));
+	
+					//get multi input box
+					var oBrandList = this.byId("idBrandList");
+					var aBrandTokens = [];
+					var aBrands = [];
+	
+					//push the selected brands 
+					aContexts.map(function (oContext) {
+	
+						var oToken = new Token({
+							text: oContext.getObject().BRAND_NAME,
+							key: oContext.getObject().BRAND_ID
+						});
+						aBrandTokens.push(oToken);
+	
+						//Brands for filtering
+						var oBrand = {
+							BRAND_ID: oContext.getObject().BRAND_ID
+						}
+						aBrands.push(oBrand);
+					});
+	
+					//add the array of tokens to the multi input
+					oBrandList.setTokens(aBrandTokens);
+	
+					//Filter brand products to find only the products of the selected brand
+					const aFilteredBrandProducts = that.aBrandProducts.filter(
+						(elem) => aBrands.find(({
+							BRAND_ID
+						}) => elem.BRAND_ID === BRAND_ID)
+					);
+	
+					
+					var sPathProductCollection = "/ProductCollection";
+	
+					//path is updated with the products
+					oFastAppDataModel.setProperty(sPathProductCollection, aFilteredBrandProducts);
+					//});
+	
+				} else {
+	
+					MessageToast.show("No new item was selected.");
+	
+				}
+				oEvent.getSource().getBinding("items").filter([]);
+				
+			},
+			//EHQUT-199066-Italy – Brand filter in Price Agreements
+			onPressAddProductToOutputList: function(){ 
+				const oSourceTable = this.byId("idListProductsInput");
+				const oSelectedItems = oSourceTable.getSelectedItems();
+				const oSelectedProducts = oSelectedItems.map(item => item.getBindingContext("pa").getObject());
+	
+				oSelectedProducts.map(this.addSelectedProductToTarget.bind(this));
+				this.getModel("pa").setProperty("/products",oSelectedProducts);
+	
+			},
+			//EHQUT-199066-Italy – Brand filter in Price Agreements
+			onPressRemoveProductFromOutputList:function(){
+				const oTargetTable = this.byId("idListProductsOutput");
+				
+				const oSelectedItem = oTargetTable.getSelectedItems();
+				var oFastAppDataModel = this.getModel("pa");
+				var aProducts=oFastAppDataModel.getProperty("/products");
+				const oSelectedProducts = oSelectedItem.map(item => item.getBindingContext("pa").getObject());
+				
+				let index = aProducts.findIndex(x => x.ProductPackId === oSelectedProducts[0].ProductPackId);
+				aProducts.splice(index,1);
+				 oFastAppDataModel.setProperty("/products",aProducts);
+	
+				// refresh 
+				oTargetTable.getBinding("items").refresh(true);
+	
+	
+			},
+			//EHQUT-199066-Italy – Brand filter in Price Agreements
+			addSelectedProductToTarget: async function(product) { 
+				const productPackId = product.ProductPackId;
+	
+				const bProductIsAlreadyAddedToTheTargetTable = this.paState.getProductByProductPackId(productPackId);
+	
+				if(bProductIsAlreadyAddedToTheTargetTable && !bProductIsAlreadyAddedToTheTargetTable.enabled){
+					bProductIsAlreadyAddedToTheTargetTable.enabled = true;
+	
+					// update binding
+					this.byId("idListProductsOutput").getBinding("items").refresh(true);
+				}else if(!bProductIsAlreadyAddedToTheTargetTable){
+					this.paState.addProduct(product);
+					this.paState.updateModel();
+				}else {
+					sap.m.MessageBox.show(`Product(${product.ProductName}) is already added.`, {
+						title: "Error",
+						icon: sap.m.MessageBox.Icon.ERROR
+					});
+				}
+			},
 
         applyNewSKUSpain: async function(priceAgreement){
             await this.paState.saveCandidatePricesOnApplyPrices(priceAgreement.ID);
