@@ -57,6 +57,9 @@
 						<core:Item key="{ProductPackId}" text="{ProductName}" />
 					</Select>
 
+					<!-- EHQUT-199066-Italy – Brand filter in Price Agreements -->
+					<Button text="Brand Filter" icon="sap-icon://add" press="onAddProductForOffer" enabled="true" visible="{= ${pa>/selectedCountryFilter} === 'ES' ||  ${pa>/selectedCountryFilter} === 'IT'}"/>
+
                  <!-- EHQUT-Price agreement app - Product multiple selection limited --> 
 
 					<ToolbarSpacer/>

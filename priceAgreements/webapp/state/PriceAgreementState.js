@@ -107,7 +107,12 @@ sap.ui.define([
             }
             return  Promise.reject();
         },
-
+        //EHQUT-199066-Italy – Brand filter in Price Agreements
+        loadBrandProductNameList : async function(sCountryCode){
+            if(sCountryCode){
+                return this.getService().loadBrandProductNameList(sCountryCode);
+            }
+        },
         createPriceAgreementObject: function(priceAgreement){
             if(priceAgreement){
                 return new PriceAgreement(priceAgreement);
