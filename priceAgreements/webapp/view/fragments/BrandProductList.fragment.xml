@@ -11,7 +11,7 @@
 					
 										
 					<!-- Select brand -->
-					<MultiInput id="idBrandList" width="50%" enabled="true" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="brandNameList_f4" value="" placeholder="Select  brand" tokenUpdate="onBrandTokenChange"/>
+					<MultiInput id="idPriceBrandList" width="50%" enabled="true" showValueHelp="true" valueHelpOnly="true" valueHelpRequest="brandNameList_f4" value="" placeholder="Select  brand" tokenUpdate="onBrandTokenChange"/>
 					
 					
 				
@@ -29,7 +29,7 @@
 										vertical="true"
 										focusable="true">
 										<Table
-											id="idListProductsInput"
+											id="idPriceListProductsInput"
 											mode="MultiSelect"
 											items="{
 												path: 'pa>/ProductCollection',
@@ -101,7 +101,7 @@
 										focusable="true">
 										<!--Output list -->
 										<Table
-											id="idListProductsOutput"
+											id="idPriceListProductsOutput"
 											mode="SingleSelectMaster" 
 											items="{
 												path: 'pa>/products'

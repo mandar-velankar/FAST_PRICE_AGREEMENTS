@@ -766,16 +766,16 @@ sap.ui.define([
 				horizontalScrolling:false,
 				verticalScrolling:false,
 				buttons: [new sap.m.Button({
-						id: "idAddProductsBtn",
+						id: "idPriceAddProductsBtn",
 						text: this.getResourceBundle().getText("Apply"),
 						enabled: true,
-						tap: [this.onAddProductDialogConfirm, this]
+						tap: [this.onPriceAddProductDialogConfirm, this]
 
 					})
 
 				],
 				//content with all fields that need to be filled
-				content: [sap.ui.xmlfragment(this.getView().getId(), "com.bayer.tender.priceagreements.view.fragments.SelectBrandProductList", this)]
+				content: [sap.ui.xmlfragment(this.getView().getId(), "com.bayer.tender.priceagreements.view.fragments.BrandProductList", this)]
 					// End of content of dialog
 			});
 
@@ -783,14 +783,14 @@ sap.ui.define([
 			this._oDialog.open();
 
 			//Clear all fields
-			 var oBrandList = this.byId("idBrandList");
+			 var oBrandList = this.byId("idPriceBrandList");
 			var aBrandTokens = [];
 			oBrandList.setTokens(aBrandTokens);
 
 		},
 
 		//EHQUT-199066-Italy – Brand filter in Price Agreements
-		onAddProductDialogConfirm:function(){
+		onPriceAddProductDialogConfirm:function(){
 			var oFastAppDataModel=this.getModel("pa");
 			var productlist=oFastAppDataModel.getProperty("/products");
 				var orFilters = [];
@@ -1023,7 +1023,7 @@ sap.ui.define([
 				var oPriceDataModel = this.getModel("pa");
 	
 				//get multi input box
-				var oBrandList = this.byId("idBrandList");
+				var oBrandList = this.byId("idPriceBrandList");
 				var oDefaultModel = Services.getDefaultModel();
 	
 				//Brands already existing in the multi input field
@@ -1085,7 +1085,7 @@ sap.ui.define([
 	
 				// //no selection anymore
 				this.byId("idInfoToolbarInput").setVisible(false);
-				var oListInput = this.byId("idListProductsInput");
+				var oListInput = this.byId("idPriceListProductsInput");
 			   oListInput.removeSelections();
 	
 				//selected brands
@@ -1097,7 +1097,7 @@ sap.ui.define([
 					}).join(", "));
 	
 					//get multi input box
-					var oBrandList = this.byId("idBrandList");
+					var oBrandList = this.byId("idPriceBrandList");
 					var aBrandTokens = [];
 					var aBrands = [];
 	
@@ -1144,7 +1144,7 @@ sap.ui.define([
 			},
 			//EHQUT-199066-Italy – Brand filter in Price Agreements
 			onPressAddProductToOutputList: function(){ 
-				const oSourceTable = this.byId("idListProductsInput");
+				const oSourceTable = this.byId("idPriceListProductsInput");
 				const oSelectedItems = oSourceTable.getSelectedItems();
 				const oSelectedProducts = oSelectedItems.map(item => item.getBindingContext("pa").getObject());
 	
@@ -1154,7 +1154,7 @@ sap.ui.define([
 			},
 			//EHQUT-199066-Italy – Brand filter in Price Agreements
 			onPressRemoveProductFromOutputList:function(){
-				const oTargetTable = this.byId("idListProductsOutput");
+				const oTargetTable = this.byId("idPriceListProductsOutput");
 				
 				const oSelectedItem = oTargetTable.getSelectedItems();
 				var oFastAppDataModel = this.getModel("pa");
@@ -1180,7 +1180,7 @@ sap.ui.define([
 					bProductIsAlreadyAddedToTheTargetTable.enabled = true;
 	
 					// update binding
-					this.byId("idListProductsOutput").getBinding("items").refresh(true);
+					this.byId("idPriceListProductsOutput").getBinding("items").refresh(true);
 				}else if(!bProductIsAlreadyAddedToTheTargetTable){
 					this.paState.addProduct(product);
 					this.paState.updateModel();
@@ -1190,6 +1190,21 @@ sap.ui.define([
 						icon: sap.m.MessageBox.Icon.ERROR
 					});
 				}
+			},
+			//EHQUT-199066-Italy – Brand filter in Price Agreements
+			onSearchProductsInput: function(event){
+			
+				const searchValue = event.getParameter("newValue");
+				const binding = this.getView().byId("idPriceListProductsInput").getBinding("items");
+				const filters = ['ProductName'].map(filterPath => new Filter({
+					path:filterPath,
+					operator:FilterOperator.Contains,
+					value1: searchValue
+				}));
+				binding.filter(new Filter({
+					filters: filters
+					
+				}));
 			},
 
         applyNewSKUSpain: async function(priceAgreement){
