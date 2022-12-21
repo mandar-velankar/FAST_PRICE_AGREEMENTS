@@ -760,14 +760,14 @@ sap.ui.define([
 				this._oDialog.destroy();
 			}
 
-			this._oDialog = new sap.m.Dialog("addProductDialog", {
-				title: this.getResourceBundle().getText("Addprod"),
+			this._oDialog = new sap.m.Dialog("addBrandProductDialog", {
+				title: "Add Product",
 				stretch: true,
 				horizontalScrolling:false,
 				verticalScrolling:false,
 				buttons: [new sap.m.Button({
-						id: "idPriceAddProductsBtn",
-						text: this.getResourceBundle().getText("Apply"),
+						id: "idApplyButton",
+						text: "Apply",
 						enabled: true,
 						tap: [this.onPriceAddProductDialogConfirm, this]
 
