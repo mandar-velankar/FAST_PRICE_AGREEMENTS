@@ -577,10 +577,11 @@ sap.ui.define([
 			const _that = this;
 			var priceAgreementsTableItems;
 			var CountryCode=this.getModel("pa").oData.selectedCountryFilter;
+			
 			if(CountryCode === 'IT'){
 				priceAgreementsTableItems = this.byId("list").getSelectedItems();
 			}else{
-				priceAgreementsTableItems = this.byId("list").Items()
+				priceAgreementsTableItems = this.byId("list").getItems();
 			}
 			//EHQUT-199067-Italy – Price Agreements multiple selection
 			//const priceAgreementsTableItems = this.byId("list").getItems();
