@@ -443,11 +443,13 @@ sap.ui.define([
 					caseSensitive: false
 				}));
 
-				orFilters.push(new Filter({
-					path: "Institute/CustomerID",
-					operator: FilterOperator.EQ,
-					value1: parseInt(sSearch)
-				}));
+				if(/^\d+$/.test(sSearch)){
+					orFilters.push(new Filter({
+						path: "Institute/CustomerID",
+						operator: FilterOperator.EQ,
+						value1: parseInt(sSearch)
+					}));
+				}
 
 				andFilters.push(new Filter(orFilters, false));
 			}
