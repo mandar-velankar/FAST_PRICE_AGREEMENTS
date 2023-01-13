@@ -93,7 +93,7 @@
 						updateFinished=".onUpdateFinished"
 						alternateRowColors="true"
 						contextualWidth="Auto" growing="true"
-                        growingThreshold="20" 
+                        growingThreshold="15" 
                         growingScrollToLoad="false" mode="{= ${pa>/selectedCountryFilter} === 'IT' ? 'MultiSelect' : 'None'}"> 
                         <!-- !!!!!!!!!!!!THE GROWING THRESHOLD HAS BEEN SET TO 200, THIS CAN NOT BE MOVED TO PRODUCTION!!!!!!!!!!!! --> 
                         
