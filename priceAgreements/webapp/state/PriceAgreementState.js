@@ -92,11 +92,19 @@ sap.ui.define([
             if(responsePA.data.ID === priceAgreement.ID){
                 responsePA.data.Price = priceAgreement.Price;
             }
-
+//EHQUT-227388-Issues with massive synch using "apply price" button
             const candidatePrices = responseCandidate.data.results;
             // when we "Apply price" from the Master screen, we must make sure that all Candidate Prices are set to Applied. 
-            candidatePrices.forEach(cp => !cp.Applied && (cp.Applied = true));
-
+            if (priceAgreement.CountryCode === "IT"){
+               // candidatePrices.forEach(cp => !cp.Applied && (cp.Applied = true));
+               candidatePrices.forEach(cp => {
+                if(cp.Applied){
+                 cp.Price=priceAgreement.Price;
+                }
+                });
+              }else{
+                candidatePrices.forEach(cp => !cp.Applied && (cp.Applied = true));
+                }
             const pa = new PriceAgreement(responsePA.data);
             pa.setCandidatePrices(candidatePrices);
             return this.saveCandidatePrice(pa,pa.getCandidatePrices());
