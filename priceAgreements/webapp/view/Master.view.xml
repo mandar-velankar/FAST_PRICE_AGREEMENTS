@@ -78,7 +78,7 @@
 						id="list"
 						inset="false"
 						items="{
-							path: '/PriceAgreements',
+							path: '/PriceAgreementsMasterView',
 							sorter: {
 								path: 'ID',
 								descending: false
