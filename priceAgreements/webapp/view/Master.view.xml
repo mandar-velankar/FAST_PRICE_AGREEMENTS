@@ -78,7 +78,7 @@
 						id="list"
 						inset="false"
 						items="{
-							path: '/PriceAgreements',
+							path: '/PriceAgreementsMasterView',
 							sorter: {
 								path: 'ID',
 								descending: false
@@ -93,7 +93,7 @@
 						updateFinished=".onUpdateFinished"
 						alternateRowColors="true"
 						contextualWidth="Auto" growing="true"
-                        growingThreshold="20" 
+                        growingThreshold="15" 
                         growingScrollToLoad="false" mode="{= ${pa>/selectedCountryFilter} === 'IT' ? 'MultiSelect' : 'None'}"> 
                         <!-- !!!!!!!!!!!!THE GROWING THRESHOLD HAS BEEN SET TO 200, THIS CAN NOT BE MOVED TO PRODUCTION!!!!!!!!!!!! --> 
                         
@@ -179,10 +179,7 @@
 								<Text text="{Tender/User/UserName}"/>
 								<Text text="{Tender/Classification}"/>
 								<Text text="{Tender/TenderName}"/>
-                                <Text text="{
-                                    path: 'Materials',
-                                    formatter: '.formatter.commaSeparator'
-                                        }"/>
+                                <Text text="{MaterialsList}"/>
                                 <Text text="{Institute/CustomerID}"/>
                                 <Text text="{OfferProduct/Offer/Division}"/>
 								<Text text="{Institute/InstituteName}"/>

@@ -443,6 +443,13 @@ sap.ui.define([
 					caseSensitive: false
 				}));
 
+				orFilters.push(new Filter({
+					path: "MaterialsList",
+					operator: FilterOperator.Contains,
+					value1: sSearch,
+					caseSensitive: false
+				}));
+
 				if(/^\d+$/.test(sSearch)){
 					orFilters.push(new Filter({
 						path: "Institute/CustomerID",
@@ -693,9 +700,12 @@ sap.ui.define([
 				priceAgreement.ListPrice = consumerPrice.ConsumerPriceExclPU;
 				priceAgreement.RetailPrice = consumerPrice.MaxPriceNhsPU;
 			}
-
+			//EHQUT-227400-Price error in massive apply price due to SKU change
 			// update the Price Agreement price
 			priceAgreement.Price = newNetOfferPrice;
+			// if((newNetOfferPrice !== 0 && priceAgreement.CountryCode === 'IT') || priceAgreement.CountryCode === 'ES'){
+			// 	priceAgreement.Price = newNetOfferPrice;
+			// }
 
 			// update CustomerPrices, if any available, whith the newly calculated newNetOfferPrice
 			// const customerPrices = customerPricesPaths.map(path => {
