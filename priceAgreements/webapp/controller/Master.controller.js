@@ -702,10 +702,10 @@ sap.ui.define([
 			}
 			//EHQUT-227400-Price error in massive apply price due to SKU change
 			// update the Price Agreement price
-			priceAgreement.Price = newNetOfferPrice;
-			// if((newNetOfferPrice !== 0 && priceAgreement.CountryCode === 'IT') || priceAgreement.CountryCode === 'ES'){
-			// 	priceAgreement.Price = newNetOfferPrice;
-			// }
+			//priceAgreement.Price = newNetOfferPrice;
+			if((newNetOfferPrice !== 0 && priceAgreement.CountryCode === 'IT') || priceAgreement.CountryCode === 'ES'){
+				priceAgreement.Price = newNetOfferPrice;
+			}
 
 			// update CustomerPrices, if any available, whith the newly calculated newNetOfferPrice
 			// const customerPrices = customerPricesPaths.map(path => {
