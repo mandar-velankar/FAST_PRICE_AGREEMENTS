@@ -96,7 +96,7 @@ sap.ui.define([
             const candidatePrices = responseCandidate.data.results;
             // when we "Apply price" from the Master screen, we must make sure that all Candidate Prices are set to Applied. 
             // if (priceAgreement.CountryCode === "IT"){
-            //    // candidatePrices.forEach(cp => !cp.Applied && (cp.Applied = true));
+               
             //    candidatePrices.forEach(cp => {
             //     if(cp.Applied){
             //      cp.Price=priceAgreement.Price;
