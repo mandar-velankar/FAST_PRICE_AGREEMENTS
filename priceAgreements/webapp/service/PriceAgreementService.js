@@ -54,6 +54,22 @@ sap.ui.define([
 			return this.odata("/RoyalDecree").get({ filters: filters });
 		},
 
+		//EHQUT-199066-Italy – Brand filter in Price Agreements
+		loadBrandProductNameList: function ( sCountryCode) {
+
+			//set filters
+			const filters = [];
+			filters.push(
+				new sap.ui.model.Filter("CountryCode", sap.ui.model.FilterOperator.EQ, sCountryCode),
+				
+			);
+			
+
+			return this.odata("/PriceAgreementProductNames").get({ filters: filters });
+			
+
+		},
+
 		updatePriceAgreement: function (priceAgreement) {
 
 			const data = priceAgreement.getJSON();

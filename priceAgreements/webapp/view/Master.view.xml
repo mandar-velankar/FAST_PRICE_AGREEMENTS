@@ -57,6 +57,9 @@
 						<core:Item key="{ProductPackId}" text="{ProductName}" />
 					</Select>
 
+					<!-- EHQUT-199066-Italy – Brand filter in Price Agreements -->
+					<Button text="Brand Filter" icon="sap-icon://add" press="onAddProductForOffer" enabled="true" visible="{= ${pa>/selectedCountryFilter} === 'ES' ||  ${pa>/selectedCountryFilter} === 'IT'}"/>
+
                  <!-- EHQUT-Price agreement app - Product multiple selection limited --> 
 
 					<ToolbarSpacer/>
@@ -67,7 +70,7 @@
 							type="Emphasized"
 							press=".onApplyNewPricePress"/>				
 						<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
-						<Button icon="sap-icon://filter" text="" press=".onOpenViewSettings"/>
+						<Button icon="sap-icon://sort" text="" press=".onOpenViewSettings"/>
 				</OverflowToolbar>
                  <!-- EHQUT-123276-Price agreement app not loading --> 
 				 <!-- EHQUT-199067-Italy – Price Agreements multiple selection --> 
@@ -75,7 +78,7 @@
 						id="list"
 						inset="false"
 						items="{
-							path: '/PriceAgreements',
+							path: '/PriceAgreementsMasterView',
 							sorter: {
 								path: 'ID',
 								descending: false
@@ -90,7 +93,7 @@
 						updateFinished=".onUpdateFinished"
 						alternateRowColors="true"
 						contextualWidth="Auto" growing="true"
-                        growingThreshold="20" 
+                        growingThreshold="15" 
                         growingScrollToLoad="false" mode="{= ${pa>/selectedCountryFilter} === 'IT' ? 'MultiSelect' : 'None'}"> 
                         <!-- !!!!!!!!!!!!THE GROWING THRESHOLD HAS BEEN SET TO 200, THIS CAN NOT BE MOVED TO PRODUCTION!!!!!!!!!!!! --> 
                         
@@ -176,10 +179,7 @@
 								<Text text="{Tender/User/UserName}"/>
 								<Text text="{Tender/Classification}"/>
 								<Text text="{Tender/TenderName}"/>
-                                <Text text="{
-                                    path: 'Materials',
-                                    formatter: '.formatter.commaSeparator'
-                                        }"/>
+                                <Text text="{MaterialsList}"/>
                                 <Text text="{Institute/CustomerID}"/>
                                 <Text text="{OfferProduct/Offer/Division}"/>
 								<Text text="{Institute/InstituteName}"/>
