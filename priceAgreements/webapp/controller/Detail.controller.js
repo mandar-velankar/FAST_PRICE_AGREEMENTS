@@ -9,10 +9,11 @@ sap.ui.define([
 	"sap/m/MessageBox",
 	"sap/ui/core/Fragment",
 	"com/bayer/tender/uilib/datatypes/PercentageType",
+	"com/bayer/tender/uilib/datatypes/PercentageTypeDecimal",
 	"sap/ui/core/BusyIndicator",
     "sap/m/Dialog",
     "sap/ui/core/library"
-], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterType,FilterOperator, MessageBox, Fragment, PercentageType,BusyIndicator, Dialog, CoreLibrary) {
+], function (BaseController, JSONModel, formatter, mobileLibrary, Filter, FilterType,FilterOperator, MessageBox, Fragment, PercentageType ,PercentageTypeDecimal,BusyIndicator, Dialog, CoreLibrary) {
 	"use strict";
 
 	// shortcut for sap.m.URLHelper
@@ -28,7 +29,8 @@ sap.ui.define([
 
 		formatter: formatter,
 		types: {
-			percent: PercentageType
+			percent: PercentageType,
+			percentdecimal :PercentageTypeDecimal
 		},
 
 		/* =========================================================== */
