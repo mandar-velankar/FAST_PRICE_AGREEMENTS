@@ -97,16 +97,7 @@ sap.ui.define([
            //EHQUT-227388-Issues with massive synch using "apply price" button
             const candidatePrices = responseCandidate.data.results;
             // when we "Apply price" from the Master screen, we must make sure that all Candidate Prices are set to Applied. 
-            // if (priceAgreement.CountryCode === "IT"){
-               
-            //    candidatePrices.forEach(cp => {
-            //     if(cp.Applied){
-            //      cp.Price=priceAgreement.Price;
-            //     }
-            //     });
-            //   }else{
-            //     candidatePrices.forEach(cp => !cp.Applied && (cp.Applied = true));
-            //     }
+            
             // if (priceAgreement.CountryCode === "IT"){
             // //EHQUT-227388-Issues with massive synch using "apply price" button
             // var customerpricecount=responsePA.data.CustomerPrices.results.length;
