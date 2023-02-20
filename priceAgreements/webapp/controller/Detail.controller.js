@@ -389,9 +389,10 @@ sap.ui.define([
 			this.synchronizePriceAgreement(this.sObjectId);
 		},
 
+		//EHQUT-SCTASK14166747-FAST Tool Service Request 
         onNavigateToOffer: function(evt){
             let priceAgreement = this.paState.getPriceAgreementInstance();
-            window.open(`/app/index.html#/tender&/t/detail/${priceAgreement.countryCode}/${priceAgreement.tenderId}/${priceAgreement.offerId}/__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded`);
+            window.open(`/app/index.html#/tender&/t/detail/${priceAgreement.countryCode}/${priceAgreement.tenderId}/${priceAgreement.offerId}/__uicomponent0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded`);
         },
 
 		onLoadPaOwnersFinished: async function(evt){
