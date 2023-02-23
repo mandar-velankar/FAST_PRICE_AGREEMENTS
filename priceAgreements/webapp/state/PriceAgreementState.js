@@ -114,8 +114,7 @@ sap.ui.define([
            for(var i=0;i<customerpriceAppliedcount;i++){
            appliedInstitueID.push(responsePA.data.CustomerPrices.results[i].InstituteId);
            }
-              
-             candidatePrices.forEach(cp => {
+              candidatePrices.forEach(cp => {
                  var Index=appliedInstitueID.findIndex(x => x === cp.InstituteId);
                   if(Index === -1){
                       cp.Applied=false;
