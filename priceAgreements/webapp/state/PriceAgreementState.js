@@ -92,18 +92,16 @@ sap.ui.define([
             if(responsePA.data.ID === priceAgreement.ID){
                 responsePA.data.Price = priceAgreement.Price;
             }
-           //EHQUT-227388-Issues with massive synch using "apply price" button
+           //EHQUT-227388-Issues with massive synch using apply price button
             const candidatePrices = responseCandidate.data.results;
             // when we "Apply price" from the Master screen, we must make sure that all Candidate Prices are set to Applied. 
             //when we "Apply Price from Master screen",only selected candidateprice is applied as true for Italy
             if (priceAgreement.CountryCode === "IT"){
-            //EHQUT-227388-Issues with massive synch using apply price button
             var customerpriceAppliedcount=responsePA.data.CustomerPrices.results.length;
             var appliedInstitueID=[];
             for(var i=0;i<customerpriceAppliedcount;i++){
             appliedInstitueID.push(responsePA.data.CustomerPrices.results[i].InstituteId);
             }
-               
                 candidatePrices.forEach(cp => {
                     var Index=appliedInstitueID.findIndex(x => x === cp.InstituteId);
                     if(Index === -1){
