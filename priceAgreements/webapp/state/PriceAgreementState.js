@@ -107,6 +107,7 @@ sap.ui.define([
             //     }
 
           //  candidatePrices.forEach(cp => !cp.Applied && (cp.Applied = true));
+          // when we "Apply price" from the Master screen, only applied candidate price should be set as true
           if (priceAgreement.CountryCode === "IT"){
             //EHQUT-227388-Issues with massive synch using apply price button
            var customerpriceAppliedcount=responsePA.data.CustomerPrices.results.length;
