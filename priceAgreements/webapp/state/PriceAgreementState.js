@@ -120,7 +120,30 @@ sap.ui.define([
             //     candidatePrices.forEach(cp => !cp.Applied && (cp.Applied = true));
             //     }
 
-           candidatePrices.forEach(cp => !cp.Applied && (cp.Applied = true));
+
+          //  candidatePrices.forEach(cp => !cp.Applied && (cp.Applied = true));
+          // when we "Apply price" from the Master screen, only applied candidate price should be set as true
+          if (priceAgreement.CountryCode === "IT"){
+            //EHQUT-227388-Issues with massive synch using apply price button
+           var customerpriceAppliedcount=responsePA.data.CustomerPrices.results.length;
+           var appliedInstitueID=[];
+           for(var i=0;i<customerpriceAppliedcount;i++){
+           appliedInstitueID.push(responsePA.data.CustomerPrices.results[i].InstituteId);
+           }
+              candidatePrices.forEach(cp => {
+                 var Index=appliedInstitueID.findIndex(x => x === cp.InstituteId);
+                  if(Index === -1){
+                      cp.Applied=false;
+                      cp.Price=priceAgreement.Price;
+                   }else{
+                       cp.Applied=true;
+                       cp.Price=priceAgreement.Price;
+                   }
+                });
+             }else{
+              candidatePrices.forEach(cp => !cp.Applied && (cp.Applied = true));
+             }
+
             const pa = new PriceAgreement(responsePA.data);
             pa.setCandidatePrices(candidatePrices);
             return this.saveCandidatePrice(pa,pa.getCandidatePrices());
