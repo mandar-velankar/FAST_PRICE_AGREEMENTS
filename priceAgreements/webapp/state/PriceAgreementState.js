@@ -83,10 +83,12 @@ sap.ui.define([
             // priceAgreement.MaterialsFOC.FreeGoodsOther = model.getProperty(`${pathPA}/MaterialsFOC/FreeGoodsOther`);
             // const pa = this.paState.createPriceAgreementObject(priceAgreement);
             //getCandidatePrices
+            
             const [responsePA,responseCandidate] = await Promise.all([
                 this.getService().getPriceAgreement(priceAgreement.ID),
                 this.getCandidatePricesByID(priceAgreement.ID)
             ]);
+           
 
             // update the price agreement price
             if(responsePA.data.ID === priceAgreement.ID){
@@ -95,18 +97,53 @@ sap.ui.define([
            //EHQUT-227388-Issues with massive synch using "apply price" button
             const candidatePrices = responseCandidate.data.results;
             // when we "Apply price" from the Master screen, we must make sure that all Candidate Prices are set to Applied. 
+            
             // if (priceAgreement.CountryCode === "IT"){
+            // //EHQUT-227388-Issues with massive synch using "apply price" button
+            // var customerpricecount=responsePA.data.CustomerPrices.results.length;
+            // var appliedInstitueID=[];
+            // for(var i=0;i<customerpricecount;i++){
+            // appliedInstitueID.push(responsePA.data.CustomerPrices.results[i].InstituteId);
+            // }
                
-            //    candidatePrices.forEach(cp => {
-            //     if(cp.Applied){
-            //      cp.Price=priceAgreement.Price;
-            //     }
-            //     });
+            //     candidatePrices.forEach(cp => {
+            //         var Index=appliedInstitueID.findIndex(x => x === cp.InstituteId);
+            //         if(Index === -1){
+            //             cp.Applied=false;
+            //             cp.Price=priceAgreement.Price;
+            //         }else{
+            //             cp.Applied=true;
+            //             cp.Price=priceAgreement.Price;
+            //         }
+            //       });
             //   }else{
             //     candidatePrices.forEach(cp => !cp.Applied && (cp.Applied = true));
             //     }
 
-            candidatePrices.forEach(cp => !cp.Applied && (cp.Applied = true));
+
+          //  candidatePrices.forEach(cp => !cp.Applied && (cp.Applied = true));
+          // when we "Apply price" from the Master screen, only applied candidate price should be set as true
+          if (priceAgreement.CountryCode === "IT"){
+            //EHQUT-227388-Issues with massive synch using apply price button
+           var customerpriceAppliedcount=responsePA.data.CustomerPrices.results.length;
+           var appliedInstitueID=[];
+           for(var i=0;i<customerpriceAppliedcount;i++){
+           appliedInstitueID.push(responsePA.data.CustomerPrices.results[i].InstituteId);
+           }
+              candidatePrices.forEach(cp => {
+                 var Index=appliedInstitueID.findIndex(x => x === cp.InstituteId);
+                  if(Index === -1){
+                      cp.Applied=false;
+                      cp.Price=priceAgreement.Price;
+                   }else{
+                       cp.Applied=true;
+                       cp.Price=priceAgreement.Price;
+                   }
+                });
+             }else{
+              candidatePrices.forEach(cp => !cp.Applied && (cp.Applied = true));
+             }
+
             const pa = new PriceAgreement(responsePA.data);
             pa.setCandidatePrices(candidatePrices);
             return this.saveCandidatePrice(pa,pa.getCandidatePrices());
