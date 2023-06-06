@@ -745,7 +745,7 @@ sap.ui.define([
                 newSKUs.map(sku => sku.priceCondition = acp.priceCondition);
 				newSKUsWithoutCustomerPrice.push(...newSKUs);
 			});
-
+			
 			// Create CustomerPrices
 			await Promise.all(newSKUsWithoutCustomerPrice.map(candidate => {
 
