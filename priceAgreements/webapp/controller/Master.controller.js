@@ -745,12 +745,12 @@ sap.ui.define([
                 newSKUs.map(sku => sku.priceCondition = acp.priceCondition);
 				newSKUsWithoutCustomerPrice.push(...newSKUs);
 			});
-			//EHQUT-377878-Italy- Apply price function
+			
 			// Create CustomerPrices
 			await Promise.all(newSKUsWithoutCustomerPrice.map(candidate => {
 
 				candidate.applied = true;
-				candidate.price = priceAgreement.Price;
+				//candidate.price = priceAgreement.Price;
 				candidate.validFrom = new Date();
                 candidate.validTo = priceAgreement.ExpiryDate;
 
