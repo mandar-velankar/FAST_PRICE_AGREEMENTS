@@ -224,7 +224,7 @@ sap.ui.define([
             })
             return obj
         },
-        
+        //EHQUT-377878-Italy- Apply price function
         saveCandidatePrice:function(priceAgreement,candidatePrices){
 
             // cponst candidatePrices = this.getProperty("candidatePrices").filter(cap => cap.applied); // get only the applied candidatePrices
@@ -234,9 +234,16 @@ sap.ui.define([
             var CustomerPrices = [];
             var currentProductId;
             let deletedSettlementPriceConditions;
-
-            // we only save the applied candidate prices 
-            const candidatePricesToBeProcessed = candidatePrices.filter(cp => cp.applied  && !cp.synchronized);
+            let candidatePricesToBeProcessed;
+ 
+            if(priceAgreement.countryCode==='IT'){
+            candidatePricesToBeProcessed = candidatePrices.filter(cp => cp.applied);
+            }
+            else{
+                // we only save the applied candidate prices 
+             candidatePricesToBeProcessed = candidatePrices.filter(cp => cp.applied  && !cp.synchronized);
+            }
+            
             
             // get existing customer prices 
             // these are customer prices already created in the DB
