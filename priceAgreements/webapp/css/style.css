@@ -1,1 +1,4 @@
 /* Enter your custom styles here */
+tr[data-mydata="CancelledES"]{
+    background: #ff3333 !important;
+    }
