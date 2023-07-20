@@ -82,7 +82,15 @@
 				"preload": true
 			}
 		},
-
+		"resources": {
+			"css": [
+				{
+					"uri": "css/style.css",
+					"id": ""
+				}
+			]
+			
+		},
 		"routing": {
 			"config": {
 				"routerClass": "sap.f.routing.Router",
