@@ -167,7 +167,9 @@
 						</Column>
 					</columns>
 					<items>
+					<!-- EHQUT-Spain - visual mark to notify that the offer is canceled in FAST -->
 						<ColumnListItem type="Navigation" press=".onSelectionChange" highlight="{= ${Synchronized} === true ? 'None' : 'Warning'}" id="items">
+						<customData> <core:CustomData key="mydata" value="{Status}{CountryCode}" writeToDom='true'></core:CustomData></customData>
 							<cells>
 								<VBox>
 									<Text text="{OfferId}"/>
