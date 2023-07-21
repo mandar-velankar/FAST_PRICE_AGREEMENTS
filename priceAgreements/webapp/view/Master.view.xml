@@ -38,6 +38,7 @@
 					<Select	id="idslctfilter" change=".setFilter" items="{pa>/countryFilters}">
 						<core:Item key="{pa>key}" text="{pa>value}"/>
 					</Select>
+
 					<Label text="{i18n>Product}" visible="{= ${appView>/layout} === 'OneColumn' }"/>
 
               <!-- EHQUT-Price agreement app - Product multiple selection limited -->      
@@ -56,7 +57,15 @@
 						}">
 						<core:Item key="{ProductPackId}" text="{ProductName}" />
 					</Select>
-
+					<!-- EHQUT-383702-Spain - search Division filter -->
+					<Select id="idDivisionES" enabled="true" visible="{= ${pa>/selectedCountryFilter} === 'ES'}" change=".setFilter">
+                                    <items>
+                                        <core:Item text="All" key="All"/>
+                                        <core:Item text="Pharma" key="Pharma"/>
+                                        <core:Item text="Radiology" key="Radiology"/>
+                                        <core:Item text="Consumer Health" key="Consumer Health"/>
+                                    </items>
+                        </Select>
 					<!-- EHQUT-199066-Italy – Brand filter in Price Agreements -->
 					<Button text="Brand Filter" icon="sap-icon://add" press="onAddProductForOffer" enabled="true" visible="{= ${pa>/selectedCountryFilter} === 'ES' ||  ${pa>/selectedCountryFilter} === 'IT'}"/>
 
