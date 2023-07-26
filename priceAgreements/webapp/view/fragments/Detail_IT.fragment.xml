@@ -176,7 +176,7 @@
 																UTC:true
 															}
 														}" />
-                                        <m:Text text="{pa>ANZPK}"/>
+                                        <m:Text text="{pa>LFIMG}"/>
                                         <m:Text text="{pa>VRKME}"/>
 
                                     </m:cells>
