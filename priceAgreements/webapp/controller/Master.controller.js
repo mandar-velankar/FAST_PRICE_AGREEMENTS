@@ -339,12 +339,15 @@ sap.ui.define([
 			this.paState.setFiltersByCountry();
 			this.setFilter(event);
 		},
+
+		//EHQUT-383702-Spain -search Division filter
 		setFilter: function (oSelection) {
 
 			var orFilters = [];
 			var andFilters = [];
 			const slctfilterSelectedItem = this.byId("idslctfilter").getSelectedItem();
 			const slctfilterSelectedItemKey = slctfilterSelectedItem && slctfilterSelectedItem.getKey().toLowerCase();
+			var oDivision = this.byId("idDivisionES").getSelectedItem()? this.byId("idDivisionES").getSelectedItem().getKey() : '';
 			//get filters
 			var hasNewMaterialsFilter = slctfilterSelectedItemKey === 'newmaterialnumberskey';
 			const updatedRetailPriceFilter = slctfilterSelectedItemKey === 'updatedretailpricekey';
@@ -516,7 +519,9 @@ sap.ui.define([
 				andFilters.push(new Filter("AppliedCount", FilterOperator.GE, 1));
                 andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
-
+			if (oDivision !== "All") {
+				andFilters.push(new sap.ui.model.Filter("Division", "EQ", oDivision));
+			}
             if(updatedPVLFilter){
 				andFilters.push(new Filter("hasNewYLLP", "EQ", 1));
                 andFilters.push(new Filter("isCancelled", "EQ", false));
