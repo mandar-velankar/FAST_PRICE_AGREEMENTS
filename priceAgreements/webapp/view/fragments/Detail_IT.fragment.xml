@@ -54,9 +54,9 @@
                         <m:Input value="{pa>/priceAgreement/discount}" enabled="false"/>
                         <!-- EHQUT-SCTASK15166885-Rounding Pack Price -->
                         <m:Label text="{i18n>price}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
-                        <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Pack'}" value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? parseFloat(${pa>/priceAgreement/price}).toFixed(2)  : parseFloat(${pa>/priceAgreement/price}*${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(2)}" description="EUR" enabled="false" />
+                        <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Pack'}" value="{= ${detailView>/selectedProductUoM} === 'Pack' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? (${pa>/priceAgreement/price}).toFixed(2)  : (${pa>/priceAgreement/price}*${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(2)}" description="EUR" enabled="false" />
                         <m:Label text="{i18n>price}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Unit'}"/>
-                        <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? parseFloat(${pa>/priceAgreement/price}).toFixed(5) : parseFloat(${pa>/priceAgreement/price}/${pa>/priceAgreement/product/productPack/pACKFACTOR}).toFixed(5)}" description="EUR" enabled="false" />
+                        <m:Input visible="{= ${detailView>/selectedProductUoM} === 'Unit'}" value="{= ${detailView>/selectedProductUoM} === 'Unit' &amp;&amp;   ${detailView>/selectedProductUoM} === ${pa>/priceAgreement/uoM} ? (${pa>/priceAgreement/price}) : (${pa>/priceAgreement/price}/${pa>/priceAgreement/product/productPack/pACKFACTOR}) }" description="EUR" enabled="false" />
 
 
 
