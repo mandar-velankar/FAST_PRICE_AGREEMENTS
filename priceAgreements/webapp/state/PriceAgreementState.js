@@ -5,18 +5,19 @@ sap.ui.define([
     "../model/CustomerPrice"
 ], function (BaseState, PriceAgreement, CandidatePrice, CustomerPrice) {
     "use strict";
+    //EHQUT-385625-Italy - filter for Active agreements in Price Agreements app
     var PriceAgreementState = BaseState.extend("com.bayer.tender.priceagreements.state.PriceAgreementState", {
         allFilters:[{key:"",country:"ALL",value:"All"},
                     {key:"newAgreementsKey",country:"ALL",value:"New Agreements"},
                     {key:"newMaterialNumbersKey",country:"ALL",value:"New Material Numbers"},
+                    {key:"activeAgreements",country:"ALL",value:"Active Agreements"},
                     {key:"updatedRetailPriceKey",country:"IT",value:"Updated Retail Price"},
                     {key:"updatedPVLKey",country:"ES",value:"Updated PVL"},
                     {key:"updatedConfidentialPriceKey",country:"ES",value:"Updated Confidential Price"},
                     {key:"netPriceAbovePVLKey",country:"ES",value:"Net Price Above PVL"},
                     {key:"netPriceBelowFloorPriceKey",country:"ES",value:"Net Price Below Floor Price"},
                     {key:"expiringSoonKey",country:"ALL",value:"Expiring Soon"},
-                    {key:"expiredKey",country:"ALL",value:"Expired"},
-                    {key:"activeAgreements",country:"ES",value:"Active Agreements"},
+                    {key:"expiredKey",country:"ALL",value:"Expired"},                    
                     {key:"cancelledKey", country:"ES",value:"Cancelled"},
                     {key:"toBeSynced",country:"ES",value:"To be Synchronized"}],
         constructor: function (service) {
