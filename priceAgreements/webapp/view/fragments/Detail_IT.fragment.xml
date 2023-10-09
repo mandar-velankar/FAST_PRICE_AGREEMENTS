@@ -28,7 +28,7 @@
 										formatOptions: {
 											pattern: 'yyyy-MM-dd',
 											UTC:true
-										}}" valueFormat="yyyy-MM-dd" change=".handleEffectiveDateChange" valueState="{pa>/priceAgreement/effectiveDateValueState}" enabled="{pa>/editMode}"/>
+										}}" valueFormat="yyyy-MM-dd" change=".handleEffectiveDateChange" valueState="{pa>/priceAgreement/effectiveDateValueState}" enabled="false"/>
 
                         <m:Label text="{i18n>expiryDate}" design="Bold" required="true"/>
                         <m:DatePicker id="expiryDateID" value="{path: 'pa>/priceAgreement/expiryDate',
@@ -36,7 +36,7 @@
 										formatOptions: {
 											pattern: 'yyyy-MM-dd',
 											UTC:true
-										}}" valueFormat="yyyy-MM-dd" change=".handleDateChange" valueState="{pa>/priceAgreement/expiryDateValueState}" enabled="{pa>/editMode}"/>
+										}}" valueFormat="yyyy-MM-dd" change=".handleDateChange" valueState="{pa>/priceAgreement/expiryDateValueState}" enabled="false"/>
 
 
                         <m:Label text="{i18n>listPrice}" design="Bold" required="false" visible="{= ${detailView>/selectedProductUoM} === 'Pack'}"/>
