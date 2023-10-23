@@ -363,10 +363,11 @@ sap.ui.define([
                 // This logic is only run for Spain
                 // The reason for this is because we have different entities (PriceConditions) for Spain 
                 if(candidate.countryCode === "ES"){ 
+                    //EHQUT-CR2-New Rebate Calculation
                     const existingPriceConditions = priceAgreement.CustomerPrices;
                     //const existingRappelCondition = existingPriceConditions.find(rappel => rappel.PriceCondition === 'YAW1' && !rappel.EffectiveDate && !rappel.ExpiryDate);
                     const aExistingFOCConditions = existingPriceConditions.filter(foc => foc.PriceCondition === 'YA01' && foc.InstituteId === candidate.instituteId);
-                    const aExistingSettlementConditions = existingPriceConditions.filter(rappel => rappel.PriceCondition === 'YAW1' && rappel.EffectiveDate && rappel.ExpiryDate && rappel.InstituteId === candidate.instituteId);
+                    const aExistingSettlementConditions = existingPriceConditions.filter(rappel => (rappel.PriceCondition === 'YAW1' || rappel.PriceCondition === 'YAW2')&& rappel.EffectiveDate && rappel.ExpiryDate && rappel.InstituteId === candidate.instituteId);
                     const mainPriceCondition = priceAgreement.priceConditions.find(condition => condition.priceConditionClassification.isMain);
                     const focPriceConditions = priceAgreement.focPriceCondition;
                     //const rappelPriceCondition = priceAgreement.rappelPriceCondition;
@@ -451,6 +452,11 @@ sap.ui.define([
                         const existingSettlementCondition = aExistingSettlementConditions.find(condition => condition.EffectiveDate.toISOString() === settlementDateCustomerPrice.effectiveDate.toISOString() && condition.ExpiryDate.toISOString() === settlementDateCustomerPrice.expiryDate.toISOString() && condition.MaterialNumber == candidate.materialNumber);
                         if(existingSettlementCondition) {
                             settlementDateCustomerPrice.iD = existingSettlementCondition.ID;
+                        }
+                        //CR2
+                        let settlementpriceconditionindex= priceAgreement.priceConditions.findIndex(cc=>(cc.priceConditionCode==='YAW2'||cc.priceConditionCode==='YAW1'));
+                        if(settlementpriceconditionindex){
+                        settlementDateCustomerPrice.priceCondition=priceAgreement.priceConditions[settlementpriceconditionindex].priceConditionCode;
                         }
                         CustomerPrices.push(settlementDateCustomerPrice);
                     });
