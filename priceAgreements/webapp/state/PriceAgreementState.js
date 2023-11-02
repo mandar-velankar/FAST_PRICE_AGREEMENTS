@@ -483,7 +483,8 @@ sap.ui.define([
         cancelPriceAgreement: async function (){
             let priceAgreement = this.getPriceAgreementInstance();
             if(priceAgreement){
-                priceAgreement.expiryDate = new Date();
+                let dateformat = new Date().toISOString().split('T')[0]+ "T00:00:00.000Z";
+                priceAgreement.expiryDate=dateformat;
                 priceAgreement.extendPriceAgreement = false;
                 priceAgreement.expiryExtensionPeriod = 0;
                 priceAgreement.status = "Cancelled";
