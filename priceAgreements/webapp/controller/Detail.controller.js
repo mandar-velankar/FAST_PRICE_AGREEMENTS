@@ -398,10 +398,28 @@ sap.ui.define([
 		onLoadPaOwnersFinished: async function(evt){
 			let oDropdown = this.byId('idPaOwnerSelect');
 			let aContexts = oDropdown.getBinding("items").getContexts()?.map(oContext => oContext.getObject());
+			let priceAgreement = this.paState.getPriceAgreementInstance();
+			let division =priceAgreement.mainPriceCondition.priceConditionClassification?.division;
+			aContexts = aContexts.filter(function (oContext) {
+				if (oContext?.BU !== null) {
+					if (division === "Radiology") {
+						if (oContext?.BU?.includes("Radiology") && oContext.Countries.__list?.some((item) => item.includes("'ES'"))) {
+							return oContext?.BU?.includes("Radiology")
+						}
+					}
+					if (division === "Consumer Health") {
+						if (oContext?.BU?.includes("Consumer Health") && oContext.Countries.__list?.some((item) => item.includes("'ES'"))) {
+							return oContext?.BU?.includes("Consumer Health");
+						}
+					}
+					if (division === "Pharma") {
+						if (oContext?.BU?.includes("Pharma") && oContext.Countries.__list?.some((item) => item.includes("'ES'"))) {
+							return oContext?.BU?.includes("Pharma")
+						}
+					}
 
 
-			aContexts = aContexts.filter(function (oContext){
-				return oContext.Countries.__list?.some((item) => item.includes("'ES'"));
+				}
 			});
 
 			let oModel = new JSONModel({'Users': aContexts});
