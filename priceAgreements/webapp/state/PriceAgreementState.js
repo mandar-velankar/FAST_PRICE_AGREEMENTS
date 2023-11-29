@@ -362,11 +362,16 @@ sap.ui.define([
 
                 // This logic is only run for Spain
                 // The reason for this is because we have different entities (PriceConditions) for Spain 
+                //CR2
                 if(candidate.countryCode === "ES"){ 
+                    //EHQUT-CR2-New Rebate Calculation
                     const existingPriceConditions = priceAgreement.CustomerPrices;
                     //const existingRappelCondition = existingPriceConditions.find(rappel => rappel.PriceCondition === 'YAW1' && !rappel.EffectiveDate && !rappel.ExpiryDate);
                     const aExistingFOCConditions = existingPriceConditions.filter(foc => foc.PriceCondition === 'YA01' && foc.InstituteId === candidate.instituteId);
-                    const aExistingSettlementConditions = existingPriceConditions.filter(rappel => rappel.PriceCondition === 'YAW1' && rappel.EffectiveDate && rappel.ExpiryDate && rappel.InstituteId === candidate.instituteId);
+
+                    const aExistingSettlementConditions = existingPriceConditions.filter(rappel => (rappel.PriceCondition === 'YAW1' || rappel.PriceCondition === 'YAW2') && rappel.EffectiveDate && rappel.ExpiryDate && rappel.InstituteId === candidate.instituteId);
+
+                   
                     const mainPriceCondition = priceAgreement.priceConditions.find(condition => condition.priceConditionClassification.isMain);
                     const focPriceConditions = priceAgreement.focPriceCondition;
                     //const rappelPriceCondition = priceAgreement.rappelPriceCondition;
@@ -452,6 +457,13 @@ sap.ui.define([
                         if(existingSettlementCondition) {
                             settlementDateCustomerPrice.iD = existingSettlementCondition.ID;
                         }
+
+                         //CR2
+                         let settlementpriceconditionindex= priceAgreement.priceConditions.findIndex(cc=>(cc.priceConditionCode==='YAW2'||cc.priceConditionCode==='YAW1'));
+                         if(settlementpriceconditionindex){
+                         settlementDateCustomerPrice.priceCondition=priceAgreement.priceConditions[settlementpriceconditionindex].priceConditionCode;
+                         }
+
                         CustomerPrices.push(settlementDateCustomerPrice);
                     });
 
@@ -483,7 +495,8 @@ sap.ui.define([
         cancelPriceAgreement: async function (){
             let priceAgreement = this.getPriceAgreementInstance();
             if(priceAgreement){
-                priceAgreement.expiryDate = new Date();
+                let dateformat = new Date().toISOString().split('T')[0]+ "T00:00:00.000Z";
+                priceAgreement.expiryDate=dateformat;
                 priceAgreement.extendPriceAgreement = false;
                 priceAgreement.expiryExtensionPeriod = 0;
                 priceAgreement.status = "Cancelled";

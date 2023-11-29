@@ -394,7 +394,6 @@ sap.ui.define([
             let priceAgreement = this.paState.getPriceAgreementInstance();
             window.open(`/app/index.html#/tender&/t/detail/${priceAgreement.countryCode}/${priceAgreement.tenderId}/${priceAgreement.offerId}/__component0---tenderManagementDetailId--basicInformationId//TwoColumnsMidExpanded`);
         },
-
 		onLoadPaOwnersFinished: async function(evt){
 			let oDropdown = this.byId('idPaOwnerSelect');
 			let aContexts = oDropdown.getBinding("items").getContexts()?.map(oContext => oContext.getObject());
