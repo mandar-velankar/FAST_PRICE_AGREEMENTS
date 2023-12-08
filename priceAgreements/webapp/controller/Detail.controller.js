@@ -453,15 +453,14 @@ sap.ui.define([
 				MessageBox.success("Price Agreement successfully synchronized");
 				// EJUVE-CR3 START price agreement after edit date flow
 				var priceAgreementInfo= await this.paState.getPriceAgreement(this.sObjectId);
-				// if((priceAgreementInfo.hasPAExpiryDateChanged() || priceAgreementInfo.hasPAEffectiveDateChanged())&& (priceAgreementInfo.CustomerPrices?.[0]?.Synchronized===true)){
-
+				const countryCode = this.paState.getProperty("priceAgreement").getTender().getCountryCode();
+				if((countryCode === "IT")&& (priceAgreementInfo.CustomerPrices?.[0]?.Synchronized===true)){
 					//Approval Status + Offer Status
 					var sApprovalStatus = "Processing"; //workflow will change this status to "Notification Sent"
-
 					//save Approvals (&status) + change offer status
 					$.when(this.paState.saveApprovals(sApprovalStatus, priceAgreementInfo)).done(function (oDataTenderOffer) {
-
 					})
+				}
 					//EJUVE-CR3 END
 				// oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
 				// 	this.paState.getPriceAgreement(this.sObjectId);
