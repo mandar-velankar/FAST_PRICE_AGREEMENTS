@@ -116,6 +116,7 @@
 											pattern: 'yyyy-MM-dd',
 											UTC:true
 										}}" valueFormat="yyyy-MM-dd" change=".handleDateChange" valueState="{pa>/priceAgreement/expiryDateValueState}" 
+
                                              enabled="{= ${pa>/editMode} &amp;&amp; 
                                                         ${pa>/priceAgreement/tender/classification} === 'Tender' &amp;&amp; 
                                                         !${pa>/priceAgreement/synchronized}}"/>
