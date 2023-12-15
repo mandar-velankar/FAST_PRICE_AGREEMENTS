@@ -293,17 +293,6 @@ sap.ui.define([
 		},
 		// EJUVE-CR3 END
 
-
-			var that = this;
-
-			//path of offer that is selected
-			var sPath = "/PriceAgreement_APPRST";
-
-			//Create
-			return that.odata(sPath).post(oApprovalToSave);
-
-		},
-		// EJUVE-CR3 END
 	});
 	return PriceAgreementService;
 });
