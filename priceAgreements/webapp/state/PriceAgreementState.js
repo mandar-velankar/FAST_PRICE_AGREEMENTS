@@ -277,14 +277,18 @@ sap.ui.define([
                 if(candidate.countryCode === "IT"){
                     customerPrice.priceCondition = "YLTP";
                     customerPrice.applied = candidate.applied;
+
                     //EJUVE-CR3 START
+
                     if((this.hasPAExpiryDateChanged() || this.hasPAEffectiveDateChanged())&& (this.priceAgreementData.CustomerPrices?.[0]?.Synchronized===true)){
                         customerPrice.synchronized = false;
                     }
                     else{
                         customerPrice.synchronized = candidate.synchronized || false;
                     }
+
                     // EJUVE-CR3 END
+
                     CustomerPrices.push(customerPrice);
 
                     // Italy can have FOC for the same product and FOC for other products
