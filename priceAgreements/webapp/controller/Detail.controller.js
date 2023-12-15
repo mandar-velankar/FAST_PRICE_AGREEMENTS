@@ -453,7 +453,7 @@ sap.ui.define([
 				MessageBox.success("Price Agreement successfully synchronized");
 				// EJUVE-CR3 START price agreement after edit date flow
 				var priceAgreementInfo= await this.paState.getPriceAgreement(this.sObjectId);
-				const countryCode = this.paState.getProperty("priceAgreement").getTender().getCountryCode();
+				const countryCode = priceAgreementInfo.countryCode;
 				if((countryCode === "IT")&& (priceAgreementInfo.CustomerPrices?.[0]?.Synchronized===true)){
 					//Approval Status + Offer Status
 					var sApprovalStatus = "Processing"; //workflow will change this status to "Notification Sent"
