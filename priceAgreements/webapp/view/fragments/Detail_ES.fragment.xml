@@ -107,8 +107,6 @@
 
                                              enabled="{= ${pa>/editMode} &amp;&amp; 
 
-                                            enabled="{= ${pa>/editMode} &amp;&amp; 
-
                                                         ${pa>/priceAgreement/tender/classification} === 'Tender' &amp;&amp; 
                                                         !${pa>/priceAgreement/synchronized}}"/>
                                                         
