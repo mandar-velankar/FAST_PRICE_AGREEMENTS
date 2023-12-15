@@ -459,7 +459,6 @@ sap.ui.define([
 					var sApprovalStatus = "Processing"; //workflow will change this status to "Notification Sent"
 					//save Approvals (&status) + change offer status
 					$.when(this.paState.saveApprovals(sApprovalStatus, priceAgreementInfo)).done(function (oDataTenderOffer) {
-
 					})
 				}
 					//EJUVE-CR3 END
