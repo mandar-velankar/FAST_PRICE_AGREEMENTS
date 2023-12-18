@@ -16,7 +16,7 @@
 		"build": "ui5 build -a --clean-dest --include-task=generateManifestBundle generateCachebusterInfo"
 	},
 	"dependencies": {
-		"@sap/approuter": "^10",
+		"@sap/approuter": "^14.4.3",
 		"@ui5/cli": "^2.10.1",
 		"ui5-middleware-simpleproxy": "^0.7.2",
 		"ui5-task-cachebuster-indexing": "^1.0.2",
