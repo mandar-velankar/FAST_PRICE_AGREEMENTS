@@ -138,7 +138,7 @@ sap.ui.define([
         deleteCustomerPrice: function (customerPrice) {
 
 			let sKey = this.model.createKey("/CustomerPrices", {
-				ID: customerPrice.iD
+				ID: customerPrice
 			});
 			return this.odata(sKey).delete();
 

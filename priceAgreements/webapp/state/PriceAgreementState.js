@@ -708,16 +708,15 @@ sap.ui.define([
                     return candidatePrice
                 });
                 let newPriceAgreement = new PriceAgreement(priceAgreement)
-                // this.saveCandidatePrice(newPriceAgreement)
-                // console.log(newPriceAgreement)
-                // this.getService().updatePriceAgreementCancel(newPriceAgreement);
-                // this.savePriceAgreement(priceAgreement,priceAgreement.candidatePrices);
-                console.log(priceAgreement, "priceAgreement-1")
-                // this.getPriceAgreementInstance().setCandidatePrices(priceAgreement.candidatePrices);
-                this.saveCandidatePricesCancel(newPriceAgreement).then(() => {
+                newPriceAgreement.customerPrices=customerPrice;
+                 this.saveCandidatePricesCancel(newPriceAgreement).then(() => {
                     return this.savePriceAgreement(newPriceAgreement);
                 });
             }
+            if(customerPrice.length > 0){
+                customerPrice.map(cp => this.getService().deleteCustomerPrice(cp[0].ID)) || []; 
+            }
+            //this.getService().deleteCustomerPrice(customerPrice[0].ID);
         },
         //EJUVE-CR9 END
 
