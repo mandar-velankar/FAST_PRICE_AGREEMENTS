@@ -678,6 +678,48 @@ sap.ui.define([
 
             return oDeferred.promise();
         }, //EJUVE-CR3 END
+        //EJUVE-CR9 START
+        getPriceAgreementsByMaterialNumberAndCustomerId: function (priceAgreementId, productPackId, instituteId) {
+            return this.getService().getPriceAgreementsByMaterialNumberAndCustomerId(priceAgreementId, productPackId, instituteId);
+
+        },
+        getPriceAgreements: function (priceAgreementId) {
+            return this.getService().getPriceAgreements(priceAgreementId);
+
+        },
+        saveCandidatePricesCancel: function (newPriceAgreement) {
+            const candidatePrices = newPriceAgreement.getCandidatePrices();
+            const priceAgreement = newPriceAgreement;
+            return this.saveCandidatePrice(priceAgreement, candidatePrices);
+        },
+
+        cancelDuplicatePriceAgreement: async function (priceAgreement, customerPrice) {
+            if (priceAgreement) {
+                let priceAgreementcandidatePrices = await this.getCandidatePricesByID(priceAgreement.ID)
+                priceAgreementcandidatePrices = priceAgreementcandidatePrices.data.results;
+                let dateformat = new Date().toISOString().split('T')[0] + "T00:00:00.000Z";
+                priceAgreement.expiryDate = dateformat;
+                priceAgreement.extendPriceAgreement = true;
+                priceAgreement.expiryExtensionPeriod = 11;
+                priceAgreement.Status = "Cancelled";
+                priceAgreement.customerPrices = customerPrice;
+                priceAgreement.candidatePrices = priceAgreementcandidatePrices?.map(candidatePrice => {
+                    candidatePrice.Applied = false;
+                    return candidatePrice
+                });
+                let newPriceAgreement = new PriceAgreement(priceAgreement)
+                // this.saveCandidatePrice(newPriceAgreement)
+                // console.log(newPriceAgreement)
+                // this.getService().updatePriceAgreementCancel(newPriceAgreement);
+                // this.savePriceAgreement(priceAgreement,priceAgreement.candidatePrices);
+                console.log(priceAgreement, "priceAgreement-1")
+                // this.getPriceAgreementInstance().setCandidatePrices(priceAgreement.candidatePrices);
+                this.saveCandidatePricesCancel(newPriceAgreement).then(() => {
+                    return this.savePriceAgreement(newPriceAgreement);
+                });
+            }
+        },
+        //EJUVE-CR9 END
 
     });
 

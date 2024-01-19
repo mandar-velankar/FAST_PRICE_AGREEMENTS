@@ -445,6 +445,33 @@ sap.ui.define([
 				throw new Error("PriceAgreementID not specified");
 			}
 			try {
+				let onSynchronizePriceAgreementDetails = this.paState.getPriceAgreementInstance();
+				const tenderClassification = onSynchronizePriceAgreementDetails.tender.classification;
+				const priceAgreementId = onSynchronizePriceAgreementDetails?.iD;
+				const instituteId = onSynchronizePriceAgreementDetails?.instituteId;
+				const productPackId = onSynchronizePriceAgreementDetails?.productPackId;
+				// if(tenderClassification === "Tender" && priceCondition!==null){
+				let test = await this.paState.getPriceAgreementsByMaterialNumberAndCustomerId(priceAgreementId, productPackId, instituteId)
+				let PriceAgreement = await this.paState.getPriceAgreements(test?.data.results[0]?.PriceAgreementId);
+				await this.paState.cancelDuplicatePriceAgreement(PriceAgreement?.data?.results[0], test?.data.results);
+				console.log(test, "priceCondition")
+				if (test?.data.results?.length == 1) {
+					// priceCondition=test?.data.results[0].PriceCondition;
+					// console.log(priceCondition,"priceCondition")
+				} else {
+					test?.data.results.map((elemen, index) => {
+						if (index === 0) {
+							// priceConditionMul1=elemen.PriceCondition;
+							// existingEffectiveDate=elemen.EffectiveDate;
+							// existingExpiryDate=elemen.ExpiryDate;
+						}
+						else {
+							// priceConditionMul2=elemen.PriceCondition;
+						}
+					})
+				}
+				// }
+
 				this.setBusy(true);
 				await this.paState.syncPriceAgreements([priceAgreementID]);
 				//const oMasterTableBinding = this.refreshMaster();
