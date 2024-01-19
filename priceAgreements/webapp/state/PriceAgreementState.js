@@ -716,7 +716,7 @@ sap.ui.define([
             if(customerPrice.length > 0){
                 customerPrice.map(cp => this.getService().deleteCustomerPrice(cp[0].ID)) || []; 
             }
-            //this.getService().deleteCustomerPrice(customerPrice[0].ID);
+           
         },
         //EJUVE-CR9 END
 

@@ -454,22 +454,7 @@ sap.ui.define([
 				let test = await this.paState.getPriceAgreementsByMaterialNumberAndCustomerId(priceAgreementId, productPackId, instituteId)
 				let PriceAgreement = await this.paState.getPriceAgreements(test?.data.results[0]?.PriceAgreementId);
 				await this.paState.cancelDuplicatePriceAgreement(PriceAgreement?.data?.results[0], test?.data.results);
-				console.log(test, "priceCondition")
-				if (test?.data.results?.length == 1) {
-					// priceCondition=test?.data.results[0].PriceCondition;
-					// console.log(priceCondition,"priceCondition")
-				} else {
-					test?.data.results.map((elemen, index) => {
-						if (index === 0) {
-							// priceConditionMul1=elemen.PriceCondition;
-							// existingEffectiveDate=elemen.EffectiveDate;
-							// existingExpiryDate=elemen.ExpiryDate;
-						}
-						else {
-							// priceConditionMul2=elemen.PriceCondition;
-						}
-					})
-				}
+			
 				// }
 
 				this.setBusy(true);
