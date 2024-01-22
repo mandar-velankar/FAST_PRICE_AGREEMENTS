@@ -347,14 +347,7 @@ sap.ui.define([
 			});
 		},
 		savePA: function () {
-            //EHQUT-Italy-Synchronise Button enable 
-            // let priceAgreement=this.paState.getPriceAgreementInstance();
-            // const countryCode = this.paState.getProperty("priceAgreement").getTender().getCountryCode();
-            // let priceAgreementID=priceAgreement.iD;
-            // let material=priceAgreement.Materials[0].SKUCode;
-            // if(syncButtonenableflag===true && countryCode === "IT") {
-            //  let customerprice=this.paState.getCustomerPrics(priceAgreementID, material);
-            // }
+
 			//EJUVE-CR3 START
 			if((this.paState.hasPAExpiryDateChanged() || this.paState.hasPAEffectiveDateChanged())&& (this.paState.priceAgreementData.CustomerPrices?.[0]?.Synchronized===true)&& (this.paState.priceAgreementData.countryCode === "IT")){
 				let oldExpiryDate=this.paState.priceAgreementData?.customerPrices?.[0]?.expiryDate;
@@ -445,12 +438,25 @@ sap.ui.define([
 				throw new Error("PriceAgreementID not specified");
 			}
 			try {
+				let onSynchronizePriceAgreementDetails = this.paState.getPriceAgreementInstance();
+				const tenderClassification = onSynchronizePriceAgreementDetails.tender.classification;
+				const priceAgreementId = onSynchronizePriceAgreementDetails?.iD;
+				const instituteId = onSynchronizePriceAgreementDetails?.instituteId;
+				const productPackId = onSynchronizePriceAgreementDetails?.productPackId;
+				// if(tenderClassification === "Tender" && priceCondition!==null){
+				let test = await this.paState.getPriceAgreementsByMaterialNumberAndCustomerId(priceAgreementId, productPackId, instituteId)
+				let PriceAgreement = await this.paState.getPriceAgreements(test?.data.results[0]?.PriceAgreementId);
+				await this.paState.cancelDuplicatePriceAgreement(PriceAgreement?.data?.results[0], test?.data.results);
+			
+				// }
+
 				this.setBusy(true);
 				await this.paState.syncPriceAgreements([priceAgreementID]);
 				//const oMasterTableBinding = this.refreshMaster();
 				this.paState.getPriceAgreement(this.sObjectId);
 				this.setBusy(false);
 				MessageBox.success("Price Agreement successfully synchronized");
+				
 				// oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
 				// 	this.paState.getPriceAgreement(this.sObjectId);
 				// 	this.setBusy(false);
@@ -472,6 +478,7 @@ sap.ui.define([
 				this.setBusy(false);
 				MessageBox.error("Try Again Later");
 			}
+			
 		},
 
 

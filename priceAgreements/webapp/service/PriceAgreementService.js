@@ -115,7 +115,7 @@ sap.ui.define([
         deleteCustomerPrice: function (customerPrice) {
 
 			let sKey = this.model.createKey("/CustomerPrices", {
-				ID: customerPrice.iD
+				ID: customerPrice
 			});
 			return this.odata(sKey).delete();
 
@@ -266,7 +266,66 @@ sap.ui.define([
 			return this.odata("/syncFocCustPrices").post(data);
 
 		},*/
+		// EJUVE-CR3 START
+		,
+		createApproval: function (oApprovalToSave) {
 
+
+			var that = this;
+
+			//path of offer that is selected
+			var sPath = "/PriceAgreement_APPRST";
+
+			//Create
+			return that.odata(sPath).post(oApprovalToSave);
+
+		},
+		// EJUVE-CR3 END
+		//EJUVE-CR9 START
+		getPriceAgreementsByMaterialNumberAndCustomerId: function (priceAgreementId, productPackId, instituteId) {
+			const filters = [];
+			filters.push(new Filter({
+				path: 'PriceAgreementId',
+				operator: FilterOperator.NE,
+				value1: priceAgreementId
+			}));
+			filters.push(new Filter({
+				path: 'InstituteId',
+				operator: FilterOperator.EQ,
+				value1: instituteId
+			}));
+			filters.push(new Filter({
+				path: 'ProductPackId',
+				operator: FilterOperator.EQ,
+				value1: productPackId
+			}));
+			
+
+
+			return this.odata("/CustomerPrices").get({ filters: filters });
+		},
+		getPriceAgreements: function (priceAgreementId) {
+			const filters = [];
+			filters.push(new Filter({
+				path: 'ID',
+				operator: FilterOperator.EQ,
+				value1: priceAgreementId
+			}));
+
+			return this.odata("/PriceAgreements").get({ filters: filters });
+		},
+		updatePriceAgreementCancel: function (priceAgreement) {
+
+			const data = priceAgreement.getJSON();
+
+			const sKey = this.model.createKey("/PriceAgreements", {
+				ID: data.ID
+			});
+
+			return this.odata(sKey).put(data, { refreshAfterChange: false });
+
+		},
+		//EJUVE-CR9 END
 	});
 	return PriceAgreementService;
 });

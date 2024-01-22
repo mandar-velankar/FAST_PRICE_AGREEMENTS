@@ -280,7 +280,9 @@ sap.ui.define([
                 if(candidate.countryCode === "IT"){
                     customerPrice.priceCondition = "YLTP";
                     customerPrice.applied = candidate.applied;
+
                    // customerPrice.synchronized = candidate.synchronized || false;
+
                     //EJUVE-CR3 START
 
                     if((this.hasPAExpiryDateChanged() || this.hasPAEffectiveDateChanged())&& (this.priceAgreementData.CustomerPrices?.[0]?.Synchronized===true)){
@@ -291,6 +293,7 @@ sap.ui.define([
                     }
 
                     // EJUVE-CR3 END
+
                     CustomerPrices.push(customerPrice);
 
                     // Italy can have FOC for the same product and FOC for other products
@@ -661,6 +664,7 @@ sap.ui.define([
             //that is this
             var that = this;
 
+
             //get save info for offer status to be saved
             var aApprovalsSaveInfo = this.getApprovalsSaveInfo(sApprovalStatus, priceAgreementInfo);
 
@@ -676,7 +680,50 @@ sap.ui.define([
             });
 
             return oDeferred.promise();
-        } //EJUVE-CR3 END
+
+        }, //EJUVE-CR3 END
+        //EJUVE-CR9 START
+        getPriceAgreementsByMaterialNumberAndCustomerId: function (priceAgreementId, productPackId, instituteId) {
+            return this.getService().getPriceAgreementsByMaterialNumberAndCustomerId(priceAgreementId, productPackId, instituteId);
+
+        },
+        getPriceAgreements: function (priceAgreementId) {
+            return this.getService().getPriceAgreements(priceAgreementId);
+
+        },
+        saveCandidatePricesCancel: function (newPriceAgreement) {
+            const candidatePrices = newPriceAgreement.getCandidatePrices();
+            const priceAgreement = newPriceAgreement;
+            return this.saveCandidatePrice(priceAgreement, candidatePrices);
+        },
+
+        cancelDuplicatePriceAgreement: async function (priceAgreement, customerPrice) {
+            if (priceAgreement) {
+                let priceAgreementcandidatePrices = await this.getCandidatePricesByID(priceAgreement.ID)
+                priceAgreementcandidatePrices = priceAgreementcandidatePrices.data.results;
+                let dateformat = new Date().toISOString().split('T')[0] + "T00:00:00.000Z";
+                priceAgreement.expiryDate = dateformat;
+                priceAgreement.extendPriceAgreement = true;
+                priceAgreement.expiryExtensionPeriod = 11;
+                priceAgreement.Status = "Cancelled";
+               // priceAgreement.customerPrices = customerPrice;
+                priceAgreement.candidatePrices = priceAgreementcandidatePrices?.map(candidatePrice => {
+                    candidatePrice.Applied = false;
+                    return candidatePrice
+                });
+                let newPriceAgreement = new PriceAgreement(priceAgreement)
+               // newPriceAgreement.customerPrices=customerPrice;
+                 this.saveCandidatePricesCancel(newPriceAgreement).then(() => {
+                    return this.savePriceAgreement(newPriceAgreement);
+                });
+            }
+            if(customerPrice.length > 0){
+                 this.getService().deleteCustomerPrice(customerPrice[0].ID);
+            }
+           
+        },
+        //EJUVE-CR9 END
+
 
     });
 

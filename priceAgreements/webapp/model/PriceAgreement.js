@@ -254,7 +254,9 @@ sap.ui.define([
                 "cancellationComment",
                 "ignoreConfPriceChange",
                 "ignorePVLPriceChange",
+
                  "OldExpiryDate" //EJUVE-CR3
+
             ]);
             data.SettlementDates = this.settlementDates.map(settlementDate => settlementDate.getJSON());
 
