@@ -149,7 +149,11 @@ sap.ui.define([
             pa.setCandidatePrices(candidatePrices);
             return this.saveCandidatePrice(pa,pa.getCandidatePrices());
         },
+        //EJUVE-CR3
         savePriceAgreement: function (priceAgreement) {
+            if(priceAgreement.CountryCode==='IT'){
+                priceAgreement.OldExpiryDate=priceAgreement.CustomerPrices[0]?.ExpiryDate; //EJUVE-CR3
+            }
             if (priceAgreement.iD) {
                 return this.getService().updatePriceAgreement(priceAgreement);
             }
@@ -276,7 +280,17 @@ sap.ui.define([
                 if(candidate.countryCode === "IT"){
                     customerPrice.priceCondition = "YLTP";
                     customerPrice.applied = candidate.applied;
-                    customerPrice.synchronized = candidate.synchronized || false;
+                   // customerPrice.synchronized = candidate.synchronized || false;
+                    //EJUVE-CR3 START
+
+                    if((this.hasPAExpiryDateChanged() || this.hasPAEffectiveDateChanged())&& (this.priceAgreementData.CustomerPrices?.[0]?.Synchronized===true)){
+                        customerPrice.synchronized = false;
+                    }
+                    else{
+                        customerPrice.synchronized = candidate.synchronized || false;
+                    }
+
+                    // EJUVE-CR3 END
                     CustomerPrices.push(customerPrice);
 
                     // Italy can have FOC for the same product and FOC for other products
@@ -583,7 +597,86 @@ sap.ui.define([
         //keep detailPage so we can access it everywhere
         setDetailPage: function (oDetailPage){
             this.detailPage = oDetailPage;
-		}
+		},
+        // EJUVE-CR3 START
+        //get information to save the status of an offer in the corresponding table PT_TMNOFST
+        getApprovalsSaveInfo: function (sApprovalStatus, priceAgreementInfo) {
+
+            var that = this;
+            var oApprovalSaveInfo = {};
+            var aApprovalsSaveInfo = []; //we save as a batch, because there are multiple products in 1 offer
+
+            //check if approval is put to send
+
+            //be sure to work with a new object
+            oApprovalSaveInfo = {};
+
+            //get information for saving
+            oApprovalSaveInfo.CountryCode = priceAgreementInfo.countryCode;
+            oApprovalSaveInfo.PriceAgreementID = priceAgreementInfo.iD;
+            oApprovalSaveInfo.ApprovalStatus = sApprovalStatus;
+            oApprovalSaveInfo.OfferId = priceAgreementInfo.offerId;
+            oApprovalSaveInfo.ProductPackID = priceAgreementInfo.product.pRODUCTPACKID;
+            oApprovalSaveInfo.InstituteID = priceAgreementInfo.institute.instituteID;
+            oApprovalSaveInfo.EffectiveDate = priceAgreementInfo.effectiveDate
+            oApprovalSaveInfo.ExpiryDate = priceAgreementInfo.expiryDate;
+            aApprovalsSaveInfo.push(oApprovalSaveInfo);
+
+            return aApprovalsSaveInfo;
+
+        },
+        createApproval: function (oApprovalToSave) {
+
+            //Create
+            // return that.odata(sPath).post(oApprovalToSave);
+            return this.getService().createApproval(oApprovalToSave);
+
+        },
+
+        //get approvals in right format for saving
+        getConvertApprovalToSave: function (oApprovalSaveInfo) {
+
+            //Convert odata to structure that can be used to save
+            var oApprovalToSave = {};
+
+            //get information for saving
+            oApprovalSaveInfo.CountryCode = oApprovalSaveInfo.CountryCode;
+            oApprovalSaveInfo.PriceAgreementID = oApprovalSaveInfo.PriceAgreementID;
+            oApprovalSaveInfo.ApprovalStatus = oApprovalSaveInfo.ApprovalStatus;
+            oApprovalSaveInfo.OfferId = oApprovalSaveInfo.OfferId;
+            oApprovalSaveInfo.ProductPackID = oApprovalSaveInfo.ProductPackID;
+            oApprovalSaveInfo.InstituteID = oApprovalSaveInfo.InstituteID;
+            oApprovalSaveInfo.EffectiveDate = oApprovalSaveInfo.EffectiveDate;
+            oApprovalSaveInfo.ExpiryDate = oApprovalSaveInfo.ExpiryDate;
+            oApprovalToSave = oApprovalSaveInfo;
+            return oApprovalToSave;
+
+        },
+        saveApprovals: function (sApprovalStatus, priceAgreementInfo) {
+
+            //lets work with callbacks: this way we only save products if OFFER is created
+            var oDeferred = $.Deferred();
+            let promises = [];
+
+            //that is this
+            var that = this;
+
+            //get save info for offer status to be saved
+            var aApprovalsSaveInfo = this.getApprovalsSaveInfo(sApprovalStatus, priceAgreementInfo);
+
+            //save every
+            aApprovalsSaveInfo.forEach(function (oApprovalSaveInfo) {
+
+                //convert data for save
+                var oApprovalToSave = that.getConvertApprovalToSave(oApprovalSaveInfo);
+
+                //create approval
+                promises.push(that.createApproval(oApprovalToSave));
+
+            });
+
+            return oDeferred.promise();
+        } //EJUVE-CR3 END
 
     });
 
