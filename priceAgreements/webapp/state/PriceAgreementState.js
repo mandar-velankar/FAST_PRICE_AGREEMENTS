@@ -716,7 +716,7 @@ sap.ui.define([
                 });
             }
             if(customerPrice.length > 0){
-                 this.getService().deleteCustomerPrice(cp[0].ID);
+                 this.getService().deleteCustomerPrice(customerPrice[0].ID);
             }
            
         },
