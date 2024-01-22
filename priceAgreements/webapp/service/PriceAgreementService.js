@@ -310,6 +310,11 @@ sap.ui.define([
 				operator: FilterOperator.EQ,
 				value1: productPackId
 			}));
+			filters.push(new Filter({
+				path: 'ProductPackId',
+				operator: FilterOperator.NE,
+				value1: productPackId
+			}));
 
 
 			return this.odata("/CustomerPrices").get({ filters: filters });
