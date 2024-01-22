@@ -702,13 +702,13 @@ sap.ui.define([
                 priceAgreement.extendPriceAgreement = true;
                 priceAgreement.expiryExtensionPeriod = 11;
                 priceAgreement.Status = "Cancelled";
-                priceAgreement.customerPrices = customerPrice;
+               // priceAgreement.customerPrices = customerPrice;
                 priceAgreement.candidatePrices = priceAgreementcandidatePrices?.map(candidatePrice => {
                     candidatePrice.Applied = false;
                     return candidatePrice
                 });
                 let newPriceAgreement = new PriceAgreement(priceAgreement)
-                newPriceAgreement.customerPrices=customerPrice;
+               // newPriceAgreement.customerPrices=customerPrice;
                  this.saveCandidatePricesCancel(newPriceAgreement).then(() => {
                     return this.savePriceAgreement(newPriceAgreement);
                 });
