@@ -151,7 +151,7 @@ sap.ui.define([
         },
         //EJUVE-CR3
         savePriceAgreement: function (priceAgreement) {
-            if(priceAgreement.CountryCode==='IT'){
+            if(priceAgreement.countryCode==='IT'){
                 priceAgreement.OldExpiryDate=priceAgreement.CustomerPrices[0]?.ExpiryDate; //EJUVE-CR3
             }
             if (priceAgreement.iD) {
