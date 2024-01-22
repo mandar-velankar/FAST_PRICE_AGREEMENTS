@@ -149,6 +149,7 @@ sap.ui.define([
             pa.setCandidatePrices(candidatePrices);
             return this.saveCandidatePrice(pa,pa.getCandidatePrices());
         },
+        //EJUVE-CR3
         savePriceAgreement: function (priceAgreement) {
             if(priceAgreement.CountryCode==='IT'){
                 priceAgreement.OldExpiryDate=priceAgreement.CustomerPrices[0]?.ExpiryDate; //EJUVE-CR3
@@ -279,6 +280,8 @@ sap.ui.define([
                 if(candidate.countryCode === "IT"){
                     customerPrice.priceCondition = "YLTP";
                     customerPrice.applied = candidate.applied;
+
+                   // customerPrice.synchronized = candidate.synchronized || false;
 
                     //EJUVE-CR3 START
 
@@ -661,8 +664,6 @@ sap.ui.define([
             //that is this
             var that = this;
 
-            //get model for calls
-            // var oModel = that.getDefaultModel();
 
             //get save info for offer status to be saved
             var aApprovalsSaveInfo = this.getApprovalsSaveInfo(sApprovalStatus, priceAgreementInfo);
@@ -679,6 +680,7 @@ sap.ui.define([
             });
 
             return oDeferred.promise();
+
         }, //EJUVE-CR3 END
         //EJUVE-CR9 START
         getPriceAgreementsByMaterialNumberAndCustomerId: function (priceAgreementId, productPackId, instituteId) {
@@ -721,6 +723,7 @@ sap.ui.define([
            
         },
         //EJUVE-CR9 END
+
 
     });
 
