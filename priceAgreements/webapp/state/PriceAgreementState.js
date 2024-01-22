@@ -150,7 +150,9 @@ sap.ui.define([
             return this.saveCandidatePrice(pa,pa.getCandidatePrices());
         },
         savePriceAgreement: function (priceAgreement) {
-            priceAgreement.OldExpiryDate=priceAgreement.CustomerPrices[0]?.ExpiryDate; //EJUVE-CR3
+            if(priceAgreement.CountryCode==='IT'){
+                priceAgreement.OldExpiryDate=priceAgreement.CustomerPrices[0]?.ExpiryDate; //EJUVE-CR3
+            }
             if (priceAgreement.iD) {
                 return this.getService().updatePriceAgreement(priceAgreement);
             }
