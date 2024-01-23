@@ -215,7 +215,7 @@ sap.ui.define([
         isValid:function(){
             let isValid = false;
             this.expiryDateValueState="Error";
-            if(this.expiryDate && this.expiryDate !== ""){
+            if(this.expiryDate && this.expiryDate !== "" && new Date(this.expiryDate) > new Date(this.effectiveDate)){
                 this.expiryDateValueState="None";
                 isValid = true;
             }
