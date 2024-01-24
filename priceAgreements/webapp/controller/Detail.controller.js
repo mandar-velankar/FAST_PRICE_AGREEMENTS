@@ -297,6 +297,7 @@ sap.ui.define([
 			this.paState.updateModel();
 			if (!isValid || !this.byId("expiryDateID").isValidValue() || !this.byId("effectiveDateId").isValidValue()) {
 				MessageBox.error(this.getText("requiredFields"));
+				this.setBusy(false);
 				return false;
 			}
             if(this.byId("idExtendExpiry") && this.byId("idExtendExpiry")?.getSelected() === true && (this.byId("idExtendExpiryDateID").getValue() > 12 || this.byId("idExtendExpiryDateID").getValue() === 0 )){
