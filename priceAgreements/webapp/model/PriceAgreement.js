@@ -30,6 +30,7 @@ sap.ui.define([
             this.rappelPriceCondition = {};
             this.expiryDateValueState="None";
             this.effectiveDateValueState="None";
+            this.OldExpiryDate=data?.expiryDate;//EJUVE-CR3
             if (data) {
                 //copy array's manually to objects
                 this.setInstitute(data.Institute||data.institute);//or for backup restore
@@ -214,7 +215,7 @@ sap.ui.define([
         isValid:function(){
             let isValid = false;
             this.expiryDateValueState="Error";
-            if(this.expiryDate && this.expiryDate !== ""){
+            if(this.expiryDate && this.expiryDate !== "" && new Date(this.expiryDate) > new Date(this.effectiveDate)){
                 this.expiryDateValueState="None";
                 isValid = true;
             }
@@ -252,7 +253,8 @@ sap.ui.define([
                 "status",
                 "cancellationComment",
                 "ignoreConfPriceChange",
-                "ignorePVLPriceChange"
+                "ignorePVLPriceChange",
+                 "OldExpiryDate" //EJUVE-CR3
             ]);
             data.SettlementDates = this.settlementDates.map(settlementDate => settlementDate.getJSON());
 
