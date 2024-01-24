@@ -452,7 +452,7 @@ sap.ui.define([
 				// EJUVE-CR3 START price agreement after edit date flow
 				var priceAgreementInfo = await this.paState.getPriceAgreement(this.sObjectId);
 				const countryCode = priceAgreementInfo.countryCode;
-				if ((countryCode === "IT") && (priceAgreementInfo.oldExpiryDate !== null && priceAgreementInfo.oldExpiryDate !== undefined)) {
+				if ((countryCode === "IT") && (priceAgreementInfo.oldExpiryDate !== null && priceAgreementInfo.oldExpiryDate !== undefined && new Date(priceAgreementInfo.oldExpiryDate).toISOString().split('T')[0] !== new Date(priceAgreementInfo.expiryDate).toISOString().split('T')[0])) {
 					//Approval Status + Offer Status
 					var sApprovalStatus = "Processing"; //workflow will change this status to "Notification Sent"
 					//save Approvals (&status) + change offer status
