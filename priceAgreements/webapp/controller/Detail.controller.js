@@ -297,6 +297,7 @@ sap.ui.define([
 			this.paState.updateModel();
 			if (!isValid || !this.byId("expiryDateID").isValidValue() || !this.byId("effectiveDateId").isValidValue()) {
 				MessageBox.error(this.getText("requiredFields"));
+				this.setBusy(false);
 				return false;
 			}
             if(this.byId("idExtendExpiry") && this.byId("idExtendExpiry")?.getSelected() === true && (this.byId("idExtendExpiryDateID").getValue() > 12 || this.byId("idExtendExpiryDateID").getValue() === 0 )){
@@ -347,14 +348,12 @@ sap.ui.define([
 			});
 		},
 		savePA: function () {
-            //EHQUT-Italy-Synchronise Button enable 
-            // let priceAgreement=this.paState.getPriceAgreementInstance();
-            // const countryCode = this.paState.getProperty("priceAgreement").getTender().getCountryCode();
-            // let priceAgreementID=priceAgreement.iD;
-            // let material=priceAgreement.Materials[0].SKUCode;
-            // if(syncButtonenableflag===true && countryCode === "IT") {
-            //  let customerprice=this.paState.getCustomerPrics(priceAgreementID, material);
-            // }
+            //EJUVE-CR3 START
+			if((this.paState.hasPAExpiryDateChanged() || this.paState.hasPAEffectiveDateChanged())&& (this.paState.priceAgreementData.CustomerPrices?.[0]?.Synchronized===true)&& (this.paState.priceAgreementData.countryCode === "IT")){
+				let oldExpiryDate=this.paState.priceAgreementData?.customerPrices?.[0]?.expiryDate;
+				 this.paState.setProperty("/OldExpiryDate",oldExpiryDate)
+			}
+			//EJUVE-CR3 END
 			return this.paState.saveCandidatePrices()
 				.then(this.paState.savePriceAgreement.bind(this.paState, this.paState.getPriceAgreementInstance()))
 				.then(() => {
@@ -450,6 +449,17 @@ sap.ui.define([
 				// 	this.setBusy(false);
 				// 	MessageBox.success("Price Agreement successfully synchronized");
 				// });
+				// EJUVE-CR3 START price agreement after edit date flow
+				var priceAgreementInfo = await this.paState.getPriceAgreement(this.sObjectId);
+				const countryCode = priceAgreementInfo.countryCode;
+				if ((countryCode === "IT") && (priceAgreementInfo.oldExpiryDate !== null && priceAgreementInfo.oldExpiryDate !== undefined && new Date(priceAgreementInfo.oldExpiryDate).toISOString().split('T')[0] !== new Date(priceAgreementInfo.expiryDate).toISOString().split('T')[0])) {
+					//Approval Status + Offer Status
+					var sApprovalStatus = "Processing"; //workflow will change this status to "Notification Sent"
+					//save Approvals (&status) + change offer status
+					$.when(this.paState.saveApprovals(sApprovalStatus, priceAgreementInfo)).done(function (oDataTenderOffer) {
+					})
+				}
+				//EJUVE-CR3 END
 			} catch (error) {
 				this.paState.getPriceAgreement(this.sObjectId);
 				this.setBusy(false);
