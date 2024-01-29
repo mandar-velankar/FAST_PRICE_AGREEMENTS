@@ -303,7 +303,7 @@ sap.ui.define([
 			orfilters.push(new Filter({
                 path: 'Status',
                 operator: FilterOperator.EQ,
-                value1: NULL
+                value1: null
             }));
             orfilters.push(new Filter({
                 path: 'Status',
