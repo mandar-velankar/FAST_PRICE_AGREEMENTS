@@ -722,6 +722,10 @@ sap.ui.define([
             }
            
         },
+        getCustomerPrices: function (priceAgreementId) {
+            return this.getService().getCustomerPrices(priceAgreementId);
+
+        },
         //EJUVE-CR9 END
 
 

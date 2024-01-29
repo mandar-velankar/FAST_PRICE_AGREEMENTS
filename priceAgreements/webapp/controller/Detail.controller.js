@@ -446,8 +446,9 @@ sap.ui.define([
 				const productPackId = onSynchronizePriceAgreementDetails?.productPackId;
 				// if(tenderClassification === "Tender" && priceCondition!==null){
 				let test = await this.paState.getPriceAgreementsByMaterialNumberAndCustomerId(priceAgreementId, productPackId, instituteId)
-				let PriceAgreement = await this.paState.getPriceAgreements(test?.data.results[0]?.PriceAgreementId);
-				await this.paState.cancelDuplicatePriceAgreement(PriceAgreement?.data?.results[0], test?.data.results);
+				let PriceAgreement = await this.paState.getPriceAgreements(test?.data.results[0]?.ID);
+				let customerPrices = await this.paState.getCustomerPrices(test?.data.results[0]?.ID);
+				await this.paState.cancelDuplicatePriceAgreement(PriceAgreement?.data?.results[0], customerPrices?.data?.results);
 			
 				// }
 

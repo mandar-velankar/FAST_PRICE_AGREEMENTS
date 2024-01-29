@@ -335,6 +335,24 @@ sap.ui.define([
 			return this.odata(sKey).put(data, { refreshAfterChange: false });
 
 		},
+		getPriceAgreements: function (priceAgreementId) {
+			const filters = [];
+			filters.push(new Filter({
+				path: 'ID',
+				operator: FilterOperator.EQ,
+				value1: priceAgreementId
+			}));
+
+			return this.odata("/PriceAgreements").get({ filters: filters });
+		},
+		deletePriceAgreement: function (customerPrice) {
+
+			let sKey = this.model.createKey("/CustomerPrices", {
+				ID: customerPrice
+			});
+			return this.odata(sKey).delete();
+
+		},
 		//EJUVE-CR9 END
 	});
 	return PriceAgreementService;
