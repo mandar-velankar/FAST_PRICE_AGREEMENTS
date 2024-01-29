@@ -335,15 +335,15 @@ sap.ui.define([
 			return this.odata(sKey).put(data, { refreshAfterChange: false });
 
 		},
-		getPriceAgreements: function (priceAgreementId) {
+		getCustomerPrices: function (priceAgreementId) {
 			const filters = [];
 			filters.push(new Filter({
-				path: 'ID',
+				path: 'PriceAgreementId',
 				operator: FilterOperator.EQ,
 				value1: priceAgreementId
 			}));
 
-			return this.odata("/PriceAgreements").get({ filters: filters });
+			return this.odata("/CustomerPrices").get({ filters: filters });
 		},
 		deletePriceAgreement: function (customerPrice) {
 
