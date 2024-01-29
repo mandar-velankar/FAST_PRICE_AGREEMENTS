@@ -285,7 +285,7 @@ sap.ui.define([
 		getPriceAgreementsByMaterialNumberAndCustomerId: function (priceAgreementId, productPackId, instituteId) {
 			const filters = [];
 			filters.push(new Filter({
-				path: 'PriceAgreementId',
+				path: 'ID',
 				operator: FilterOperator.NE,
 				value1: priceAgreementId
 			}));
@@ -302,7 +302,7 @@ sap.ui.define([
 			
 
 
-			return this.odata("/CustomerPrices").get({ filters: filters });
+			return this.odata("/PriceAgreements").get({ filters: filters });
 		},
 		getPriceAgreements: function (priceAgreementId) {
 			const filters = [];
