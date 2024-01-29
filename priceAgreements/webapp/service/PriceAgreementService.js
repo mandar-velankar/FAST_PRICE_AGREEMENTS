@@ -284,6 +284,7 @@ sap.ui.define([
 		//EJUVE-CR9 START
 		getPriceAgreementsByMaterialNumberAndCustomerId: function (priceAgreementId, productPackId, instituteId) {
 			const filters = [];
+			var orfilters=[];
 			filters.push(new Filter({
 				path: 'ID',
 				operator: FilterOperator.NE,
@@ -299,9 +300,18 @@ sap.ui.define([
 				operator: FilterOperator.EQ,
 				value1: productPackId
 			}));
+			orfilters.push(new Filter({
+                path: 'Status',
+                operator: FilterOperator.EQ,
+                value1: NULL
+            }));
+            orfilters.push(new Filter({
+                path: 'Status',
+                operator: FilterOperator.EQ,
+                value1: ''
+            }));
+            filters.push(new sap.ui.model.Filter(orfilters, false));
 			
-
-
 			return this.odata("/PriceAgreements").get({ filters: filters });
 		},
 		getPriceAgreements: function (priceAgreementId) {
