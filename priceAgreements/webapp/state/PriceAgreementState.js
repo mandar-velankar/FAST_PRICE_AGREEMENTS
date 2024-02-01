@@ -699,28 +699,34 @@ sap.ui.define([
 
         cancelDuplicatePriceAgreement: async function (priceAgreement, customerPrice) {
             if (priceAgreement) {
-                let priceAgreementcandidatePrices = await this.getCandidatePricesByID(priceAgreement.ID)
-                priceAgreementcandidatePrices = priceAgreementcandidatePrices.data.results;
-                let dateformat = new Date().toISOString().split('T')[0] + "T00:00:00.000Z";
-                priceAgreement.expiryDate = dateformat;
-                priceAgreement.extendPriceAgreement = true;
-                priceAgreement.expiryExtensionPeriod = 11;
-                priceAgreement.Status = "Cancelled";
-               // priceAgreement.customerPrices = customerPrice;
-                priceAgreement.candidatePrices = priceAgreementcandidatePrices?.map(candidatePrice => {
-                    candidatePrice.Applied = false;
-                    return candidatePrice
-                });
-                let newPriceAgreement = new PriceAgreement(priceAgreement)
-               // newPriceAgreement.customerPrices=customerPrice;
-                 this.saveCandidatePricesCancel(newPriceAgreement).then(() => {
-                    return this.savePriceAgreement(newPriceAgreement);
-                });
+                if (priceAgreement.length > 0) {
+                    priceAgreement.map(async (item) => {
+                        let priceAgreementcandidatePrices = await this.getCandidatePricesByID(item.ID)
+                        priceAgreementcandidatePrices = priceAgreementcandidatePrices.data.results;
+                        let dateformat = new Date().toISOString().split('T')[0] + "T00:00:00.000Z";
+                        item.expiryDate = dateformat;
+                        item.extendPriceAgreement = true;
+                        item.expiryExtensionPeriod = 11;
+                        item.Status = "Cancelled";
+                        // priceAgreement.customerPrices = customerPrice;
+                        item.candidatePrices = priceAgreementcandidatePrices?.map(candidatePrice => {
+                            candidatePrice.Applied = false;
+                            return candidatePrice
+                        });
+                        let newPriceAgreement = new PriceAgreement(item)
+                        // newPriceAgreement.customerPrices=customerPrice;
+                        this.saveCandidatePricesCancel(newPriceAgreement).then(() => {
+                            return this.savePriceAgreement(newPriceAgreement);
+                        });
+                    })
+                }
+
             }
-            if(customerPrice.length > 0){
-                 this.getService().deletePriceAgreement(customerPrice[0].ID);
+            if (customerPrice.length > 0) {
+                customerPrice.map(item => this.getService().deletePriceAgreement(item.ID));
+                //  this.getService().deletePriceAgreement(customerPrice[0].ID);
             }
-           
+
         },
         getCustomerPrices: function (priceAgreementId) {
             return this.getService().getCustomerPrices(priceAgreementId);
