@@ -706,7 +706,7 @@ sap.ui.define([
                         let dateformat = new Date().toISOString().split('T')[0] + "T00:00:00.000Z";
                         item.expiryDate = dateformat;
                         item.extendPriceAgreement = true;
-                        item.expiryExtensionPeriod = 11;
+                        item.expiryExtensionPeriod = 0;
                         item.Status = "Cancelled";
                         // priceAgreement.customerPrices = customerPrice;
                         item.candidatePrices = priceAgreementcandidatePrices?.map(candidatePrice => {
