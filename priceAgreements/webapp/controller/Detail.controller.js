@@ -447,8 +447,8 @@ sap.ui.define([
 				const instituteId = onSynchronizePriceAgreementDetails?.instituteId;
 				const productPackId = onSynchronizePriceAgreementDetails?.productPackId;
 				if (countryCodePriceAgreement === "ES" && tenderClassification === "Commercial Agreement") {
-				let test = await this.paState.getPriceAgreementsByMaterialNumberAndCustomerId(priceAgreementId, productPackId, instituteId)
-				test.data.results.map(async (item) => {
+				let filteredPriceAgreement = await this.paState.getPriceAgreementsByMaterialNumberAndCustomerId(priceAgreementId, productPackId, instituteId)
+				filteredPriceAgreement.data.results.map(async (item) => {
 					let PriceAgreement = await this.paState.getPriceAgreements(item?.ID);
 					let customerPrices = await this.paState.getCustomerPrices(item?.ID);
 					if(PriceAgreement && customerPrices){
