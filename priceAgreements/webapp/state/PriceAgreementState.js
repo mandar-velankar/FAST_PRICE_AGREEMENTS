@@ -468,7 +468,7 @@ sap.ui.define([
                             "FOCproductPackID": null,
                             "FOCmaterialNumber": null,
                             "PriceCondition": "YAW1",
-                            "Applied": candidate.applied
+                            "Applied": candidate.countryCode === 'ES' && candidate.instituteType === 'Ship-To' ? false : true
                         });
                         const existingSettlementCondition = aExistingSettlementConditions.find(condition => condition.EffectiveDate.toISOString() === settlementDateCustomerPrice.effectiveDate.toISOString() && condition.ExpiryDate.toISOString() === settlementDateCustomerPrice.expiryDate.toISOString() && condition.MaterialNumber == candidate.materialNumber);
                         if(existingSettlementCondition) {
