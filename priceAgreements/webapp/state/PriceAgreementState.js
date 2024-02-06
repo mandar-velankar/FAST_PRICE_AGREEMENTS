@@ -464,7 +464,7 @@ sap.ui.define([
                             "Price": candidate.price,
                             "PriceAgreementId": candidate.priceAgreementId,
                             "ProductPackId": candidate.productPackId,
-                            "Synchronized": candidate.synchronized || false,
+                            "Synchronized": candidate.countryCode === 'ES' && candidate.instituteType === 'Ship-To' ? false : candidate.synchronized,
                             "FOCproductPackID": null,
                             "FOCmaterialNumber": null,
                             "PriceCondition": "YAW1",
