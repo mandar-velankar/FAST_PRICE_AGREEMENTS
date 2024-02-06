@@ -240,7 +240,7 @@ sap.ui.define([
             var currentProductId;
             let deletedSettlementPriceConditions;
             let candidatePricesToBeProcessed;
- 
+            var applyAllSelected=false;
             if(priceAgreement.countryCode==='IT'){
             candidatePricesToBeProcessed = candidatePrices.filter(cp => cp.applied);
             }
@@ -249,7 +249,9 @@ sap.ui.define([
              candidatePricesToBeProcessed = candidatePrices.filter(cp => cp.applied  && !cp.synchronized);
             }
             
-            
+            if(candidatePrices.length===candidatePricesToBeProcessed.length){
+                applyAllSelected=true;
+            }
             // get existing customer prices 
             // these are customer prices already created in the DB
             const existingCustomerPrices = priceAgreement.customerPrices;
@@ -481,7 +483,7 @@ sap.ui.define([
                          settlementDateCustomerPrice.priceCondition=priceAgreement.priceConditions[settlementpriceconditionindex].priceConditionCode;
                          }
 
-                         if(candidate.instituteType !== 'Ship-To'){
+                         if(candidate.instituteType !== 'Ship-To' && applyAllSelected===true){
                             CustomerPrices.push(settlementDateCustomerPrice);
                         }
                     });
