@@ -466,11 +466,11 @@ sap.ui.define([
                             "Price": candidate.price,
                             "PriceAgreementId": candidate.priceAgreementId,
                             "ProductPackId": candidate.productPackId,
-                            "Synchronized": candidate.countryCode === 'ES' && candidate.instituteType === 'Ship-To' ? false : candidate.synchronized,
+                            "Synchronized": candidate.synchronized || false,
                             "FOCproductPackID": null,
                             "FOCmaterialNumber": null,
                             "PriceCondition": "YAW1",
-                            "Applied": candidate.countryCode === 'ES' && candidate.instituteType === 'Ship-To' ? false : true
+                            "Applied": candidate.applied
                         });
                         const existingSettlementCondition = aExistingSettlementConditions.find(condition => condition.EffectiveDate.toISOString() === settlementDateCustomerPrice.effectiveDate.toISOString() && condition.ExpiryDate.toISOString() === settlementDateCustomerPrice.expiryDate.toISOString() && condition.MaterialNumber == candidate.materialNumber);
                         if(existingSettlementCondition) {
