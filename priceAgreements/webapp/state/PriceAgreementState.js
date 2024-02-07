@@ -484,6 +484,7 @@ sap.ui.define([
                          }
                           
                          if(applyAllSelected===false){
+                            CustomerPrices.push(settlementDateCustomerPrice);
                          }
                          if (applyAllSelected===true){
                             if(candidate.instituteType !== 'Ship-To'){
