@@ -483,15 +483,10 @@ sap.ui.define([
                          settlementDateCustomerPrice.priceCondition=priceAgreement.priceConditions[settlementpriceconditionindex].priceConditionCode;
                          }
                           
-                         if(applyAllSelected===false){
-                            CustomerPrices.push(settlementDateCustomerPrice);
-                         }
-                         if (applyAllSelected===true){
-                            if(candidate.instituteType !== 'Ship-To'){
+                           if(candidate.instituteType === 'Ship-To'){
                                 CustomerPrices.push(settlementDateCustomerPrice);
                             }
-                        }
-                        
+                                                
                     });
 
                 }
