@@ -482,10 +482,10 @@ sap.ui.define([
                          if(settlementpriceconditionindex){
                          settlementDateCustomerPrice.priceCondition=priceAgreement.priceConditions[settlementpriceconditionindex].priceConditionCode;
                          }
-                          
-                           if(candidate.instituteType === 'Ship-To'){
-                                CustomerPrices.push(settlementDateCustomerPrice);
-                            }
+                         CustomerPrices.push(settlementDateCustomerPrice);
+                        //    if(candidate.instituteType === 'Ship-To'){
+                        //     CustomerPrices.push(settlementDateCustomerPrice);  
+                        //     }
                                                 
                     });
 
