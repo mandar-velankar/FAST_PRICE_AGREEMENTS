@@ -520,7 +520,7 @@ sap.ui.define([
                     return candidatePrice
                 });
                 this.getPriceAgreementInstance().setCandidatePrices(priceAgreement.candidatePrices);
-                this.saveCandidatePrices(priceAgreement).then(() => {
+                await this.saveCandidatePrices(priceAgreement).then(() => {
                     return this.savePriceAgreement(priceAgreement);
                 });
             }
