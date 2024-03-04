@@ -226,6 +226,79 @@ sap.ui.define([
 
 		},
 		// EJUVE-CR3 END
+		//EJUVE-CR9 START
+		getPriceAgreementsByMaterialNumberAndCustomerId: function (priceAgreementId, productPackId, instituteId) {
+			const filters = [];
+			var orfilters=[];
+			filters.push(new Filter({
+				path: 'ID',
+				operator: FilterOperator.NE,
+				value1: priceAgreementId
+			}));
+			filters.push(new Filter({
+				path: 'InstituteId',
+				operator: FilterOperator.EQ,
+				value1: instituteId
+			}));
+			filters.push(new Filter({
+				path: 'ProductPackId',
+				operator: FilterOperator.EQ,
+				value1: productPackId
+			}));
+			orfilters.push(new Filter({
+                path: 'Status',
+                operator: FilterOperator.EQ,
+                value1: null
+            }));
+            orfilters.push(new Filter({
+                path: 'Status',
+                operator: FilterOperator.EQ,
+                value1: ''
+            }));
+            filters.push(new sap.ui.model.Filter(orfilters, false));
+			
+			return this.odata("/PriceAgreements").get({ filters: filters });
+		},
+		getPriceAgreements: function (priceAgreementId) {
+			const filters = [];
+			filters.push(new Filter({
+				path: 'ID',
+				operator: FilterOperator.EQ,
+				value1: priceAgreementId
+			}));
+
+			return this.odata("/PriceAgreements").get({ filters: filters });
+		},
+		updatePriceAgreementCancel: function (priceAgreement) {
+
+			const data = priceAgreement.getJSON();
+
+			const sKey = this.model.createKey("/PriceAgreements", {
+				ID: data.ID
+			});
+
+			return this.odata(sKey).put(data, { refreshAfterChange: false });
+
+		},
+		getCustomerPrices: function (priceAgreementId) {
+			const filters = [];
+			filters.push(new Filter({
+				path: 'PriceAgreementId',
+				operator: FilterOperator.EQ,
+				value1: priceAgreementId
+			}));
+
+			return this.odata("/CustomerPrices").get({ filters: filters });
+		},
+		deletePriceAgreement: function (customerPrice) {
+
+			let sKey = this.model.createKey("/CustomerPrices", {
+				ID: customerPrice
+			});
+			return this.odata(sKey).delete();
+
+		},
+		//EJUVE-CR9 END
 		syncPriceAgreements: function (ids) {
 
 			if (!ids || !Array.isArray(ids) || ids.length <= 0) return "You must provide a list of PriceAgreement IDs";

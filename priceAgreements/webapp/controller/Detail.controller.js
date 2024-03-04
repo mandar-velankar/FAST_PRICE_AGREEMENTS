@@ -438,6 +438,24 @@ sap.ui.define([
 				throw new Error("PriceAgreementID not specified");
 			}
 			try {
+				//EJUVE-CR9 START
+				let onSynchronizePriceAgreementDetails = this.paState.getPriceAgreementInstance();
+				const countryCodePriceAgreement = onSynchronizePriceAgreementDetails.tender.countryCode;
+				const tenderClassification = onSynchronizePriceAgreementDetails.tender.classification;
+				const priceAgreementId = onSynchronizePriceAgreementDetails?.iD;
+				const instituteId = onSynchronizePriceAgreementDetails?.instituteId;
+				const productPackId = onSynchronizePriceAgreementDetails?.productPackId;
+				if (countryCodePriceAgreement === "ES" && tenderClassification === "Commercial Agreement") {
+				let filteredPriceAgreement = await this.paState.getPriceAgreementsByMaterialNumberAndCustomerId(priceAgreementId, productPackId, instituteId)
+				filteredPriceAgreement.data.results.map(async (item) => {
+					let PriceAgreement = await this.paState.getPriceAgreements(item?.ID);
+					let customerPrices = await this.paState.getCustomerPrices(item?.ID);
+					if(PriceAgreement && customerPrices){
+						await this.paState.cancelDuplicatePriceAgreement(PriceAgreement?.data?.results, customerPrices?.data?.results);
+					}
+				})
+				}
+				 //EJUVE-CR9 END
 				this.setBusy(true);
 				await this.paState.syncPriceAgreements([priceAgreementID]);
 				//const oMasterTableBinding = this.refreshMaster();

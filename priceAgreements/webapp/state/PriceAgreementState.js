@@ -679,8 +679,58 @@ sap.ui.define([
 
             return oDeferred.promise();
 
-        } //EJUVE-CR3 END
+        }, //EJUVE-CR3 END
+        //EJUVE-CR9 START
+        getPriceAgreementsByMaterialNumberAndCustomerId: function (priceAgreementId, productPackId, instituteId) {
+            return this.getService().getPriceAgreementsByMaterialNumberAndCustomerId(priceAgreementId, productPackId, instituteId);
 
+        },
+        getPriceAgreements: function (priceAgreementId) {
+            return this.getService().getPriceAgreements(priceAgreementId);
+
+        },
+        saveCandidatePricesCancel: function (newPriceAgreement) {
+            const candidatePrices = newPriceAgreement.getCandidatePrices();
+            const priceAgreement = newPriceAgreement;
+            return this.saveCandidatePrice(priceAgreement, candidatePrices);
+        },
+
+        cancelDuplicatePriceAgreement: async function (priceAgreement, customerPrice) {
+            if (priceAgreement) {
+                if (priceAgreement.length > 0) {
+                    priceAgreement.map(async (item) => {
+                        let priceAgreementcandidatePrices = await this.getCandidatePricesByID(item.ID)
+                        priceAgreementcandidatePrices = priceAgreementcandidatePrices.data.results;
+                        let dateformat = new Date().toISOString().split('T')[0] + "T00:00:00.000Z";
+                        item.expiryDate = dateformat;
+                        item.extendPriceAgreement = true;
+                        item.expiryExtensionPeriod = 0;
+                        item.Status = "Cancelled";
+                        // priceAgreement.customerPrices = customerPrice;
+                        item.candidatePrices = priceAgreementcandidatePrices?.map(candidatePrice => {
+                            candidatePrice.Applied = false;
+                            return candidatePrice
+                        });
+                        let newPriceAgreement = new PriceAgreement(item)
+                        // newPriceAgreement.customerPrices=customerPrice;
+                        this.saveCandidatePricesCancel(newPriceAgreement).then(() => {
+                            return this.savePriceAgreement(newPriceAgreement);
+                        });
+                    })
+                }
+
+            }
+            if (customerPrice.length > 0) {
+                customerPrice.map(item => this.getService().deletePriceAgreement(item.ID));
+                //  this.getService().deletePriceAgreement(customerPrice[0].ID);
+            }
+
+        },
+        getCustomerPrices: function (priceAgreementId) {
+            return this.getService().getCustomerPrices(priceAgreementId);
+
+        },
+        //EJUVE-CR9 END
     });
 
     return PriceAgreementState;
