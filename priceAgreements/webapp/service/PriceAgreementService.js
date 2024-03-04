@@ -81,30 +81,7 @@ sap.ui.define([
 			return this.odata(sKey).put(data,{refreshAfterChange:false});
 
 		},
-        //EHQUT-Italy Synchronise Button enable
-        // getCustomerPrics : function(priceAgreementID, material){
-        //     var aFilters = [];
-
-        //     aFilters.push(new Filter({
-        //         path: 'PriceAgreementId',
-        //         operator: FilterOperator.EQ,
-        //         value1: priceAgreementID
-
-        //     }))
-
-        //     aFilters.push(new Filter({
-        //         path: 'MaterialNumber',
-        //         operator: FilterOperator.EQ,
-        //         value1: material
-        //     }))
-
-		// 	var mParameters = {
-		// 		filters: aFilters
-
-		// 	};
-
-		// 	return this.odata("/CustomerPrices").get(mParameters);
-		// },
+       
 		saveCustomerPrice: function (customerPrice) {
 
 			// const data = customerPrice.getAll();
@@ -310,7 +287,19 @@ sap.ui.define([
 			return this.odata("/syncPriceAgreements").post(data);
 
 		},
+		//EJUVE-CR3
+		createApproval: function (oApprovalToSave) {
 
+
+			var that = this;
+
+			//path of offer that is selected
+			var sPath = "/PriceAgreement_APPRST";
+
+			//Create
+			return that.odata(sPath).post(oApprovalToSave);
+
+		},
 		getFocMaterials: function (filters) {
 
 			if (!filters) {
@@ -363,7 +352,21 @@ sap.ui.define([
 			return this.odata("/syncFocCustPrices").post(data);
 
 		},*/
+		// EJUVE-CR3 START
+		,
+		createApproval: function (oApprovalToSave) {
 
+
+			var that = this;
+
+			//path of offer that is selected
+			var sPath = "/PriceAgreement_APPRST";
+
+			//Create
+			return that.odata(sPath).post(oApprovalToSave);
+
+		},
+		// EJUVE-CR3 END
 	});
 	return PriceAgreementService;
 });

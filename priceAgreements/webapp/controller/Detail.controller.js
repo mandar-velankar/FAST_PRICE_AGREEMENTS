@@ -348,7 +348,9 @@ sap.ui.define([
 			});
 		},
 		savePA: function () {
+
             //EJUVE-CR3 START
+
 			if((this.paState.hasPAExpiryDateChanged() || this.paState.hasPAEffectiveDateChanged())&& (this.paState.priceAgreementData.CustomerPrices?.[0]?.Synchronized===true)&& (this.paState.priceAgreementData.countryCode === "IT")){
 				let oldExpiryDate=this.paState.priceAgreementData?.customerPrices?.[0]?.expiryDate;
 				 this.paState.setProperty("/OldExpiryDate",oldExpiryDate)
@@ -462,6 +464,7 @@ sap.ui.define([
 				this.paState.getPriceAgreement(this.sObjectId);
 				this.setBusy(false);
 				MessageBox.success("Price Agreement successfully synchronized");
+				
 				// oMasterTableBinding.attachEventOnce("dataReceived", (data) => {
 				// 	this.paState.getPriceAgreement(this.sObjectId);
 				// 	this.setBusy(false);
@@ -483,6 +486,7 @@ sap.ui.define([
 				this.setBusy(false);
 				MessageBox.error("Try Again Later");
 			}
+			
 		},
 
 

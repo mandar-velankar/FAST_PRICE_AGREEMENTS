@@ -241,7 +241,7 @@ sap.ui.define([
             var currentProductId;
             let deletedSettlementPriceConditions;
             let candidatePricesToBeProcessed;
- 
+            var applyAllSelected=false;
             if(priceAgreement.countryCode==='IT'){
             candidatePricesToBeProcessed = candidatePrices.filter(cp => cp.applied);
             }
@@ -250,7 +250,9 @@ sap.ui.define([
              candidatePricesToBeProcessed = candidatePrices.filter(cp => cp.applied  && !cp.synchronized);
             }
             
-            
+            if(candidatePrices.length===candidatePricesToBeProcessed.length){
+                applyAllSelected=true;
+            }
             // get existing customer prices 
             // these are customer prices already created in the DB
             const existingCustomerPrices = priceAgreement.customerPrices;
@@ -281,7 +283,9 @@ sap.ui.define([
                 if(candidate.countryCode === "IT"){
                     customerPrice.priceCondition = "YLTP";
                     customerPrice.applied = candidate.applied;
+
                    // customerPrice.synchronized = candidate.synchronized || false;
+
                     //EJUVE-CR3 START
 
                     if((this.hasPAExpiryDateChanged() || this.hasPAEffectiveDateChanged())&& (this.priceAgreementData.CustomerPrices?.[0]?.Synchronized===true)){
@@ -292,6 +296,7 @@ sap.ui.define([
                     }
 
                     // EJUVE-CR3 END
+
                     CustomerPrices.push(customerPrice);
 
                     // Italy can have FOC for the same product and FOC for other products
@@ -478,8 +483,11 @@ sap.ui.define([
                          if(settlementpriceconditionindex){
                          settlementDateCustomerPrice.priceCondition=priceAgreement.priceConditions[settlementpriceconditionindex].priceConditionCode;
                          }
-
-                        CustomerPrices.push(settlementDateCustomerPrice);
+                         CustomerPrices.push(settlementDateCustomerPrice);
+                        //    if(candidate.instituteType === 'Ship-To'){
+                        //     CustomerPrices.push(settlementDateCustomerPrice);  
+                        //     }
+                                                
                     });
 
                 }
