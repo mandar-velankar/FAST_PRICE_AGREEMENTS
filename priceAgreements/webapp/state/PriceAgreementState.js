@@ -241,17 +241,12 @@ sap.ui.define([
             var currentProductId;
             let deletedSettlementPriceConditions;
             let candidatePricesToBeProcessed;
-            var applyAllSelected=false;
             if(priceAgreement.countryCode==='IT'){
             candidatePricesToBeProcessed = candidatePrices.filter(cp => cp.applied);
             }
             else{
                 // we only save the applied candidate prices 
              candidatePricesToBeProcessed = candidatePrices.filter(cp => cp.applied  && !cp.synchronized);
-            }
-            
-            if(candidatePrices.length===candidatePricesToBeProcessed.length){
-                applyAllSelected=true;
             }
             // get existing customer prices 
             // these are customer prices already created in the DB
