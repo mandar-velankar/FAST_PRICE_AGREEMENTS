@@ -241,7 +241,6 @@ sap.ui.define([
             var currentProductId;
             let deletedSettlementPriceConditions;
             let candidatePricesToBeProcessed;
- 
             if(priceAgreement.countryCode==='IT'){
             candidatePricesToBeProcessed = candidatePrices.filter(cp => cp.applied);
             }
@@ -249,8 +248,6 @@ sap.ui.define([
                 // we only save the applied candidate prices 
              candidatePricesToBeProcessed = candidatePrices.filter(cp => cp.applied  && !cp.synchronized);
             }
-            
-            
             // get existing customer prices 
             // these are customer prices already created in the DB
             const existingCustomerPrices = priceAgreement.customerPrices;
@@ -281,7 +278,9 @@ sap.ui.define([
                 if(candidate.countryCode === "IT"){
                     customerPrice.priceCondition = "YLTP";
                     customerPrice.applied = candidate.applied;
+
                    // customerPrice.synchronized = candidate.synchronized || false;
+
                     //EJUVE-CR3 START
 
                     if((this.hasPAExpiryDateChanged() || this.hasPAEffectiveDateChanged())&& (this.priceAgreementData.CustomerPrices?.[0]?.Synchronized===true)){
@@ -292,6 +291,7 @@ sap.ui.define([
                     }
 
                     // EJUVE-CR3 END
+
                     CustomerPrices.push(customerPrice);
 
                     // Italy can have FOC for the same product and FOC for other products
@@ -478,8 +478,11 @@ sap.ui.define([
                          if(settlementpriceconditionindex){
                          settlementDateCustomerPrice.priceCondition=priceAgreement.priceConditions[settlementpriceconditionindex].priceConditionCode;
                          }
-
-                        CustomerPrices.push(settlementDateCustomerPrice);
+                         CustomerPrices.push(settlementDateCustomerPrice);
+                        //    if(candidate.instituteType === 'Ship-To'){
+                        //     CustomerPrices.push(settlementDateCustomerPrice);  
+                        //     }
+                                                
                     });
 
                 }
@@ -679,8 +682,58 @@ sap.ui.define([
 
             return oDeferred.promise();
 
-        } //EJUVE-CR3 END
+        }, //EJUVE-CR3 END
+        //EJUVE-CR9 START
+        getPriceAgreementsByMaterialNumberAndCustomerId: function (priceAgreementId, productPackId, instituteId) {
+            return this.getService().getPriceAgreementsByMaterialNumberAndCustomerId(priceAgreementId, productPackId, instituteId);
 
+        },
+        getPriceAgreements: function (priceAgreementId) {
+            return this.getService().getPriceAgreements(priceAgreementId);
+
+        },
+        saveCandidatePricesCancel: function (newPriceAgreement) {
+            const candidatePrices = newPriceAgreement.getCandidatePrices();
+            const priceAgreement = newPriceAgreement;
+            return this.saveCandidatePrice(priceAgreement, candidatePrices);
+        },
+
+        cancelDuplicatePriceAgreement: async function (priceAgreement, customerPrice) {
+            if (priceAgreement) {
+                if (priceAgreement.length > 0) {
+                    priceAgreement.map(async (item) => {
+                        let priceAgreementcandidatePrices = await this.getCandidatePricesByID(item.ID)
+                        priceAgreementcandidatePrices = priceAgreementcandidatePrices.data.results;
+                        let dateformat = new Date().toISOString().split('T')[0] + "T00:00:00.000Z";
+                        item.expiryDate = dateformat;
+                        item.extendPriceAgreement = true;
+                        item.expiryExtensionPeriod = 0;
+                        item.Status = "Cancelled";
+                        // priceAgreement.customerPrices = customerPrice;
+                        item.candidatePrices = priceAgreementcandidatePrices?.map(candidatePrice => {
+                            candidatePrice.Applied = false;
+                            return candidatePrice
+                        });
+                        let newPriceAgreement = new PriceAgreement(item)
+                        // newPriceAgreement.customerPrices=customerPrice;
+                        this.saveCandidatePricesCancel(newPriceAgreement).then(() => {
+                            return this.savePriceAgreement(newPriceAgreement);
+                        });
+                    })
+                }
+
+            }
+            if (customerPrice.length > 0) {
+                customerPrice.map(item => this.getService().deletePriceAgreement(item.ID));
+                //  this.getService().deletePriceAgreement(customerPrice[0].ID);
+            }
+
+        },
+        getCustomerPrices: function (priceAgreementId) {
+            return this.getService().getCustomerPrices(priceAgreementId);
+
+        },
+        //EJUVE-CR9 END
     });
 
     return PriceAgreementState;
