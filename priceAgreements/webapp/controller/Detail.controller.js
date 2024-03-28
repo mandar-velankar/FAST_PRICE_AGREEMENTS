@@ -542,7 +542,11 @@ sap.ui.define([
 			//let customerPrices = priceAgreement.CustomerPrices;
             let allSynchronized = customerPrices.length > 0 && customerPrices.every(customerPrice => customerPrice.synchronized === true);
             if( allSynchronized || (isCancelled === 'Cancelled')) return false;
-
+			//CR14
+			if(priceAgreement.applyAll === true && priceAgreement.
+				synchronizationStatus === 'DONE' && priceAgreement.
+				countryCode === 'ES'
+				) return true;
             // after call with Jonathan, these checks are not needed anymore, we simplified it above ( just commenting to be safe)
             
             /*const countryCode = this.paState.getProperty("priceAgreement").getTender().getCountryCode();
