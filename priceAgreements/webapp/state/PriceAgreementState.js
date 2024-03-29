@@ -156,7 +156,10 @@ sap.ui.define([
             }
             //EHQUT-CR2
             if(priceAgreement.countryCode==='ES'){
-                priceAgreement.applyAll=this.data.allApplied;
+                if(priceAgreement.candidatePrices.filter(cp => cp.applied).length === priceAgreement.candidatePrices.length){
+                    priceAgreement.applyAll=true;
+                }
+                
             }
             if (priceAgreement.iD) {
                 return this.getService().updatePriceAgreement(priceAgreement);
