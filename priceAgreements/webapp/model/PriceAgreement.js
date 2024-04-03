@@ -254,7 +254,7 @@ sap.ui.define([
                 "cancellationComment",
                 "ignoreConfPriceChange",
                 "ignorePVLPriceChange",
-
+                "applyAll",//CR2
                  "OldExpiryDate" //EJUVE-CR3
 
             ]);
