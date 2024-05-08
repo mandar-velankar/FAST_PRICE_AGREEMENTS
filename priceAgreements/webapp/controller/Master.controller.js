@@ -524,22 +524,22 @@ sap.ui.define([
 			}
             if(updatedPVLFilter){
 				andFilters.push(new Filter("hasNewYLLP", "EQ", 1));
-                andFilters.push(new Filter("isCancelled", "EQ", false));
+               // andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
 
             if(updatedConfidentialPriceFilter){
 				andFilters.push(new Filter("hasNewYLAP", "EQ", 1));
-                andFilters.push(new Filter("isCancelled", "EQ", false));
+               // andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
             if(netPriceAbovePVLFilter){
 				andFilters.push(new Filter("hasNewYLLP", "EQ", 3));
                 andFilters.push(new Filter("hasNewYLAP", "EQ", 3));
-                andFilters.push(new Filter("isCancelled", "EQ", false));
+               // andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
             if(netPriceBelowFloorPriceFilter){
 				andFilters.push(new Filter("hasNewYLLP", "EQ", 4));
                 andFilters.push(new Filter("hasNewYLAP", "EQ", 4));
-                andFilters.push(new Filter("isCancelled", "EQ", false));
+               // andFilters.push(new Filter("isCancelled", "EQ", false));
 			}
 
 			if(andFilters.length > 0){
