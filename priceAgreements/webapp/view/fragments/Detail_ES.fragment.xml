@@ -33,7 +33,8 @@
                                             },
                                             events: {
                                                 dataReceived: '.onLoadPaOwnersFinished'
-                                            }
+                                            },
+                                            length: 500
                                         }">
                             <core:Item key="{CWID}" text="{UserName}" />
                         </m:Select>
