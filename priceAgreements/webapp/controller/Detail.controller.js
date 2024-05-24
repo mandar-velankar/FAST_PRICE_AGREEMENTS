@@ -401,7 +401,7 @@ sap.ui.define([
 
 
 			aContexts = aContexts.filter(function (oContext){
-				return oContext.Countries.__list?.some((item) => item.includes("'ES'"));
+				return oContext.Countries.__list.length === 1 && oContext.Countries.__list?.some((item) => item.includes("'ES'"));
 			});
 
 			let oModel = new JSONModel({'Users': aContexts});
