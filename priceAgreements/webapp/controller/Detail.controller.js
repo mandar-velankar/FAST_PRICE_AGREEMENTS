@@ -521,7 +521,18 @@ sap.ui.define([
             let applied = evt.getParameters().state;
             let candidatePrices = this.paState.getPriceAgreementInstance().getCandidatePrices();
 
-            candidatePrices.filter(candidatePrice => candidatePrice.applied != applied && candidatePrice.synchronized === false)?.map(candidatePrice => { candidatePrice.applied = applied; });
+			if (countryCode === 'ES') {
+				candidatePrices.filter(candidatePrice => 
+					candidatePrice.applied !== applied &&
+					candidatePrice.synchronized === false &&
+					!(instComment === 'Sales Partner' && candidatePrice.comment === 'Sold-To')
+				)?.map(candidatePrice => { candidatePrice.applied = applied; });
+			}else{
+				candidatePrices.filter(candidatePrice => 
+					candidatePrice.applied != applied && 
+					candidatePrice.synchronized === false
+				)?.map(candidatePrice => { candidatePrice.applied = applied; });
+			}
         },
 
 		_setSelectedProductUoM(uom){
