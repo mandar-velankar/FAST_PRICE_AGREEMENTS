@@ -218,6 +218,8 @@ sap.ui.define([
 			const tender = this.paState.getProperty("priceAgreement").getTender();
 			const bSynchronised = this.paState.getProperty("priceAgreement").synchronized;
 			if(countryCode === "ES"){
+				const {comment} = this.paState.getProperty("priceAgreement").getInstitute();
+				this.paState.setProperty("priceAgreementTenderInstcomment",comment);
                 //let priceAgreement = this.paState.getPriceAgreementInstance();
                 //let instType = priceAgreement.getInstitute().instituteType;
                 /*Note: allApplied and allSynchronized can be checked using candidatePrices view instead of customerPrices, 
@@ -520,8 +522,21 @@ sap.ui.define([
         onApplyAll: function(evt){
             let applied = evt.getParameters().state;
             let candidatePrices = this.paState.getPriceAgreementInstance().getCandidatePrices();
+			let instComment = this.paState.getProperty("priceAgreementTenderInstcomment")
+			const countryCode = this.paState.getProperty("priceAgreement").getTender().getCountryCode();
 
-            candidatePrices.filter(candidatePrice => candidatePrice.applied != applied && candidatePrice.synchronized === false)?.map(candidatePrice => { candidatePrice.applied = applied; });
+			if (countryCode === 'ES') {
+				candidatePrices.filter(candidatePrice => 
+					candidatePrice.applied !== applied &&
+					candidatePrice.synchronized === false &&
+					!(instComment === 'Sales Partner' && candidatePrice.comment === 'Sold-To')
+				)?.map(candidatePrice => { candidatePrice.applied = applied; });
+			}else{
+				candidatePrices.filter(candidatePrice => 
+					candidatePrice.applied != applied && 
+					candidatePrice.synchronized === false
+				)?.map(candidatePrice => { candidatePrice.applied = applied; });
+			}
         },
 
 		_setSelectedProductUoM(uom){
