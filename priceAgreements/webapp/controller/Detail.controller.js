@@ -218,6 +218,8 @@ sap.ui.define([
 			const tender = this.paState.getProperty("priceAgreement").getTender();
 			const bSynchronised = this.paState.getProperty("priceAgreement").synchronized;
 			if(countryCode === "ES"){
+				const {comment} = this.paState.getProperty("priceAgreement").getInstitute();
+				this.paState.setProperty("priceAgreementTenderInstcomment",comment);
                 //let priceAgreement = this.paState.getPriceAgreementInstance();
                 //let instType = priceAgreement.getInstitute().instituteType;
                 /*Note: allApplied and allSynchronized can be checked using candidatePrices view instead of customerPrices, 
@@ -520,6 +522,8 @@ sap.ui.define([
         onApplyAll: function(evt){
             let applied = evt.getParameters().state;
             let candidatePrices = this.paState.getPriceAgreementInstance().getCandidatePrices();
+			let instComment = this.paState.getProperty("priceAgreementTenderInstcomment")
+			const countryCode = this.paState.getProperty("priceAgreement").getTender().getCountryCode();
 
 			if (countryCode === 'ES') {
 				candidatePrices.filter(candidatePrice => 

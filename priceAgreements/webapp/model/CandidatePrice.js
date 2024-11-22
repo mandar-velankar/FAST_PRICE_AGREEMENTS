@@ -35,7 +35,8 @@ sap.ui.define([
                 "applied",
                 "PriceCondition",
                 "priceAgreementId",
-                "priceCondition"
+                "priceCondition",
+                'comment'
             ]);
 
         },
