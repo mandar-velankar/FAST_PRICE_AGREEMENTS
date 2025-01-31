@@ -24,6 +24,13 @@
                             items="{ 
 								path: '/UserCountry', 
 								sorter: { path: 'Country/CountryName' }, 
+								filters: {
+									filters: [
+										{ path: 'Application', operator: 'EQ', value1: 'PA' },
+										{ path: 'Application', operator: 'EQ', value1: 'ALL' }
+									],
+									and: false
+								},
 								parameters: { expand: 'Country' },
 								events: {
 									dataReceived: '.onUserCountriesReceived'
