@@ -403,7 +403,8 @@ sap.ui.define([
 
 
 			aContexts = aContexts.filter(function (oContext){
-				return oContext.Countries.__list.length === 1 && oContext.Countries.__list?.some((item) => item.includes("'ES'"));
+				const spainOnlyAccess = oContext.Countries.__list?.every((item) => item.includes("'ES'"));
+				return spainOnlyAccess && oContext.Countries.__list?.some((item) => item.includes("'PA'"));
 			});
 
 			let oModel = new JSONModel({'Users': aContexts});
