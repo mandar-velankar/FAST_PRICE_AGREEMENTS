@@ -270,6 +270,7 @@ sap.ui.define([
 				sortBy: "ID",
 				groupBy: "None",
 				btnApplyNewPriceEnabled: false,
+				btnIgnoreNewPriceEnabled: false,
 				btnApplyNewSkuEnabled: false,
 			});
 		},
@@ -480,6 +481,26 @@ sap.ui.define([
 				this.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", false);
 			}
 
+			// enabled/disable the IgnoreNewPrice button 
+			const isRetailPriceUpdateSelected = oCountry === 'IT' && updatedRetailPriceFilter;
+			this.getView().getModel("masterView").setProperty("/btnIgnoreNewPriceEnabled", isRetailPriceUpdateSelected);
+
+			if (isRetailPriceUpdateSelected) {
+				const statusFilters = [
+					new Filter({
+						path: "Status",
+						operator: FilterOperator.NE,
+						value1: "Ignored"
+					}),
+					new Filter({
+						path: "Status",
+						operator: FilterOperator.EQ,
+						value1: null
+					})
+				]
+				andFilters.push(new Filter(statusFilters, false));
+			}
+
 			const productPackfilter = this.byId("idProductPackfilter").getSelectedKey();
 
 			if(productPackfilter){
@@ -653,6 +674,7 @@ sap.ui.define([
 					_that.getView().byId("list").getBinding("items").filter();
 
 					_that.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", false);
+					_that.getView().getModel("masterView").setProperty("/btnIgnoreNewPriceEnabled", false);
 
 					// navigate to master page
 					_that.getOwnerComponent().oListSelector.clearMasterListSelection();
@@ -670,6 +692,72 @@ sap.ui.define([
 				onClose: _fnOnClose
 			});
 			
+		},
+
+		onIgnoreNewPricePress: function(evt){
+			//EHQUT-199067-Italy – Price Agreements multiple selection
+			const _that = this;
+			var priceAgreementsTableItems;
+			var CountryCode=this.getModel("pa").oData.selectedCountryFilter;
+			
+			if(CountryCode === 'IT'){
+				priceAgreementsTableItems = this.byId("list").getSelectedItems();
+			}else{
+				priceAgreementsTableItems = this.byId("list").getItems();
+			}
+			//EHQUT-199067-Italy – Price Agreements multiple selection
+			//const priceAgreementsTableItems = this.byId("list").getItems();
+			const priceAgreements = priceAgreementsTableItems.map(item => item.getBindingContext().getObject());
+			const filterTxt = this.byId("idslctfilter").getSelectedItem().getText();
+
+			if(priceAgreements.length <= 0){
+				MessageBox.warning(`There are no Price Agreements with ${filterTxt}.`);
+				return;
+			}
+
+			const _fnOnClose = async function(sAction){
+
+				if (sAction === "YES") {
+
+					_that.getView().setBusyIndicatorDelay(0);
+					_that.getView().setBusy(true);
+
+					// apply the new price on each price agreement
+					await Promise.all(priceAgreements.map(pr => _that.ignoreNewPrice.call(_that, pr)));
+
+
+					// clear the filter and refresh the binding
+					// _that.byId("idslctfilter").setSelectedKey();
+					// _that.getView().byId("list").getBinding("items").aApplicationFilters = [];
+					_that.getView().byId("list").getBinding("items").filter();
+
+					_that.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", false);
+					_that.getView().getModel("masterView").setProperty("/btnIgnoreNewPriceEnabled", false);
+
+					// navigate to master page
+					_that.getOwnerComponent().oListSelector.clearMasterListSelection();
+					_that.getRouter().navTo("master");
+
+					_that.getView().setBusy(false);
+				
+				} 
+
+			};
+
+			MessageBox.warning("Are you sure you want to ignore the new prices for the selected agreements?", {
+				actions: [MessageBox.Action.YES, MessageBox.Action.NO],
+				styleClass: "sapUiSizeCompact",
+				onClose: _fnOnClose
+			});
+			
+		},
+
+		ignoreNewPrice: async function(priceAgreement){
+
+			priceAgreement.Status = 'Ignored';
+			
+			// save changes
+			return this.paState.savePriceAgreement(this.paState.createPriceAgreementObject(priceAgreement));
 		},
 
 		/**
@@ -691,6 +779,7 @@ sap.ui.define([
 			// const customerPricesPaths = priceAgreement.CustomerPrices.__list;
 			
 			const consumerPrice = this.getView().getModel().getProperty(`/${priceAgreement.ConsumerPrice.__ref}`);
+			const btnIgnoreNewPriceEnabled = this.getView().getModel("masterView").getProperty("/btnIgnoreNewPriceEnabled");
 
 			// calulate the new NetOfferPrice
 			let newNetOfferPrice = "";
@@ -710,6 +799,11 @@ sap.ui.define([
 			//priceAgreement.Price = newNetOfferPrice;
 			if((newNetOfferPrice !== 0 && priceAgreement.CountryCode === 'IT') || priceAgreement.CountryCode === 'ES'){
 				priceAgreement.Price = newNetOfferPrice;
+			}
+
+			// Set status when Retail Update Price filter is selected
+			if (priceAgreement.CountryCode === 'IT' && btnIgnoreNewPriceEnabled) {
+				priceAgreement.Status = 'Updated Price';
 			}
 
 			// update CustomerPrices, if any available, whith the newly calculated newNetOfferPrice
@@ -860,6 +954,9 @@ sap.ui.define([
 				}else{
 					this.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", false);
 				}
+
+				// enabled/disable the IgnoreNewPrice button 
+				this.getView().getModel("masterView").setProperty("/btnIgnoreNewPriceEnabled", oCountry === 'IT' && updatedRetailPriceFilter);
 	
 				const productPackfilter = this.byId("idProductPackfilter").getSelectedKey();
 	

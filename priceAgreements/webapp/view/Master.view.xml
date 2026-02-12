@@ -84,7 +84,14 @@
 							text="Apply price"
 							enabled="{masterView>/btnApplyNewPriceEnabled}"
 							type="Emphasized"
-							press=".onApplyNewPricePress"/>				
+							press=".onApplyNewPricePress"/>		
+						<Button
+							id="idIgnoreNewPrice"
+							text="Ignore price"
+							enabled="{masterView>/btnIgnoreNewPriceEnabled}"
+							type="Emphasized"
+							press=".onIgnoreNewPricePress"
+							visible="{masterView>/btnIgnoreNewPriceEnabled}"/>			
 						<SearchField id="idSearch" search=".setFilter" width="17.5rem"/>
 						<Button icon="sap-icon://sort" text="" press=".onOpenViewSettings"/>
 				</OverflowToolbar>
