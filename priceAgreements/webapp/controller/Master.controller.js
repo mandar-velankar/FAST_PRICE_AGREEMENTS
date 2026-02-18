@@ -490,7 +490,7 @@ sap.ui.define([
 					new Filter({
 						path: "Status",
 						operator: FilterOperator.NE,
-						value1: "Ignored"
+						value1: "Ignored Price"
 					}),
 					new Filter({
 						path: "Status",
@@ -649,6 +649,15 @@ sap.ui.define([
 				return;
 			}
 
+			if (CountryCode === 'IT') {
+				const somePriceAgreementsNotReviewed = priceAgreements.some(pa => pa.Status !== "Ignored Price" && pa.Status !== "Updated Price");
+
+				if (somePriceAgreementsNotReviewed) {
+					MessageBox.warning("Price updates needs to be reviewed first");
+					return;
+				}
+			}
+
 			const _fnOnClose = async function(sAction){
 
 				if (sAction === "YES") {
@@ -754,7 +763,7 @@ sap.ui.define([
 
 		ignoreNewPrice: async function(priceAgreement){
 
-			priceAgreement.Status = 'Ignored';
+			priceAgreement.Status = 'Ignored Price';
 			
 			// save changes
 			return this.paState.savePriceAgreement(this.paState.createPriceAgreementObject(priceAgreement));
