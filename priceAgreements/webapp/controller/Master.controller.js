@@ -485,21 +485,21 @@ sap.ui.define([
 			const isRetailPriceUpdateSelected = oCountry === 'IT' && updatedRetailPriceFilter;
 			this.getView().getModel("masterView").setProperty("/btnIgnoreNewPriceEnabled", isRetailPriceUpdateSelected);
 
-			if (isRetailPriceUpdateSelected) {
-				const statusFilters = [
-					new Filter({
-						path: "Status",
-						operator: FilterOperator.NE,
-						value1: "Ignored Price"
-					}),
-					new Filter({
-						path: "Status",
-						operator: FilterOperator.EQ,
-						value1: null
-					})
-				]
-				andFilters.push(new Filter(statusFilters, false));
-			}
+			// if (isRetailPriceUpdateSelected) {
+			// 	const statusFilters = [
+			// 		new Filter({
+			// 			path: "Status",
+			// 			operator: FilterOperator.NE,
+			// 			value1: "Ignored Price"
+			// 		}),
+			// 		new Filter({
+			// 			path: "Status",
+			// 			operator: FilterOperator.EQ,
+			// 			value1: null
+			// 		})
+			// 	]
+			// 	andFilters.push(new Filter(statusFilters, false));
+			// }
 
 			const productPackfilter = this.byId("idProductPackfilter").getSelectedKey();
 
@@ -643,13 +643,14 @@ sap.ui.define([
 			const priceAgreements = priceAgreementsTableItems.map(item => item.getBindingContext().getObject());
 			const priceAgreementIDs = priceAgreements.map(pr => pr.ID);
 			const filterTxt = this.byId("idslctfilter").getSelectedItem().getText();
+			const selectedFilterKey = this.byId("idslctfilter").getSelectedItem().getKey().toLowerCase();
 
 			if(priceAgreements.length <= 0){
 				MessageBox.warning(`There are no Price Agreements with ${filterTxt}.`);
 				return;
 			}
 
-			if (CountryCode === 'IT') {
+			if (CountryCode === 'IT' && selectedFilterKey === 'newmaterialnumberskey') {
 				const somePriceAgreementsNotReviewed = priceAgreements.some(pa => pa.Status !== "Ignored Price" && pa.Status !== "Updated Price");
 
 				if (somePriceAgreementsNotReviewed) {
@@ -740,9 +741,6 @@ sap.ui.define([
 					// _that.getView().byId("list").getBinding("items").aApplicationFilters = [];
 					_that.getView().byId("list").getBinding("items").filter();
 
-					_that.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", false);
-					_that.getView().getModel("masterView").setProperty("/btnIgnoreNewPriceEnabled", false);
-
 					// navigate to master page
 					_that.getOwnerComponent().oListSelector.clearMasterListSelection();
 					_that.getRouter().navTo("master");
@@ -762,6 +760,8 @@ sap.ui.define([
 		},
 
 		ignoreNewPrice: async function(priceAgreement){
+			
+			this.updatePriceAgreementBeforeApplyPrices(priceAgreement);
 
 			priceAgreement.Status = 'Ignored Price';
 			
@@ -778,37 +778,9 @@ sap.ui.define([
 		 * @returns {Promise}
 		 */
 		applyNewPrice: async function(priceAgreement){
-
-			if(!priceAgreement.ConsumerPrice){
-				return;
-			}
-
-			const uom = priceAgreement.UoM;
-			//only works when already viewed in detail - otherwise will be empty
-			// const customerPricesPaths = priceAgreement.CustomerPrices.__list;
-			
-			const consumerPrice = this.getView().getModel().getProperty(`/${priceAgreement.ConsumerPrice.__ref}`);
 			const btnIgnoreNewPriceEnabled = this.getView().getModel("masterView").getProperty("/btnIgnoreNewPriceEnabled");
 
-			// calulate the new NetOfferPrice
-			let newNetOfferPrice = "";
-			if(uom === "Pack"){
-				newNetOfferPrice = consumerPrice.MaxPriceNhsPP * (1 - priceAgreement.Discount / 100);
-				// update the PriceAgreement prices
-				priceAgreement.ListPrice = consumerPrice.ConsumerPriceExclPP;
-				priceAgreement.RetailPrice = consumerPrice.MaxPriceNhsPP;
-			}else{
-				newNetOfferPrice = consumerPrice.MaxPriceNhsPU * (1 - priceAgreement.Discount / 100);
-				// update the PriceAgreement prices
-				priceAgreement.ListPrice = consumerPrice.ConsumerPriceExclPU;
-				priceAgreement.RetailPrice = consumerPrice.MaxPriceNhsPU;
-			}
-			//EHQUT-227400-Price error in massive apply price due to SKU change
-			// update the Price Agreement price
-			//priceAgreement.Price = newNetOfferPrice;
-			if((newNetOfferPrice !== 0 && priceAgreement.CountryCode === 'IT') || priceAgreement.CountryCode === 'ES'){
-				priceAgreement.Price = newNetOfferPrice;
-			}
+			this.updatePriceAgreementBeforeApplyPrices(priceAgreement);
 
 			// Set status when Retail Update Price filter is selected
 			if (priceAgreement.CountryCode === 'IT' && btnIgnoreNewPriceEnabled) {
@@ -829,6 +801,40 @@ sap.ui.define([
 			const savePriceAgreement = this.paState.savePriceAgreement(this.paState.createPriceAgreementObject(priceAgreement));
 			
 			return await Promise.all(saveCustomerPricePromises, savePriceAgreement);
+
+		},
+
+		updatePriceAgreementBeforeApplyPrices: function (priceAgreement) {
+			if(!priceAgreement.ConsumerPrice){
+				return;
+			}
+
+			const uom = priceAgreement.UoM;
+			//only works when already viewed in detail - otherwise will be empty
+			// const customerPricesPaths = priceAgreement.CustomerPrices.__list;
+			
+			const consumerPrice = this.getView().getModel().getProperty(`/${priceAgreement.ConsumerPrice.__ref}`);
+			
+
+			// calulate the new NetOfferPrice
+			let newNetOfferPrice = "";
+			if(uom === "Pack"){
+				newNetOfferPrice = consumerPrice.MaxPriceNhsPP * (1 - priceAgreement.Discount / 100);
+				// update the PriceAgreement prices
+				priceAgreement.ListPrice = consumerPrice.ConsumerPriceExclPP;
+				priceAgreement.RetailPrice = consumerPrice.MaxPriceNhsPP;
+			}else{
+				newNetOfferPrice = consumerPrice.MaxPriceNhsPU * (1 - priceAgreement.Discount / 100);
+				// update the PriceAgreement prices
+				priceAgreement.ListPrice = consumerPrice.ConsumerPriceExclPU;
+				priceAgreement.RetailPrice = consumerPrice.MaxPriceNhsPU;
+			}
+			//EHQUT-227400-Price error in massive apply price due to SKU change
+			// update the Price Agreement price
+			//priceAgreement.Price = newNetOfferPrice;
+			if((newNetOfferPrice !== 0 && priceAgreement.CountryCode === 'IT') || priceAgreement.CountryCode === 'ES'){
+				priceAgreement.Price = newNetOfferPrice;
+			}
 
 		},
 
