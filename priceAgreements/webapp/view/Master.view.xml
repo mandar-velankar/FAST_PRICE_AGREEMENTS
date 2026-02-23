@@ -42,7 +42,7 @@
 							selectedKey="{pa>/selectedCountryFilter}">
 							<core:Item key="{CountryCode}" text="{Country/CountryName}"/>
 					</Select>
-					<Select	id="idslctfilter" change=".setFilter" items="{pa>/countryFilters}">
+					<Select	id="idslctfilter" change=".setFilter" items="{pa>/countryFilters}" selectedKey="{pa>/selectedStatusFilter}">
 						<core:Item key="{pa>key}" text="{pa>value}"/>
 					</Select>
 

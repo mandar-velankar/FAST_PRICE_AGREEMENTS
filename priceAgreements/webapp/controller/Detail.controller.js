@@ -389,7 +389,19 @@ sap.ui.define([
 		 * @param {*} evt On click event
 		 */
 		onSynchronize: function (evt) {
-			this.synchronizePriceAgreement(this.sObjectId);
+			const priceAgreementPath = this.getModel().createKey('/PriceAgreementsMasterView', {
+				ID: this.sObjectId
+			});
+			const priceAgreement = this.getModel().getObject(priceAgreementPath);
+			const countryCode = priceAgreement?.CountryCode;
+			const selectedStatusFilter = this.paState.getModel().getProperty('/selectedStatusFilter');
+			if (countryCode === 'IT' && selectedStatusFilter?.toLowerCase() === 'newmaterialnumberskey') {
+				if (priceAgreement.hasNewPrice === true) {
+					MessageBox.warning("Price updates needs to be reviewed first");
+					return;
+				}
+			}
+			this.synchronizePriceAgreement(this.sObjectId, priceAgreement);
 		},
 
 		//EHQUT-SCTASK14166747-FAST Tool Service Request 
@@ -438,7 +450,9 @@ sap.ui.define([
             });
         },
 
-		synchronizePriceAgreement: async function(priceAgreementID){
+		synchronizePriceAgreement: async function(priceAgreementID, priceAgreement){
+			const selectedStatusFilter = this.paState.getModel().getProperty('/selectedStatusFilter');
+
 			if(!priceAgreementID){
 				throw new Error("PriceAgreementID not specified");
 			}
@@ -463,6 +477,13 @@ sap.ui.define([
 				 //EJUVE-CR9 END
 				this.setBusy(true);
 				await this.paState.syncPriceAgreements([priceAgreementID]);
+				
+				if (priceAgreement?.CountryCode === 'IT' && selectedStatusFilter.toLowerCase() === 'newmaterialnumberskey') {
+					await this.paState.savePriceAgreement(this.paState.createPriceAgreementObject({
+						...priceAgreement,
+						Status: ""
+					}));
+				}
 				//const oMasterTableBinding = this.refreshMaster();
 				this.paState.getPriceAgreement(this.sObjectId);
 				this.setBusy(false);
