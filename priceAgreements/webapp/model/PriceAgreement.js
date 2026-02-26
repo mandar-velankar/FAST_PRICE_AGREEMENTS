@@ -255,8 +255,9 @@ sap.ui.define([
                 "ignoreConfPriceChange",
                 "ignorePVLPriceChange",
                 "applyAll",//CR2
-                 "OldExpiryDate" //EJUVE-CR3
-
+                 "OldExpiryDate", //EJUVE-CR3
+                "ignoredListPrice",
+                "ignoredRetailPrice",
             ]);
             data.SettlementDates = this.settlementDates.map(settlementDate => settlementDate.getJSON());
 

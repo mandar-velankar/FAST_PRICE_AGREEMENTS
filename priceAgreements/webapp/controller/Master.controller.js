@@ -828,19 +828,22 @@ sap.ui.define([
 
 			if(priceAgreement.CountryCode === 'IT') {
 				const isActionApply = action === 'apply';
-				const isPriceIgnored = btnIgnoreNewPriceEnabled && priceAgreement.Status === 'Ignored Price';
+				const isPriceIgnored = !btnIgnoreNewPriceEnabled && priceAgreement.Status === 'Ignored Price';
 				// calulate the new NetOfferPrice
-				
+				priceAgreement.IgnoredListPrice = isActionApply ? priceAgreement.IgnoredListPrice : priceAgreement.ListPrice;
+				priceAgreement.IgnoredRetailPrice = isActionApply ? priceAgreement.IgnoredRetailPrice : priceAgreement.RetailPrice;
+
 				if(uom === "Pack"){
 					// update the PriceAgreement prices
-					priceAgreement.ListPrice = isActionApply ? isPriceIgnored ? priceAgreement.ListPrice : consumerPrice.ConsumerPriceExclPP : consumerPrice.ConsumerPriceExclPP;
-					priceAgreement.RetailPrice = isActionApply ? isPriceIgnored ? priceAgreement.RetailPrice : consumerPrice.MaxPriceNhsPP : consumerPrice.MaxPriceNhsPP;
+					
+					priceAgreement.ListPrice = isActionApply ? isPriceIgnored ? priceAgreement.IgnoredListPrice : consumerPrice.ConsumerPriceExclPP : consumerPrice.ConsumerPriceExclPP;
+					priceAgreement.RetailPrice = isActionApply ? isPriceIgnored ? priceAgreement.IgnoredRetailPrice : consumerPrice.MaxPriceNhsPP : consumerPrice.MaxPriceNhsPP;
 
 					newNetOfferPrice = priceAgreement.RetailPrice * (1 - priceAgreement.Discount / 100);
 				}else{
 					// update the PriceAgreement prices
-					priceAgreement.ListPrice = isActionApply ? isPriceIgnored ? priceAgreement.ListPrice : consumerPrice.ConsumerPriceExclPU : consumerPrice.ConsumerPriceExclPU;
-					priceAgreement.RetailPrice = isActionApply ? isPriceIgnored ? priceAgreement.RetailPrice : consumerPrice.MaxPriceNhsPU : consumerPrice.MaxPriceNhsPU;
+					priceAgreement.ListPrice = isActionApply ? isPriceIgnored ? priceAgreement.IgnoredListPrice : consumerPrice.ConsumerPriceExclPU : consumerPrice.ConsumerPriceExclPU;
+					priceAgreement.RetailPrice = isActionApply ? isPriceIgnored ? priceAgreement.IgnoredRetailPrice : consumerPrice.MaxPriceNhsPU : consumerPrice.MaxPriceNhsPU;
 
 					newNetOfferPrice = priceAgreement.RetailPrice * (1 - priceAgreement.Discount / 100);
 				}
