@@ -662,45 +662,51 @@ sap.ui.define([
 			const _fnOnClose = async function(sAction){
 
 				if (sAction === "YES") {
-					const selectedFilterKey = _that.byId("idslctfilter").getSelectedItem().getKey().toLowerCase();
-					const CountryCode= _that.getModel("pa").oData.selectedCountryFilter;
+					try {
+						const selectedFilterKey = _that.byId("idslctfilter").getSelectedItem().getKey().toLowerCase();
+						const CountryCode= _that.getModel("pa").oData.selectedCountryFilter;
 
-					_that.getView().setBusyIndicatorDelay(0);
-					_that.getView().setBusy(true);
+						_that.getView().setBusyIndicatorDelay(0);
+						_that.getView().setBusy(true);
 
-					// apply the new price on each price agreement
-					await Promise.all(priceAgreements.map(pr => _that.applyNewPrice.call(_that, pr)));
+						// apply the new price on each price agreement
+						await Promise.all(priceAgreements.map(pr => _that.applyNewPrice.call(_that, pr)));
 
-					// apply new SKU on each price agreement
-                    await Promise.all(priceAgreements.map(pr => pr.CountryCode === 'IT' ? _that.applyNewSKU.call(_that, pr) : _that.applyNewSKUSpain.call(_that, pr)));
+						// apply new SKU on each price agreement
+						await Promise.all(priceAgreements.map(pr => pr.CountryCode === 'IT' ? _that.applyNewSKU.call(_that, pr) : _that.applyNewSKUSpain.call(_that, pr)));
 
-					// synchronize with sap backend
-					 await _that.paState.syncPriceAgreements(priceAgreementIDs);
+						// synchronize with sap backend
+						await _that.paState.syncPriceAgreements(priceAgreementIDs);
 
-					 // reset status of agreement after applying reviewed prices
-					if (CountryCode === 'IT' && selectedFilterKey === 'newmaterialnumberskey') {
-						await Promise.all(priceAgreements.map(pa => _that.paState.savePriceAgreement(_that.paState.createPriceAgreementObject({
-							...pa,
-							Status: ""
-						}))));
+						// reset status of agreement after applying reviewed prices
+						if (CountryCode === 'IT' && selectedFilterKey === 'newmaterialnumberskey') {
+							await Promise.all(priceAgreements.map(pa => _that.paState.savePriceAgreement(_that.paState.createPriceAgreementObject({
+								...pa,
+								Status: ""
+							}))));
+						}
+						
+						// synchronize with sap backend
+						//await _that.paState.syncFocCustPrices(priceAgreementIDs);
+
+						// clear the filter and refresh the binding
+						_that.byId("idslctfilter").setSelectedKey();
+						_that.getView().byId("list").getBinding("items").aApplicationFilters = [];
+						_that.getView().byId("list").getBinding("items").filter();
+
+						_that.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", false);
+						_that.getView().getModel("masterView").setProperty("/btnIgnoreNewPriceEnabled", false);
+
+						// navigate to master page
+						_that.getOwnerComponent().oListSelector.clearMasterListSelection();
+						_that.getRouter().navTo("master");
+
+						_that.getView().setBusy(false);
+					} catch (error) {
+						_that.getView().setBusy(false);
+						const message = JSON.parse(error?.responseText)?.error?.message?.value || "An error occurred while applying the new prices. Please try again."
+						MessageBox.error(message);
 					}
-					
-					// synchronize with sap backend
-					//await _that.paState.syncFocCustPrices(priceAgreementIDs);
-
-					// clear the filter and refresh the binding
-					_that.byId("idslctfilter").setSelectedKey();
-					_that.getView().byId("list").getBinding("items").aApplicationFilters = [];
-					_that.getView().byId("list").getBinding("items").filter();
-
-					_that.getView().getModel("masterView").setProperty("/btnApplyNewPriceEnabled", false);
-					_that.getView().getModel("masterView").setProperty("/btnIgnoreNewPriceEnabled", false);
-
-					// navigate to master page
-					_that.getOwnerComponent().oListSelector.clearMasterListSelection();
-					_that.getRouter().navTo("master");
-
-					_that.getView().setBusy(false);
 				
 				} 
 
@@ -740,25 +746,31 @@ sap.ui.define([
 
 				if (sAction === "YES") {
 
-					_that.getView().setBusyIndicatorDelay(0);
-					_that.getView().setBusy(true);
+					try {
+						_that.getView().setBusyIndicatorDelay(0);
+						_that.getView().setBusy(true);
 
-					// apply the new price on each price agreement
-					await Promise.all(priceAgreements.map(pr => _that.ignoreNewPrice.call(_that, pr)));
+						// apply the new price on each price agreement
+						await Promise.all(priceAgreements.map(pr => _that.ignoreNewPrice.call(_that, pr)));
 
-					// synchronize with sap backend
-					await _that.paState.syncPriceAgreements(notSynchronizedPriceAgreementIDs);
+						// synchronize with sap backend
+						await _that.paState.syncPriceAgreements(notSynchronizedPriceAgreementIDs);
 
-					// clear the filter and refresh the binding
-					// _that.byId("idslctfilter").setSelectedKey();
-					// _that.getView().byId("list").getBinding("items").aApplicationFilters = [];
-					_that.getView().byId("list").getBinding("items").filter();
+						// clear the filter and refresh the binding
+						// _that.byId("idslctfilter").setSelectedKey();
+						// _that.getView().byId("list").getBinding("items").aApplicationFilters = [];
+						_that.getView().byId("list").getBinding("items").filter();
 
-					// navigate to master page
-					_that.getOwnerComponent().oListSelector.clearMasterListSelection();
-					_that.getRouter().navTo("master");
+						// navigate to master page
+						_that.getOwnerComponent().oListSelector.clearMasterListSelection();
+						_that.getRouter().navTo("master");
 
-					_that.getView().setBusy(false);
+						_that.getView().setBusy(false);
+					} catch (error) {
+						_that.getView().setBusy(false);
+						const message = JSON.parse(error?.responseText)?.error?.message?.value || "An error occurred while ignoring the new prices. Please try again."
+						MessageBox.error(message);
+					}
 				
 				} 
 
