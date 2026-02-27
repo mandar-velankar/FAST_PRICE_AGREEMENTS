@@ -728,6 +728,7 @@ sap.ui.define([
 			//EHQUT-199067-Italy – Price Agreements multiple selection
 			//const priceAgreementsTableItems = this.byId("list").getItems();
 			const priceAgreements = priceAgreementsTableItems.map(item => item.getBindingContext().getObject());
+			const notSynchronizedPriceAgreementIDs = priceAgreements.filter(pr => !pr.Synchronized).map(pr => pr.ID);
 			const filterTxt = this.byId("idslctfilter").getSelectedItem().getText();
 
 			if(priceAgreements.length <= 0){
@@ -745,6 +746,8 @@ sap.ui.define([
 					// apply the new price on each price agreement
 					await Promise.all(priceAgreements.map(pr => _that.ignoreNewPrice.call(_that, pr)));
 
+					// synchronize with sap backend
+					await _that.paState.syncPriceAgreements(notSynchronizedPriceAgreementIDs);
 
 					// clear the filter and refresh the binding
 					// _that.byId("idslctfilter").setSelectedKey();
