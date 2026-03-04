@@ -15,9 +15,10 @@ sap.ui.define([
 	"sap/m/Token",
 	"sap/m/Tokenizer",
 	"sap/ui/core/BusyIndicator",
-	"sap/m/library"
+	"sap/m/library",
+	"com/bayer/tender/uilib/datatypes/CustomDecimalType",
 	
-], function (BaseController, JSONModel, Filter,FilterType, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, formatter,MessageBox,Dialog,MessageToast,Token,Tokenizer, BusyIndicator,mLib) {
+], function (BaseController, JSONModel, Filter,FilterType, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, formatter,MessageBox,Dialog,MessageToast,Token,Tokenizer, BusyIndicator,mLib, CustomDecimalType) {
 	"use strict";
 
 	return BaseController.extend("com.bayer.tender.priceagreements.controller.Master", {
@@ -753,6 +754,8 @@ sap.ui.define([
 						// apply the new price on each price agreement
 						await Promise.all(priceAgreements.map(pr => _that.ignoreNewPrice.call(_that, pr)));
 
+						// await Promise.all(priceAgreements.map(pr => pr.CountryCode === 'IT' ? _that.applyNewSKU.call(_that, pr) : _that.applyNewSKUSpain.call(_that, pr)));
+
 						// synchronize with sap backend
 						await _that.paState.syncPriceAgreements(notSynchronizedPriceAgreementIDs);
 
@@ -768,7 +771,7 @@ sap.ui.define([
 						_that.getView().setBusy(false);
 					} catch (error) {
 						_that.getView().setBusy(false);
-						const message = JSON.parse(error?.responseText)?.error?.message?.value || "An error occurred while ignoring the new prices. Please try again."
+						const message = error?.message || JSON.parse(error?.responseText)?.error?.message?.value || "An error occurred while ignoring the new prices. Please try again."
 						MessageBox.error(message);
 					}
 				
@@ -791,7 +794,8 @@ sap.ui.define([
 			priceAgreement.Status = 'Ignored Price';
 			
 			// save changes
-			return this.paState.savePriceAgreement(this.paState.createPriceAgreementObject(priceAgreement));
+			await this.paState.updateCustomerPrices(priceAgreement);
+			await this.paState.savePriceAgreement(this.paState.createPriceAgreementObject(priceAgreement));
 		},
 
 		/**
@@ -843,25 +847,17 @@ sap.ui.define([
 
 			if(priceAgreement.CountryCode === 'IT') {
 				const isActionApply = action === 'apply';
-				const isPriceIgnored = !btnIgnoreNewPriceEnabled && priceAgreement.Status === 'Ignored Price';
 				// calulate the new NetOfferPrice
-				priceAgreement.IgnoredListPrice = isActionApply ? priceAgreement.IgnoredListPrice : priceAgreement.ListPrice;
-				priceAgreement.IgnoredRetailPrice = isActionApply ? priceAgreement.IgnoredRetailPrice : priceAgreement.RetailPrice;
-
-				if(uom === "Pack"){
-					// update the PriceAgreement prices
-					
-					priceAgreement.ListPrice = isActionApply ? isPriceIgnored ? priceAgreement.IgnoredListPrice : consumerPrice.ConsumerPriceExclPP : consumerPrice.ConsumerPriceExclPP;
-					priceAgreement.RetailPrice = isActionApply ? isPriceIgnored ? priceAgreement.IgnoredRetailPrice : consumerPrice.MaxPriceNhsPP : consumerPrice.MaxPriceNhsPP;
-
-					newNetOfferPrice = priceAgreement.RetailPrice * (1 - priceAgreement.Discount / 100);
-				}else{
-					// update the PriceAgreement prices
-					priceAgreement.ListPrice = isActionApply ? isPriceIgnored ? priceAgreement.IgnoredListPrice : consumerPrice.ConsumerPriceExclPU : consumerPrice.ConsumerPriceExclPU;
-					priceAgreement.RetailPrice = isActionApply ? isPriceIgnored ? priceAgreement.IgnoredRetailPrice : consumerPrice.MaxPriceNhsPU : consumerPrice.MaxPriceNhsPU;
-
-					newNetOfferPrice = priceAgreement.RetailPrice * (1 - priceAgreement.Discount / 100);
+				
+				if (isActionApply && btnIgnoreNewPriceEnabled) {
+					newNetOfferPrice = this.calculateAppliedPrices(priceAgreement, consumerPrice, newNetOfferPrice, uom)
+				}else if (isActionApply && !btnIgnoreNewPriceEnabled) {
+					newNetOfferPrice = this.calculateAppliedPricesBasedOnAgreementStatus(priceAgreement, consumerPrice, newNetOfferPrice, uom)
+				}else {
+					newNetOfferPrice = this.calculateIgnoredPrices(priceAgreement, consumerPrice, newNetOfferPrice, uom);
 				}
+
+				newNetOfferPrice = new CustomDecimalType().formatValue(newNetOfferPrice);
 			}else {
 				// calulate the new NetOfferPrice
 				if(uom === "Pack"){
@@ -883,6 +879,65 @@ sap.ui.define([
 				priceAgreement.Price = newNetOfferPrice;
 			}
 
+		},
+
+		calculateIgnoredPrices: function (priceAgreement, consumerPrice, newNetOfferPrice, uom) {
+			
+
+			if(uom === "Pack"){
+				// update the PriceAgreement prices
+				priceAgreement.IgnoredListPrice = priceAgreement.ConsumerPriceExclPP;
+				priceAgreement.IgnoredRetailPrice = priceAgreement.MaxPriceNhsPP;
+
+				newNetOfferPrice = priceAgreement.RetailPrice * (1 - priceAgreement.Discount / 100);
+			}else{
+				// update the PriceAgreement prices
+				priceAgreement.IgnoredListPrice = consumerPrice.ConsumerPriceExclPU;
+				priceAgreement.IgnoredRetailPrice = consumerPrice.MaxPriceNhsPU;
+
+				newNetOfferPrice = priceAgreement.RetailPrice * (1 - priceAgreement.Discount / 100);
+			}
+
+			return newNetOfferPrice;
+		},
+
+		calculateAppliedPrices: function (priceAgreement, consumerPrice, newNetOfferPrice, uom) {
+			priceAgreement.IgnoredListPrice = null;
+			priceAgreement.IgnoredRetailPrice = null;
+
+			if(uom === "Pack"){
+				// update the PriceAgreement prices
+				priceAgreement.ListPrice = consumerPrice.ConsumerPriceExclPP;
+				priceAgreement.RetailPrice = consumerPrice.MaxPriceNhsPP;
+
+				newNetOfferPrice = priceAgreement.RetailPrice * (1 - priceAgreement.Discount / 100);
+			}else{
+				// update the PriceAgreement prices
+				priceAgreement.ListPrice = consumerPrice.ConsumerPriceExclPU;
+				priceAgreement.RetailPrice = consumerPrice.MaxPriceNhsPU;
+
+				newNetOfferPrice = priceAgreement.RetailPrice * (1 - priceAgreement.Discount / 100);
+			}
+
+			return newNetOfferPrice;
+		},
+
+		calculateAppliedPricesBasedOnAgreementStatus: function (priceAgreement, consumerPrice, newNetOfferPrice, uom) {
+			if(uom === "Pack"){
+				// update the PriceAgreement prices
+				priceAgreement.ListPrice = priceAgreement.Status === 'Ignored Price' ? priceAgreement.ListPrice : consumerPrice.ConsumerPriceExclPP;
+				priceAgreement.RetailPrice = priceAgreement.Status === 'Ignored Price' ? priceAgreement.RetailPrice : consumerPrice.MaxPriceNhsPP;
+
+				newNetOfferPrice = priceAgreement.RetailPrice * (1 - priceAgreement.Discount / 100);
+			}else{
+				// update the PriceAgreement prices
+				priceAgreement.ListPrice = priceAgreement.Status === 'Ignored Price' ? priceAgreement.ListPrice : consumerPrice.ConsumerPriceExclPU;
+				priceAgreement.RetailPrice = priceAgreement.Status === 'Ignored Price' ? priceAgreement.RetailPrice : consumerPrice.MaxPriceNhsPU;
+
+				newNetOfferPrice = priceAgreement.RetailPrice * (1 - priceAgreement.Discount / 100);
+			}
+
+			return newNetOfferPrice;
 		},
 
 		/**
