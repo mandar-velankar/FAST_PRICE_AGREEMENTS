@@ -23,7 +23,7 @@
 		"ui5-task-transpile": "^0.3.1"
 	},
 	"engines": {
-		"node": "^18.19.0"
+		"node": "^20.19.5"
 	},
 	"ui5": {
 		"dependencies": [
