@@ -128,6 +128,11 @@ sap.ui.define([
             //EHQUT-227388-Issues with massive synch using apply price button
            var customerpriceAppliedcount=responsePA.data.CustomerPrices.results.length;
            var appliedInstitueID=[];
+
+           if (customerpriceAppliedcount === 0) {
+                throw new Error("No customer Prices found. Please apply the price and then click on Apply/Ignore price button");
+           }
+
            for(var i=0;i<customerpriceAppliedcount;i++){
            appliedInstitueID.push(responsePA.data.CustomerPrices.results[i].InstituteId);
            }
